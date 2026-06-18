@@ -467,6 +467,9 @@ func originChecker(cfg config, log *slog.Logger) func(*http.Request) bool {
 			log.Warn("invalid ws origin", "origin", origin)
 			return false
 		}
+		if strings.EqualFold(u.Host, r.Host) {
+			return true
+		}
 		origin = strings.ToLower(u.Scheme + "://" + u.Host)
 		for _, allowed := range cfg.allowedOrigins {
 			if strings.EqualFold(origin, allowed) {
