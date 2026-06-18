@@ -2,6 +2,8 @@
 
 > End-to-end encrypted file transfer. No accounts. No server storage. Just a key and a direct connection.
 
+🌐 **Live Demo:** [transfera.onrender.com](https://transfera.onrender.com)
+
 ---
 
 ## How it works
