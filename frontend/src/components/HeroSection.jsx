@@ -170,10 +170,9 @@ export default function HeroSection() {
               A private passage for your files. Encrypted in the browser, delivered directly, and never retained by the gateway.
             </motion.p>
 
-            {/* CTA row */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap gap-4 mb-12"
+              className="flex flex-wrap gap-4 mb-12 justify-end"
             >
               <a href="/live" className="btn-primary group">
                 <span>Start Secure Transfer</span>
