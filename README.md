@@ -9,8 +9,8 @@
 1. **Origin Node** opens `transfera.sanyamgarg.com` and gets an **Access Key** + QR code
 2. **Destination Node** enters the same key on any device
 3. Files are **encrypted in the browser** with NaCl secretbox (XSalsa20 + Poly1305) before leaving your device
-4. Transfer goes **direct over WebRTC** — the server only sees encrypted handshake bytes
-5. If a direct link fails, it falls back through the **Secure Gateway** — still fully encrypted
+4. Transfer goes **direct over WebRTC** - the server only sees encrypted handshake bytes
+5. If a direct link fails, it falls back through the **Secure Gateway** - still fully encrypted
 
 The server never sees plaintext. Ever.
 
@@ -31,10 +31,10 @@ The server never sees plaintext. Ever.
 
 ## Stack
 
-- **Backend** — Go, WebSocket signaling, minimal relay
-- **Frontend** — Vanilla JS + Web Crypto API + WebRTC
-- **Encryption** — [TweetNaCl](https://tweetnacl.js.org/) (`nacl.secretbox`)
-- **Landing page** — React + Vite
+- **Backend** - Go, WebSocket signaling, minimal relay
+- **Frontend** - Vanilla JS + Web Crypto API + WebRTC
+- **Encryption** - [TweetNaCl](https://tweetnacl.js.org/) (`nacl.secretbox`)
+- **Landing page** - React + Vite
 
 ---
 
