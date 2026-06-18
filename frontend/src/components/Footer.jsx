@@ -11,11 +11,11 @@ export default function Footer() {
     Resources: [
       { label: 'Documentation', href: '/development' },
       { label: 'Security', href: '#security' },
-      { label: 'GitHub', href: 'https://github.com/Sanyam-G/Transfera' },
+      { label: 'GitHub', href: 'https://github.com/Mohammed-razin-cr/transfera' },
     ],
     Company: [
-      { label: 'MIT License', href: 'https://github.com/Sanyam-G/Transfera/blob/main/LICENSE' },
-      { label: 'Contributing', href: 'https://github.com/Sanyam-G/Transfera' },
+      { label: 'MIT License', href: 'https://github.com/Mohammed-razin-cr/transfera/blob/main/LICENSE' },
+      { label: 'Contributing', href: 'https://github.com/Mohammed-razin-cr/transfera' },
     ],
   }
 
@@ -39,7 +39,7 @@ export default function Footer() {
               </p>
               <div className="flex items-center gap-3 mt-6">
                 <a
-                  href="https://github.com/Sanyam-G/Transfera"
+                  href="https://github.com/Mohammed-razin-cr/transfera"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="icon-button h-8 w-8 rounded-sm"

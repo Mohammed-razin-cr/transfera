@@ -41,7 +41,7 @@ The server never sees plaintext. Ever.
 ## Self-host
 
 ```bash
-git clone https://github.com/Sanyam-G/Transfera
+git clone https://github.com/Mohammed-razin-cr/transfera
 cd Transfera
 
 # Run the relay server
@@ -68,4 +68,4 @@ Server starts at `http://localhost:8088`. Transfer UI at `/live`.
 
 ## License
 
-MIT © [Sanyam Garg](https://github.com/Sanyam-G)
+MIT © [Mohammed Razin CR](https://github.com/Mohammed-razin-cr)
