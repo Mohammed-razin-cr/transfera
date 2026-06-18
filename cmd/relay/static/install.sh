@@ -11,7 +11,7 @@ case "$ARCH" in
 esac
 
 RELAY="__GATEWAY_URL__"
-URL="https://github.com/Sanyam-G/Transfera/releases/latest/download/transfera-${OS}-${ARCH}"
+URL="https://github.com/Mohammed-razin-cr/transfera/releases/latest/download/transfera-${OS}-${ARCH}"
 
 echo "Downloading transfera for ${OS}-${ARCH}..."
 curl -sL "$URL" -o /tmp/transfera
@@ -29,7 +29,7 @@ fi
 
 echo "Done! Run: transfera send <file>"
 
-if [ "$RELAY" != "https://transfera.sanyamgarg.com" ] && [ "$RELAY" != "__GATEWAY_URL__" ]; then
+if [ "$RELAY" != "https://transfera.onrender.com" ] && [ "$RELAY" != "__GATEWAY_URL__" ]; then
     case "$SHELL" in
         */zsh)  RC="$HOME/.zshrc" ;;
         */bash) RC="$HOME/.bashrc" ;;

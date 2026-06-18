@@ -27,7 +27,7 @@ import (
 	"github.com/sanyam-g/transfera/internal/transfer"
 )
 
-const defaultRelay = "https://transfera.sanyamgarg.com"
+const defaultRelay = "https://transfera.onrender.com"
 
 // ANSI escape codes
 const (
@@ -95,8 +95,8 @@ func printHelp() {
 	fmt.Printf("  transfera --Secure Gateway https://my.Secure Gateway send a.zip\n\n")
 
 	fmt.Printf("%sLinks%s\n", b, r)
-	fmt.Printf("  Source        github.com/Sanyam-G/Transfera\n")
-	fmt.Printf("  Web Origin Node    https://transfera.sanyamgarg.com\n\n")
+	fmt.Printf("  Source        github.com/Mohammed-razin-cr/transfera\n")
+	fmt.Printf("  Web Origin Node    https://transfera.onrender.com\n\n")
 }
 
 func banner(mode string) {

@@ -6,7 +6,7 @@
 
 ## How it works
 
-1. **Origin Node** opens `transfera.sanyamgarg.com` and gets an **Access Key** + QR code
+1. **Origin Node** opens `transfera.onrender.com` and gets an **Access Key** + QR code
 2. **Destination Node** enters the same key on any device
 3. Files are **encrypted in the browser** with NaCl secretbox (XSalsa20 + Poly1305) before leaving your device
 4. Transfer goes **direct over WebRTC** - the server only sees encrypted handshake bytes
