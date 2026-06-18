@@ -45,14 +45,17 @@ export default function SecuritySection() {
 
       const w = canvas.offsetWidth
       const h = canvas.offsetHeight
-      const spacing = w / 4
+      const margin = w < 480 ? 30 : 60
+      const segmentWidth = (w - 2 * margin) / 3
 
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)'
       ctx.lineWidth = 1
       for (let i = 0; i < nodes.length - 1; i++) {
+        const x1 = margin + i * segmentWidth
+        const x2 = margin + (i + 1) * segmentWidth
         ctx.beginPath()
-        ctx.moveTo(spacing * (i + 0.5) + 40, h / 2)
-        ctx.lineTo(spacing * (i + 1.5) + 40, h / 2)
+        ctx.moveTo(x1, h / 2)
+        ctx.lineTo(x2, h / 2)
         ctx.stroke()
 
         const flowOffset = (time * 30) % 20
@@ -60,11 +63,11 @@ export default function SecuritySection() {
         ctx.lineWidth = 1
         for (let j = 0; j < 3; j++) {
           const offset = (flowOffset + j * 6) % 20
-          const startX = spacing * (i + 0.5) + 40 + offset * (spacing / 20)
-          if (startX < spacing * (i + 1.5) + 40) {
+          const startX = x1 + offset * (segmentWidth / 20)
+          if (startX < x2) {
             ctx.beginPath()
             ctx.moveTo(startX, h / 2)
-            ctx.lineTo(Math.min(startX + 8, spacing * (i + 1.5) + 40), h / 2)
+            ctx.lineTo(Math.min(startX + 8, x2), h / 2)
             ctx.stroke()
           }
         }
@@ -82,8 +85,8 @@ export default function SecuritySection() {
           if (p.to >= 3) { particles.splice(i, 1); continue }
         }
 
-        const fromX = spacing * (p.from + 0.5) + 40
-        const toX = spacing * (p.to + 0.5) + 40
+        const fromX = margin + p.from * segmentWidth
+        const toX = margin + p.to * segmentWidth
         const x = fromX + (toX - fromX) * p.progress
         const y = h / 2 + p.yOffset
 
@@ -99,7 +102,7 @@ export default function SecuritySection() {
       }
 
       nodes.forEach((node, i) => {
-        const nx = spacing * (i + 0.5) + 40
+        const nx = margin + i * segmentWidth
         const ny = h / 2
 
         ctx.beginPath()
