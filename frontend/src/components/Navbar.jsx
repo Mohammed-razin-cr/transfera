@@ -58,7 +58,7 @@ export default function Navbar() {
               Gateway Online
             </div>
             <a
-              href="http://localhost:8088/live"
+              href="/live"
               className="btn-primary group"
             >
               <span>Start Transfer</span>
@@ -100,7 +100,7 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <a href="http://localhost:8088/live" className="btn-primary group text-center mt-2">
+              <a href="/live" className="btn-primary group text-center mt-2">
                 <span>Start Transfer</span>
                 <span className="btn-icon"><Send className="w-3 h-3" /></span>
               </a>

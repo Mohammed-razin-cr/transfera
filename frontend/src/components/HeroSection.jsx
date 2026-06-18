@@ -175,7 +175,7 @@ export default function HeroSection() {
               variants={itemVariants}
               className="flex flex-wrap gap-4 mb-12"
             >
-              <a href="http://localhost:8088/live" className="btn-primary group">
+              <a href="/live" className="btn-primary group">
                 <span>Start Secure Transfer</span>
                 <span className="btn-icon">
                   <ArrowUpRight className="w-3.5 h-3.5" />
