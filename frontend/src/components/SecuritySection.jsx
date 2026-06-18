@@ -193,7 +193,7 @@ export default function SecuritySection() {
               Security<br />
               <span className="gradient-text italic">Architecture</span>
             </h2>
-            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: '#4a3a3a' }}>
+            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: '#9c8e8a' }}>
               Four-stage encrypted pipeline. Your data never touches unencrypted infrastructure.
             </p>
           </motion.div>
@@ -209,7 +209,7 @@ export default function SecuritySection() {
           >
             <div className="px-6 py-3 border-b border-white/5 flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-transfera-red" />
-              <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#4a3a3a' }}>
+              <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#8c7e7b' }}>
                 Encrypted pipeline · live simulation
               </span>
             </div>
@@ -234,7 +234,7 @@ export default function SecuritySection() {
                   <point.icon className="w-4 h-4" style={{ color: 'rgba(180,30,30,0.5)' }} />
                 </div>
                 <h3 className="section-heading text-base text-white mb-2">{point.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#4a3a3a' }}>{point.desc}</p>
+                <p className="text-sm leading-relaxed" style={{ color: '#9c8e8a' }}>{point.desc}</p>
               </motion.div>
             ))}
           </div>

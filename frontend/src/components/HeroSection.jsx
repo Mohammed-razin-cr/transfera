@@ -159,7 +159,7 @@ export default function HeroSection() {
               <br />
               <span className="gradient-text italic">Without</span>
               <br />
-              <span style={{ color: '#2a2020' }}>Limits.</span>
+              <span className="text-white">Limits.</span>
             </motion.h1>
 
             {/* Sub */}
@@ -193,7 +193,7 @@ export default function HeroSection() {
             <motion.div
               variants={itemVariants}
               className="flex flex-wrap gap-6 text-[11px] font-mono tracking-widest uppercase"
-              style={{ color: '#4a3a3a' }}
+              style={{ color: '#8c7e7b' }}
             >
               <span className="flex items-center gap-2">
                 <Radio className="h-3 w-3 text-emerald-500" />
@@ -224,7 +224,7 @@ export default function HeroSection() {
             <div className="network-console relative overflow-hidden rounded-sm">
               <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5">
                 <div className="w-2 h-2 rounded-full bg-transfera-red" />
-                <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#4a3a3a' }}>
+                <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#8c7e7b' }}>
                   Live Network · 6 nodes
                 </span>
                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -235,13 +235,13 @@ export default function HeroSection() {
                 style={{ background: 'rgba(6,4,4,0.95)' }}
               />
               <div className="flex justify-between items-center px-4 py-3 border-t border-white/5">
-                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#4a3a3a' }}>
+                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8c7e7b' }}>
                   Network: <span className="text-transfera-red">Active</span>
                 </span>
-                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#4a3a3a' }}>
+                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8c7e7b' }}>
                   Nodes: <span style={{ color: '#9a6060' }}>6</span>
                 </span>
-                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#4a3a3a' }}>
+                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8c7e7b' }}>
                   Latency: <span className="text-emerald-500">12ms</span>
                 </span>
               </div>

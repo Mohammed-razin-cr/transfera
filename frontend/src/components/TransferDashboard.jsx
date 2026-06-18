@@ -99,7 +99,7 @@ export default function TransferDashboard() {
               Transfer<br />
               <span className="gradient-text italic">Dashboard</span>
             </h2>
-            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: '#4a3a3a' }}>
+            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: '#9c8e8a' }}>
               Monitor your data flow with real-time analytics and encrypted transfer visualization.
             </p>
           </motion.div>
@@ -123,13 +123,13 @@ export default function TransferDashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-transfera-red animate-pulse" />
-                  <span className="font-mono text-[10px]" style={{ color: '#4a3a3a' }}>Live</span>
+                  <span className="font-mono text-[10px]" style={{ color: '#8c7e7b' }}>Live</span>
                 </div>
               </div>
               <canvas ref={canvasRef} className="w-full h-52" style={{ background: 'rgba(6,4,4,0.9)' }} />
               <div className="flex justify-between px-6 py-3 border-t border-white/5">
                 {['0s', '10s', '20s', '30s', '40s', '50s', '60s'].map((t) => (
-                  <span key={t} className="font-mono text-[10px]" style={{ color: '#3a2a2a' }}>{t}</span>
+                  <span key={t} className="font-mono text-[10px]" style={{ color: '#8c7e7b' }}>{t}</span>
                 ))}
               </div>
             </motion.div>
@@ -149,7 +149,7 @@ export default function TransferDashboard() {
                   <div className="flex items-center gap-4">
                     <stat.icon className="w-4 h-4 transition-colors duration-300" style={{ color: 'rgba(180,30,30,0.4)' }} />
                     <div>
-                      <p className="font-mono text-[10px] tracking-widest uppercase mb-1" style={{ color: '#3a2a2a' }}>
+                      <p className="font-mono text-[10px] tracking-widest uppercase mb-1" style={{ color: '#8c7e7b' }}>
                         {stat.label}
                       </p>
                       <p className="section-heading text-lg text-white">{stat.value}</p>

@@ -86,7 +86,7 @@ export default function TerminalDemo() {
                 Terminal<br />
                 <span className="gradient-text italic">Demo</span>
               </h2>
-              <p className="text-sm max-w-xs leading-relaxed sm:text-right font-light tracking-wide" style={{ color: '#4a3a3a' }}>
+              <p className="text-sm max-w-xs leading-relaxed sm:text-right font-light tracking-wide" style={{ color: '#9c8e8a' }}>
                 See how a transfer flows in real-time. No accounts. No passwords. Just pure encryption.
               </p>
             </div>
@@ -111,7 +111,7 @@ export default function TerminalDemo() {
                 </div>
                 <div className="flex items-center gap-2 ml-3">
                   <Terminal className="w-3 h-3" style={{ color: 'rgba(180,30,30,0.5)' }} />
-                  <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#4a3a3a' }}>
+                  <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#8c7e7b' }}>
                     transfera-cli
                   </span>
                 </div>
@@ -119,7 +119,7 @@ export default function TerminalDemo() {
 
               {/* Terminal body */}
               <div className="p-6 min-h-[300px] font-mono text-sm leading-relaxed">
-                <div className="mb-3 font-mono text-[10px] tracking-widest uppercase" style={{ color: '#3a2a2a' }}>
+                <div className="mb-3 font-mono text-[10px] tracking-widest uppercase" style={{ color: '#8c7e7b' }}>
                   ~/documents $
                 </div>
                 {displayedLines.map((line, index) => (

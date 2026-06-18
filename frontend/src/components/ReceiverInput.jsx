@@ -78,7 +78,7 @@ export default function ReceiverInput() {
               Receive a<br />
               <span className="gradient-text italic">Transfer</span>
             </h2>
-            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: '#4a3a3a' }}>
+            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: '#9c8e8a' }}>
               Enter the Access Key shared by the Origin Node to receive your encrypted file.
             </p>
           </motion.div>
@@ -132,7 +132,7 @@ export default function ReceiverInput() {
                 </div>
               )}
 
-              <p className="font-mono text-[10px] mt-5 tracking-wider" style={{ color: '#3a2a2a' }}>
+              <p className="font-mono text-[10px] mt-5 tracking-wider" style={{ color: '#8c7e7b' }}>
                 Access Keys are case-insensitive and expire after 10 minutes in Vault Storage mode.
               </p>
             </div>

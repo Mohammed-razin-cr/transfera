@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ShieldCheck, Github, Twitter, Heart, ArrowUpRight } from 'lucide-react'
+import { ShieldCheck, Github, Instagram, Heart, ArrowUpRight } from 'lucide-react'
 
 export default function Footer() {
   const links = {
@@ -34,7 +34,7 @@ export default function Footer() {
                   Transfera
                 </span>
               </a>
-              <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#3a2a2a' }}>
+              <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#9c8e8a' }}>
                 Military-grade encrypted file transfer. Direct device-to-device. Zero server storage. Built for privacy-first teams.
               </p>
               <div className="flex items-center gap-3 mt-6">
@@ -47,12 +47,12 @@ export default function Footer() {
                   <Github className="w-3.5 h-3.5" />
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href="https://instagram.com/mohammed_razin_c.r"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="icon-button h-8 w-8 rounded-sm"
                 >
-                  <Twitter className="w-3.5 h-3.5" />
+                  <Instagram className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
@@ -68,9 +68,9 @@ export default function Footer() {
                         target={item.href.startsWith('http') ? '_blank' : undefined}
                         rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                         className="text-sm transition-colors duration-300 inline-flex items-center gap-1 group"
-                        style={{ color: '#3a2a2a' }}
+                        style={{ color: '#8c7e7b' }}
                         onMouseEnter={e => e.currentTarget.style.color = '#e8e0d5'}
-                        onMouseLeave={e => e.currentTarget.style.color = '#3a2a2a'}
+                        onMouseLeave={e => e.currentTarget.style.color = '#8c7e7b'}
                       >
                         {item.label}
                         {item.href.startsWith('http') && (
@@ -87,13 +87,13 @@ export default function Footer() {
           {/* Bottom bar */}
           <div className="border-t border-white/[0.05] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4 font-mono text-[10px] tracking-widest uppercase"
-              style={{ color: '#2a1a1a' }}>
+              style={{ color: '#6e5d5a' }}>
               <span>2026 Transfera</span>
               <span className="hidden sm:inline">·</span>
               <span className="hidden sm:inline">MIT License</span>
             </div>
             <p className="font-mono text-[10px] tracking-wider flex items-center gap-1.5"
-              style={{ color: '#2a1a1a' }}>
+              style={{ color: '#6e5d5a' }}>
               Built with <Heart className="w-2.5 h-2.5" style={{ color: 'rgba(180,30,30,0.5)' }} /> for the privacy community
             </p>
           </div>

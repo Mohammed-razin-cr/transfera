@@ -53,7 +53,7 @@ export default function Navbar() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <div className="flex items-center gap-2 text-[10px] font-mono text-[#4a3a3a] tracking-widest uppercase">
+            <div className="flex items-center gap-2 text-[10px] font-mono text-[#8c7e7b] tracking-widest uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Gateway Online
             </div>
@@ -104,7 +104,7 @@ export default function Navbar() {
                 <span>Start Transfer</span>
                 <span className="btn-icon"><Send className="w-3 h-3" /></span>
               </a>
-              <div className="flex items-center gap-2 border-t border-white/[0.05] pt-4 text-[10px] font-mono uppercase text-[#4a3a3a] tracking-widest">
+              <div className="flex items-center gap-2 border-t border-white/[0.05] pt-4 text-[10px] font-mono uppercase text-[#8c7e7b] tracking-widest">
                 <Radio className="h-3 w-3 text-emerald-500" /> Gateway online
               </div>
             </div>

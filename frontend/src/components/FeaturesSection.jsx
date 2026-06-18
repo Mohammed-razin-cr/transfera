@@ -133,7 +133,7 @@ export default function FeaturesSection() {
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm leading-relaxed" style={{ color: '#4a3a3a' }}>
+                <p className="text-sm leading-relaxed" style={{ color: '#9c8e8a' }}>
                   {feature.description}
                 </p>
 
