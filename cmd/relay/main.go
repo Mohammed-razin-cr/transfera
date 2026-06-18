@@ -728,6 +728,7 @@ func main() {
 	staticFS, _ := fs.Sub(staticFiles, "static")
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFS))))
 	mux.Handle("GET /site/", http.StripPrefix("/site/", http.FileServer(http.FS(web.FS()))))
+	mux.Handle("GET /assets/", http.FileServer(http.FS(web.FS())))
 	mux.HandleFunc("GET /", s.handleLandingPage)
 	mux.HandleFunc("GET /development", s.handleDevelopmentPage)
 	mux.HandleFunc("GET /send", s.handleSendPage)
