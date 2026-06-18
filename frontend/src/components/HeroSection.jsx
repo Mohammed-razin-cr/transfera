@@ -153,7 +153,7 @@ export default function HeroSection() {
             {/* Main headline */}
             <motion.h1
               variants={itemVariants}
-              className="hero-title text-[clamp(64px,10vw,120px)] leading-none mb-6 text-white"
+              className="hero-title text-[clamp(44px,8vw,120px)] leading-none mb-6 text-white"
             >
               Transfer
               <br />
@@ -172,7 +172,7 @@ export default function HeroSection() {
 
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap gap-4 mb-12 justify-end"
+              className="flex flex-wrap gap-4 mb-12 justify-start lg:justify-end"
             >
               <a href="/live" className="btn-primary group">
                 <span>Start Secure Transfer</span>
