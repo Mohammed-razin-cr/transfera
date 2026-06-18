@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Send · Transfera</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260510a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=20260510b">
+</head>
+<body>
+
+<header class="top-strip">
+  <div class="strip-cell brand"><a href="/">TRANSFERA</a></div>
+  <div class="strip-cell spacer"></div>
+  <div class="strip-cell status live"><span class="dot"></span>SECURE GATEWAY ONLINE</div>
+  <a href="https://github.com/Sanyam-G/Transfera" target="_blank" rel="noopener" class="strip-cell port-btn">GITHUB <span class="arrow">↗</span></a>
+</header>
+
+<main class="grid single">
+
+  <section id="select" class="block">
+    <h2>Send files</h2>
+    <p class="block-sub">Encryption happens in your browser. The Secure Gateway holds the ciphertext for 10 minutes; the Destination Node decrypts locally with the Access Key.</p>
+    <div class="drop-zone" id="dropzone">
+      <div class="drop-icon">+</div>
+      <div class="drop-label">tap to select or <strong>drop files</strong></div>
+      <div class="drop-hint">any type · up to 500 mb · multiple files = one Vault Storage bundle</div>
+    </div>
+    <input type="file" id="fileinput" multiple>
+  </section>
+
+  <section id="encrypting" class="block hidden">
+    <h2>Encrypting</h2>
+    <div class="filename" id="enc-name">-</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="enc-progress"></div></div>
+      <div class="progress-text" id="enc-text">preparing...</div>
+    </div>
+  </section>
+
+  <section id="uploading" class="block hidden">
+    <h2>Uploading</h2>
+    <div class="filename" id="up-name">-</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="up-progress"></div></div>
+      <div class="progress-text" id="up-text">0%</div>
+    </div>
+  </section>
+
+  <section id="done" class="block hidden">
+    <h2>Share this Access Key</h2>
+    <p class="block-sub">Tell your Destination Node. They type it at <code id="phrase-domain">transfera.sanyamgarg.com</code>, scan the QR, or run <code>transfera download &lt;Access Key&gt;</code>.</p>
+
+    <div class="phrase-display">
+      <div class="phrase-words" id="phrase-display" onclick="copyPhrase()">RIVER FALCON MARBLE 42</div>
+      <div class="phrase-hint">tap to copy · expires 10 min</div>
+    </div>
+
+    <div class="qr-wrap" id="qr"></div>
+
+    <div class="code-block" onclick="copyURL()">
+      <code id="share-url">-</code>
+      <span class="copied" id="copy-badge">copied</span>
+    </div>
+  </section>
+
+  <section id="error" class="block hidden">
+    <h2 style="color:var(--accent)">Error</h2>
+    <div class="filename" id="errmsg">-</div>
+  </section>
+
+</main>
+
+<footer class="bottom-strip">
+  <span class="strip-cell">End-to-end encrypted</span>
+  <span class="spacer"></span>
+  <span class="strip-cell"><a href="/">Home</a></span>
+</footer>
+
+<script src="/static/nacl-fast.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="/static/words.js"></script>
+<script src="/static/transfera-protocol.js"></script>
+<script src="/static/airpipe-mailbox.js"></script>
+<script>
+if(!window.isSecureContext){
+  const w=document.createElement('div');
+  w.style.cssText='background:#FF4F00;color:#1B1714;padding:14px;font:14px/1.4 monospace;text-align:center';
+  w.textContent='This page needs HTTPS (or localhost) to encrypt files. Put the Secure Gateway behind a reverse proxy with TLS, or access it locally.';
+  document.body.prepend(w);
+}
+const dropzone=document.getElementById('dropzone');
+const fileinput=document.getElementById('fileinput');
+
+dropzone.addEventListener('click',()=>fileinput.click());
+fileinput.addEventListener('change',(e)=>{
+  const fl=e.target.files;
+  if(fl&&fl.length)handleFiles(fl);
+});
+dropzone.addEventListener('dragover',(e)=>{e.preventDefault();dropzone.classList.add('dragover')});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop',(e)=>{
+  e.preventDefault();dropzone.classList.remove('dragover');
+  const fl=e.dataTransfer.files;
+  if(fl&&fl.length)handleFiles(fl);
+});
+
+function show(id){
+  ['select','encrypting','uploading','done','error'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function showError(msg){show('error');document.getElementById('errmsg').textContent=msg}
+
+function b64encode(bytes){
+  let binary='';
+  for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);
+  return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+let shareURL='';
+let currentPhrase='';
+
+function copyURL(){
+  navigator.clipboard.writeText(shareURL);
+  const badge=document.getElementById('copy-badge');
+  badge.classList.add('show');
+  setTimeout(()=>badge.classList.remove('show'),1500);
+}
+
+function copyPhrase(){
+  navigator.clipboard.writeText(currentPhrase);
+}
+
+function generateAccessKey(){
+  const words=[];
+  const arr=new Uint32Array(5);
+  crypto.getRandomValues(arr);
+  for(let i=0;i<4;i++)words.push(TRANSFERA_WORDS[arr[i]%1024]);
+  const num=10+(arr[4]%90);
+  return words.join(' ')+' '+num;
+}
+
+async function sha256(str){
+  const data=new TextEncoder().encode(str);
+  const hash=await crypto.subtle.digest('SHA-256',data);
+  return new Uint8Array(hash);
+}
+
+function hexEncode(bytes){
+  return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function handleFiles(filesIn){
+  const fileListArr=Array.from(filesIn||[]);
+  if(!fileListArr.length)return;
+  try{
+    currentPhrase=generateAccessKey();
+    const normalized=currentPhrase.toUpperCase().trim().replace(/\s+/g,' ');
+    const tokenHash=await sha256('transfera:token:'+normalized);
+    const derivedToken=hexEncode(tokenHash.slice(0,8));
+    const keyBytes=await sha256('transfera:key:'+normalized);
+
+    show('encrypting');
+    document.getElementById('enc-progress').style.width='10%';
+    document.getElementById('enc-text').textContent=fileListArr.length>1?'reading files…':'reading file…';
+
+    let payload;
+    if(fileListArr.length===1){
+      const file=fileListArr[0];
+      document.getElementById('enc-name').textContent=file.name;
+      const content=new Uint8Array(await file.arrayBuffer());
+      document.getElementById('enc-progress').style.width='30%';
+      document.getElementById('enc-text').textContent='building payload…';
+      payload=encodeMailboxV1(file.name,content);
+    }else{
+      document.getElementById('enc-name').textContent=fileListArr.length+' files';
+      document.getElementById('enc-progress').style.width='25%';
+      document.getElementById('enc-text').textContent='reading files…';
+      const entries=[];
+      for(const f of fileListArr){
+        entries.push({name:f.name||'file',content:new Uint8Array(await f.arrayBuffer())});
+      }
+      payload=encodeMailboxAMB2(entries);
+      document.getElementById('enc-progress').style.width='40%';
+      document.getElementById('enc-text').textContent='building bundle…';
+    }
+
+    document.getElementById('enc-progress').style.width='60%';
+    document.getElementById('enc-text').textContent='encrypting…';
+
+    const nonce=nacl.randomBytes(24);
+    const ciphertext=nacl.secretbox(payload,nonce,keyBytes);
+
+    const encrypted=new Uint8Array(24+ciphertext.length);
+    encrypted.set(nonce);
+    encrypted.set(ciphertext,24);
+
+    document.getElementById('enc-progress').style.width='100%';
+    document.getElementById('enc-text').textContent='encrypted · '+formatSize(encrypted.length);
+
+    show('uploading');
+    document.getElementById('up-name').textContent=fileListArr.length===1?fileListArr[0].name:(fileListArr.length+' files');
+
+    const formData=new FormData();
+    formData.append('token',derivedToken);
+    formData.append('file',new Blob([encrypted]),'encrypted.bin');
+
+    const xhr=new XMLHttpRequest();
+    xhr.open('POST','/upload');
+
+    xhr.upload.addEventListener('progress',(e)=>{
+      if(e.lengthComputable){
+        const pct=Math.round(e.loaded/e.total*100);
+        document.getElementById('up-progress').style.width=pct+'%';
+        document.getElementById('up-text').textContent=pct+'% · '+formatSize(e.loaded)+' / '+formatSize(e.total);
+      }
+    });
+
+    xhr.onload=()=>{
+      if(xhr.status!==200){showError('Upload failed: '+xhr.statusText);return}
+      let resp;
+      try{resp=JSON.parse(xhr.responseText)}catch(e){showError('Invalid server response');return}
+
+      const keyB64=b64encode(keyBytes);
+      shareURL=location.origin+'/d/'+resp.token+'#'+keyB64;
+
+      document.getElementById('phrase-display').textContent=currentPhrase;
+      document.getElementById('phrase-domain').textContent=location.host;
+      document.getElementById('share-url').textContent=shareURL;
+
+      const qr=qrcode(0,'M');
+      qr.addData(shareURL);
+      qr.make();
+      const modules=qr.getModuleCount();
+      const cellSize=Math.max(3,Math.floor(240/modules));
+      const canvas=document.createElement('canvas');
+      const size=modules*cellSize;
+      canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#ECE6DC';ctx.fillRect(0,0,size,size);
+      ctx.fillStyle='#1B1714';
+      for(let r=0;r<modules;r++){
+        for(let c=0;c<modules;c++){
+          if(qr.isDark(r,c)) ctx.fillRect(c*cellSize,r*cellSize,cellSize,cellSize);
+        }
+      }
+      const qrEl=document.getElementById('qr');
+      qrEl.innerHTML='';
+      qrEl.appendChild(canvas);
+
+      show('done');
+    };
+
+    xhr.onerror=()=>showError('Upload failed. Check connection.');
+    xhr.send(formData);
+
+  }catch(e){
+    showError(e.message||'Encryption failed');
+  }
+}
+</script>
+</body>
+</html>

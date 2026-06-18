@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Send live · Transfera</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260510a">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=20260510b">
+</head>
+<body class="live-transfer-page">
+
+<header class="top-strip">
+  <div class="strip-cell brand"><a href="/"><em>Transfera</em></a></div>
+  <div class="strip-cell spacer"></div>
+  <div class="strip-cell status" id="ws-status"><span class="dot"></span>CONNECTING</div>
+  <a href="/" class="strip-cell port-btn">HOME <span class="arrow">↗</span></a>
+</header>
+
+<main class="grid single">
+
+  <section id="waiting" class="block">
+    <div class="live-stage-head">
+      <span class="stage-kicker">Origin node · Pairing mode</span>
+      <h1>Open a secure passage.</h1>
+      <p>Share one access key. The file stays on your device until the destination joins.</p>
+    </div>
+
+    <div class="live-pairing-grid">
+      <div class="live-key-panel">
+        <div class="panel-label"><span>01</span> Access key</div>
+        <div class="phrase-display">
+          <div class="phrase-words" id="phrase-display" onclick="copyPhrase()">-</div>
+          <div class="phrase-hint">select to copy</div>
+        </div>
+        <p class="block-sub">Enter this key on <code id="phrase-domain">transfera.sanyamgarg.com</code> or use the Transfera CLI.</p>
+        <div class="code-block" onclick="copyURL()">
+          <code id="share-url">-</code>
+          <span class="copied" id="copy-badge">copied</span>
+        </div>
+        <div class="live-trust-row">
+          <span><i class="trust-dot"></i> End-to-end encrypted</span>
+          <span>Expires with this session</span>
+        </div>
+      </div>
+
+      <div class="live-qr-panel">
+        <div class="panel-label"><span>02</span> Scan to join</div>
+        <div class="qr-wrap" id="qr"></div>
+        <p>Point the destination camera at the code. Pairing begins automatically.</p>
+        <div class="dots" aria-label="Waiting for destination"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="select" class="block hidden">
+    <h2>Drop file(s)</h2>
+    <p class="block-sub">It encrypts in your browser, negotiates a direct connection, and streams to the Destination Node. Falls back through the Secure Gateway if a direct link fails. Multiple files send in one connection.</p>
+    <div class="drop-zone" id="dropzone">
+      <div class="drop-icon">+</div>
+      <div class="drop-label">tap to select or <strong>drop files</strong></div>
+      <div class="drop-hint">any type · any size</div>
+    </div>
+    <input type="file" id="fileinput" multiple>
+  </section>
+
+  <section id="negotiating" class="block hidden">
+    <h2>Connecting peer</h2>
+    <div class="filename" id="neg-name">-</div>
+    <p class="block-sub">Trying a direct WebRTC link. Falls back to streaming through the Secure Gateway after 15 seconds if NAT punching fails.</p>
+    <div class="dots"><span></span><span></span><span></span></div>
+  </section>
+
+  <section id="sending" class="block hidden">
+    <h2>Sending</h2>
+    <div class="transport" id="transport"></div>
+    <div class="filename" id="filename">-</div>
+    <div class="size-info" id="send-size"></div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+      <div class="progress-text" id="ptext">0%</div>
+    </div>
+    <div class="speed-info" id="speed"></div>
+  </section>
+
+  <section id="batch-done" class="block hidden">
+    <div class="checkmark">✓</div>
+    <h2 style="color:var(--accent)">Batch sent</h2>
+    <div class="transport" id="batch-done-transport"></div>
+    <div class="filename" id="batch-done-name">-</div>
+    <div class="size-info" id="batch-done-size"></div>
+    <p class="block-sub">Same secure link — send another batch whenever you’re ready.</p>
+    <div class="batch-actions">
+      <button type="button" class="cta cta-primary" id="send-more-btn">Send more files</button>
+    </div>
+  </section>
+
+  <section id="complete" class="block hidden">
+    <div class="checkmark">✓</div>
+    <h2 style="color:var(--accent)">Transfer complete</h2>
+    <div class="transport" id="done-transport"></div>
+    <div class="filename" id="done-name">-</div>
+    <div class="size-info" id="done-size"></div>
+    <p class="block-sub">You can leave this page or reload to start over.</p>
+  </section>
+
+  <section id="error" class="block hidden">
+    <h2 style="color:var(--accent)">Error</h2>
+    <div class="filename" id="errmsg">-</div>
+    <p class="block-sub">Reload to start over.</p>
+  </section>
+
+</main>
+
+<footer class="bottom-strip">
+  <span class="strip-cell">End-to-end encrypted</span>
+  <span class="spacer"></span>
+  <span class="strip-cell"><a href="/">Home</a></span>
+</footer>
+
+<script src="/static/nacl-fast.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="/static/words.js"></script>
+<script src="/static/transfera-protocol.js"></script>
+<script>
+if(!window.isSecureContext){
+  const w=document.createElement('div');
+  w.style.cssText='background:#FF4F00;color:#1B1714;padding:14px;font:14px/1.4 monospace;text-align:center';
+  w.textContent='This page needs HTTPS (or localhost) to encrypt files. Put the Secure Gateway behind a reverse proxy with TLS, or access it locally.';
+  document.body.prepend(w);
+}
+const CHUNK=64*1024;
+const NEGOTIATE_TIMEOUT_MS=15000;
+
+function $(id){return document.getElementById(id)}
+
+function randomHex(nBytes){
+  const b=nacl.randomBytes(nBytes);
+  return Array.from(b).map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function hexEncode(bytes){
+  return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function b64encode(bytes){
+  let bin='';for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+async function sha256(str){
+  const data=new TextEncoder().encode(str);
+  const hash=await crypto.subtle.digest('SHA-256',data);
+  return new Uint8Array(hash);
+}
+function generateAccessKey(){
+  const words=[];
+  const arr=new Uint32Array(5);
+  crypto.getRandomValues(arr);
+  for(let i=0;i<4;i++)words.push(TRANSFERA_WORDS[arr[i]%1024]);
+  const num=10+(arr[4]%90);
+  return words.join(' ')+' '+num;
+}
+function formatSpeed(bps){
+  if(bps<1024)return bps.toFixed(0)+' B/s';
+  if(bps<1048576)return (bps/1024).toFixed(1)+' KB/s';
+  return (bps/1048576).toFixed(1)+' MB/s';
+}
+function show(id){
+  ['waiting','select','negotiating','sending','batch-done','complete','error'].forEach(x=>$(x).classList.add('hidden'));
+  $(id).classList.remove('hidden');
+}
+function showError(msg){
+  phase='error';
+  show('error');
+  $('errmsg').textContent=msg;
+}
+
+// Access Key-derived token + key, matches the CLI's Access Key package.
+let currentPhrase='';
+let token='';
+let keyBytes=null;
+let shareURL='';
+let ws=null;
+let pc=null, dc=null;
+let phase='waiting';
+let peerJoined=false;
+let transportReady=false;
+let usingDirectLinkMedia=false;
+
+function copyURL(){
+  navigator.clipboard.writeText(shareURL);
+  const badge=$('copy-badge');
+  badge.classList.add('show');
+  setTimeout(()=>badge.classList.remove('show'),1500);
+}
+function copyPhrase(){
+  navigator.clipboard.writeText(currentPhrase);
+}
+
+async function init(){
+  currentPhrase=generateAccessKey();
+  const normalized=currentPhrase.toUpperCase().trim().replace(/\s+/g,' ');
+  const tokenHash=await sha256('transfera:token:'+normalized);
+  token=hexEncode(tokenHash.slice(0,8));
+  keyBytes=await sha256('transfera:key:'+normalized);
+  // Send Destination Nodes to /d/{token} so the same Access Key resolver works whether
+  // they type it on the homepage or scan the QR. /d/ probes the Vault Storage first
+  // and falls back to live WS pairing on 404.
+  shareURL=location.origin+'/d/'+token+'#'+b64encode(keyBytes);
+
+  $('phrase-display').textContent=currentPhrase;
+  $('phrase-domain').textContent=location.host;
+  $('share-url').textContent=shareURL;
+
+  // QR
+  const qr=qrcode(0,'M');
+  qr.addData(shareURL);
+  qr.make();
+  const modules=qr.getModuleCount();
+  const cellSize=Math.max(3,Math.floor(240/modules));
+  const canvas=document.createElement('canvas');
+  const size=modules*cellSize;
+  canvas.width=size;canvas.height=size;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#ECE6DC';ctx.fillRect(0,0,size,size);
+  ctx.fillStyle='#1B1714';
+  for(let r=0;r<modules;r++){
+    for(let c=0;c<modules;c++){
+      if(qr.isDark(r,c)) ctx.fillRect(c*cellSize,r*cellSize,cellSize,cellSize);
+    }
+  }
+  $('qr').innerHTML='';
+  $('qr').appendChild(canvas);
+
+  // open the WS room at the derived token; Destination Node joins it via /d/ fallback
+  ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token);
+  ws.binaryType='arraybuffer';
+  attachWS();
+}
+
+function attachWS(){
+  ws.onopen=()=>{
+    const s=$('ws-status');
+    s.classList.remove('err');s.classList.add('live');
+    s.innerHTML='<span class="dot"></span>SECURE GATEWAY ONLINE';
+  };
+
+  ws.onerror=()=>{
+    const s=$('ws-status');
+    s.classList.remove('live');s.classList.add('err');
+    s.innerHTML='<span class="dot"></span>SECURE GATEWAY OFFLINE';
+    showError('Connection to Secure Gateway lost. Reload to retry.');
+  };
+
+  ws.onclose=()=>{
+    if(phase==='sending'||phase==='negotiating'){
+      showError('Connection closed during '+phase+'. Destination Node may have disconnected.');
+      return;
+    }
+    if(phase==='batch-done'){
+      return;
+    }
+  };
+
+  ws.onmessage=async(evt)=>{
+    const enc=new Uint8Array(evt.data);
+    const dec=decrypt(enc,keyBytes);
+    if(!dec){
+      return;
+    }
+    const msg=decode(dec);
+    if(!msg)return;
+
+    if(msg.type===MSG_PEER_JOIN){
+      if(!peerJoined){
+        peerJoined=true;
+        phase='select';
+        show('select');
+      }
+      return;
+    }
+    if(msg.type===MSG_ICE_CANDIDATE&&pc){
+      try{
+        const c=JSON.parse(new TextDecoder().decode(msg.payload));
+        await pc.addIceCandidate(c);
+      }catch(e){console.warn('addIceCandidate:',e)}
+      return;
+    }
+    if(msg.type===MSG_SDP_ANSWER&&pc){
+      try{
+        await pc.setRemoteDescription({type:'answer',sdp:new TextDecoder().decode(msg.payload)});
+      }catch(e){console.warn('setRemoteDescription:',e)}
+      return;
+    }
+  };
+}
+
+init().catch(e=>showError(e.message||String(e)));
+
+const dropzone=$('dropzone');
+const fileinput=$('fileinput');
+dropzone.addEventListener('click',()=>fileinput.click());
+fileinput.addEventListener('change',(e)=>{if(e.target.files.length)sendFiles(e.target.files)});
+$('send-more-btn').addEventListener('click',()=>{
+  phase='select';
+  show('select');
+  fileinput.value='';
+});
+dropzone.addEventListener('dragover',(e)=>{e.preventDefault();dropzone.classList.add('dragover')});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop',(e)=>{
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if(e.dataTransfer.files.length)sendFiles(e.dataTransfer.files);
+});
+
+async function sendFiles(fileList){
+  const files=[...fileList];
+  if(!files.length)return;
+  $('neg-name').textContent=files.length===1?files[0].name:(files.length+' files');
+
+  try{
+    if(!transportReady){
+      phase='negotiating';
+      show('negotiating');
+      try{
+        await negotiateDirectLink();
+        usingDirectLinkMedia=true;
+      }catch(e){
+        console.warn('DirectLink negotiation failed, falling back to Secure Gateway:',e);
+        usingDirectLinkMedia=false;
+        if(pc){try{pc.close()}catch(_){}pc=null;dc=null}
+      }
+      phase='sending';
+      show('sending');
+      if(usingDirectLinkMedia){
+        $('transport').textContent='direct · WebRTC DataChannel';
+        ws.send(encrypt(encode(MSG_DirectLink_READY,new Uint8Array(0)),keyBytes));
+      }else{
+        $('transport').textContent='via Secure Gateway · DirectLink unavailable';
+        ws.send(encrypt(encode(MSG_DirectLink_FAIL,new TextEncoder().encode('browser DirectLink failed')),keyBytes));
+      }
+      transportReady=true;
+    }else{
+      phase='sending';
+      show('sending');
+      $('transport').textContent=usingDirectLinkMedia?'direct · WebRTC DataChannel':'via Secure Gateway · DirectLink unavailable';
+    }
+
+    const sendFn=usingDirectLinkMedia?sendDC:sendWS;
+    let totalSent=0;
+    for(let i=0;i<files.length;i++){
+      const file=files[i];
+      const label=files.length>1?'('+String(i+1)+'/'+String(files.length)+') ':'';
+      $('filename').textContent=label+file.name;
+      $('send-size').textContent=formatSize(file.size);
+      $('progress').style.width='0%';
+      $('ptext').textContent='0%';
+      await streamFile(file,sendFn);
+      totalSent+=file.size;
+    }
+    if(usingDirectLinkMedia){
+      while(dc.bufferedAmount>0){await sleep(10)}
+    }
+    await sendFn(encode(MSG_SESSION_END,new Uint8Array(0)));
+
+    phase='batch-done';
+    $('batch-done-name').textContent=files.length===1?files[0].name:(String(files.length)+' files');
+    $('batch-done-size').textContent=formatSize(totalSent);
+    $('batch-done-transport').textContent=usingDirectLinkMedia?'direct · WebRTC':'via Secure Gateway';
+    show('batch-done');
+  }catch(err){
+    showError(err.message||String(err));
+  }
+}
+
+async function negotiateDirectLink(){
+  pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  dc=pc.createDataChannel('transfera',{ordered:true,id:1,negotiated:true});
+  dc.binaryType='arraybuffer';
+
+  pc.onicecandidate=(evt)=>{
+    if(evt.candidate){
+      const raw=new TextEncoder().encode(JSON.stringify(evt.candidate.toJSON()));
+      ws.send(encrypt(encode(MSG_ICE_CANDIDATE,raw),keyBytes));
+    }
+  };
+
+  const offer=await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  ws.send(encrypt(encode(MSG_SDP_OFFER,new TextEncoder().encode(offer.sdp)),keyBytes));
+
+  await new Promise((resolve,reject)=>{
+    const t=setTimeout(()=>reject(new Error('datachannel open timeout')),NEGOTIATE_TIMEOUT_MS);
+    dc.onopen=()=>{clearTimeout(t);resolve()};
+    dc.onerror=(e)=>{clearTimeout(t);reject(e)};
+  });
+}
+
+async function streamFile(file,sendFn){
+  const meta={filename:file.name,size:file.size,chunks:Math.ceil(file.size/CHUNK)};
+  await sendFn(encode(MSG_METADATA,new TextEncoder().encode(JSON.stringify(meta))));
+
+  let offset=0;
+  const startTime=performance.now();
+  let lastUIUpdate=0;
+
+  while(offset<file.size){
+    const end=Math.min(offset+CHUNK,file.size);
+    const chunk=await file.slice(offset,end).arrayBuffer();
+    await sendFn(encode(MSG_CHUNK,new Uint8Array(chunk)));
+    offset=end;
+
+    const now=performance.now();
+    if(now-lastUIUpdate>50||offset>=file.size){
+      lastUIUpdate=now;
+      const pct=Math.round(offset/file.size*100);
+      const elapsed=(now-startTime)/1000;
+      const speed=elapsed>0?offset/elapsed:0;
+      await new Promise(resolve=>requestAnimationFrame(()=>{
+        $('progress').style.width=pct+'%';
+        $('ptext').textContent=pct+'% · '+formatSize(offset)+' / '+formatSize(file.size);
+        $('speed').textContent=formatSpeed(speed);
+        resolve();
+      }));
+    }
+  }
+
+  await sendFn(encode(MSG_COMPLETE,new Uint8Array(0)));
+}
+
+async function sendDC(plaintext){
+  while(dc.bufferedAmount>8*1024*1024){await sleep(5)}
+  dc.send(encrypt(plaintext,keyBytes));
+}
+
+function sendWS(plaintext){
+  ws.send(encrypt(plaintext,keyBytes));
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+</script>
+</body>
+</html>

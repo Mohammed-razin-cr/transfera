@@ -1,0 +1,11 @@
+/relay
+/airpipe
+/airpipe-*
+*.exe
+
+# Frontend dependencies and local tooling output
+/frontend/node_modules/
+*.log
+
+# Local visual QA artifacts
+/*-check.png

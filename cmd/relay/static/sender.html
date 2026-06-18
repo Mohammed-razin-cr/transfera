@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Send to CLI · Transfera</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260510a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=20260510b">
+</head>
+<body>
+
+<header class="top-strip">
+  <div class="strip-cell brand"><a href="/">TRANSFERA</a></div>
+  <div class="strip-cell spacer"></div>
+  <div class="strip-cell status" id="ws-status"><span class="dot"></span>CONNECTING</div>
+  <a href="https://github.com/Sanyam-G/Transfera" target="_blank" rel="noopener" class="strip-cell port-btn">GITHUB <span class="arrow">↗</span></a>
+</header>
+
+<main class="grid single">
+
+  <section id="connecting" class="block">
+    <h2>Connecting</h2>
+    <p class="block-sub">Opening an encrypted link to the Secure Gateway. Once paired with the CLI Destination Node, we attempt a direct WebRTC connection.</p>
+    <div class="dots"><span></span><span></span><span></span></div>
+  </section>
+
+  <section id="select" class="block hidden">
+    <h2>Drop file(s)</h2>
+    <p class="block-sub">It encrypts in your browser before any bytes leave. The Secure Gateway only ever sees ciphertext. Multiple files send in one connection.</p>
+    <div class="drop-zone" id="dropzone">
+      <div class="drop-icon">+</div>
+      <div class="drop-label">tap to select or <strong>drop files</strong></div>
+      <div class="drop-hint">any type · any size</div>
+    </div>
+    <input type="file" id="fileinput" multiple>
+  </section>
+
+  <section id="preparing" class="block hidden">
+    <h2>Handshaking</h2>
+    <div class="filename" id="prep-name">-</div>
+    <p class="block-sub">Waiting for the Destination Node to be ready, then negotiating the WebRTC offer.</p>
+    <div class="dots"><span></span><span></span><span></span></div>
+  </section>
+
+  <section id="negotiating" class="block hidden">
+    <h2>Connecting peer</h2>
+    <p class="block-sub">Attempting direct WebRTC. Falls back to streaming through the Secure Gateway if NAT punching fails after 15 seconds.</p>
+    <div class="dots"><span></span><span></span><span></span></div>
+  </section>
+
+  <section id="sending" class="block hidden">
+    <h2>Sending</h2>
+    <div class="transport" id="transport"></div>
+    <div class="filename" id="filename">-</div>
+    <div class="size-info" id="send-size"></div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+      <div class="progress-text" id="ptext">0%</div>
+    </div>
+    <div class="speed-info" id="speed"></div>
+  </section>
+
+  <section id="batch-done" class="block hidden">
+    <div class="checkmark">✓</div>
+    <h2 style="color:var(--accent)">Batch sent</h2>
+    <div class="transport" id="batch-done-transport"></div>
+    <div class="filename" id="batch-done-name">-</div>
+    <div class="size-info" id="batch-done-size"></div>
+    <p class="block-sub">Same secure link — send another batch whenever you’re ready.</p>
+    <div class="batch-actions">
+      <button type="button" class="cta cta-primary" id="send-more-btn">Send more files</button>
+    </div>
+  </section>
+
+  <section id="complete" class="block hidden">
+    <div class="checkmark">✓</div>
+    <h2 style="color:var(--accent)">Transfer complete</h2>
+    <div class="transport" id="done-transport"></div>
+    <div class="filename" id="done-name">-</div>
+    <div class="size-info" id="done-size"></div>
+  </section>
+
+  <section id="error" class="block hidden">
+    <h2 style="color:var(--accent)">Error</h2>
+    <div class="filename" id="errmsg">-</div>
+  </section>
+
+</main>
+
+<footer class="bottom-strip">
+  <span class="strip-cell">End-to-end encrypted</span>
+  <span class="spacer"></span>
+  <span class="strip-cell"><a href="/">Home</a></span>
+</footer>
+
+<script src="/static/nacl-fast.min.js"></script>
+<script src="/static/transfera-protocol.js"></script>
+<script>
+const CHUNK=64*1024;
+const NEGOTIATE_TIMEOUT_MS=15000;
+
+const token=location.pathname.split('/').pop();
+const keyHash=location.hash.slice(1);
+if(!token||!keyHash){showError('Invalid link');throw''}
+
+let keyBytes;
+try{
+  keyBytes=b64decode(keyHash);
+  if(keyBytes.length!==32)throw'';
+}catch(e){showError('Invalid encryption key');throw e}
+
+function $(id){return document.getElementById(id)}
+
+function formatSpeed(bps){
+  if(bps<1024)return bps.toFixed(0)+' B/s';
+  if(bps<1048576)return (bps/1024).toFixed(1)+' KB/s';
+  return (bps/1048576).toFixed(1)+' MB/s';
+}
+
+const ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token);
+ws.binaryType='arraybuffer';
+
+const waiters={};
+function awaitMsg(type,timeoutMs){
+  return new Promise((resolve,reject)=>{
+    waiters[type]=resolve;
+    if(timeoutMs){
+      setTimeout(()=>{
+        if(waiters[type]===resolve){delete waiters[type];reject(new Error('timeout waiting for type 0x'+type.toString(16)))}
+      },timeoutMs);
+    }
+  });
+}
+
+let pc=null,dc=null;
+let phase='connecting';
+let transportReady=false;
+let usingDirectLinkMedia=false;
+
+ws.onmessage=async(evt)=>{
+  const enc=new Uint8Array(evt.data);
+  const dec=decrypt(enc,keyBytes);
+  if(!dec)return;
+  const msg=decode(dec);
+  if(!msg)return;
+  if(msg.type===MSG_ICE_CANDIDATE&&pc){
+    try{
+      const c=JSON.parse(new TextDecoder().decode(msg.payload));
+      await pc.addIceCandidate(c);
+    }catch(e){console.warn('addIceCandidate:',e)}
+    return;
+  }
+  if(msg.type===MSG_SDP_ANSWER&&pc){
+    try{
+      await pc.setRemoteDescription({type:'answer',sdp:new TextDecoder().decode(msg.payload)});
+    }catch(e){console.warn('setRemoteDescription:',e)}
+    return;
+  }
+  if(waiters[msg.type]){
+    const w=waiters[msg.type];
+    delete waiters[msg.type];
+    w(msg);
+  }
+};
+
+ws.onopen=()=>{
+  phase='select';
+  show('select');
+  const s=$('ws-status');
+  s.classList.remove('err');s.classList.add('live');
+  s.innerHTML='<span class="dot"></span>SECURE GATEWAY ONLINE';
+};
+ws.onerror=()=>{
+  const s=$('ws-status');
+  s.classList.remove('live');s.classList.add('err');
+  s.innerHTML='<span class="dot"></span>SECURE GATEWAY OFFLINE';
+  showError('Connection lost. Reload to retry.');
+};
+ws.onclose=()=>{
+  if(phase==='batch-done'){
+    return;
+  }
+  if(phase!=='connecting'&&phase!=='select'&&phase!=='complete'){
+    showError('Connection closed during transfer ('+phase+')');
+  }
+};
+
+const dropzone=$('dropzone');
+const fileinput=$('fileinput');
+dropzone.addEventListener('click',()=>fileinput.click());
+fileinput.addEventListener('change',(e)=>{if(e.target.files.length)sendFiles(e.target.files)});
+$('send-more-btn').addEventListener('click',()=>{
+  phase='select';
+  show('select');
+  fileinput.value='';
+});
+dropzone.addEventListener('dragover',(e)=>{e.preventDefault();dropzone.classList.add('dragover')});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop',(e)=>{
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if(e.dataTransfer.files.length)sendFiles(e.dataTransfer.files);
+});
+
+async function sendFiles(fileList){
+  const files=[...fileList];
+  if(!files.length)return;
+  $('prep-name').textContent=files.length===1?files[0].name:(files.length+' files');
+
+  try{
+    if(!transportReady){
+      phase='preparing';
+      show('preparing');
+
+      ws.send(encrypt(encode(MSG_VERSION,new Uint8Array([PROTOCOL_VERSION])),keyBytes));
+      await awaitMsg(MSG_READY,30000);
+
+      phase='negotiating';
+      show('negotiating');
+      try{
+        await negotiateDirectLink();
+        usingDirectLinkMedia=true;
+      }catch(e){
+        console.warn('DirectLink negotiation failed, falling back to Secure Gateway:',e);
+        usingDirectLinkMedia=false;
+        if(pc){try{pc.close()}catch(_){}pc=null;dc=null}
+      }
+
+      phase='sending';
+      show('sending');
+      if(usingDirectLinkMedia){
+        $('transport').textContent='direct · WebRTC DataChannel';
+        ws.send(encrypt(encode(MSG_DirectLink_READY,new Uint8Array(0)),keyBytes));
+      }else{
+        $('transport').textContent='via Secure Gateway · DirectLink unavailable';
+        ws.send(encrypt(encode(MSG_DirectLink_FAIL,new TextEncoder().encode('browser DirectLink failed')),keyBytes));
+      }
+      transportReady=true;
+    }else{
+      phase='sending';
+      show('sending');
+      $('transport').textContent=usingDirectLinkMedia?'direct · WebRTC DataChannel':'via Secure Gateway · DirectLink unavailable';
+    }
+
+    const sendFn=usingDirectLinkMedia?sendDC:sendWS;
+    let totalSent=0;
+    for(let i=0;i<files.length;i++){
+      const file=files[i];
+      const label=files.length>1?'('+String(i+1)+'/'+String(files.length)+') ':'';
+      $('filename').textContent=label+file.name;
+      $('send-size').textContent=formatSize(file.size);
+      $('progress').style.width='0%';
+      $('ptext').textContent='0%';
+      await streamFile(file,sendFn);
+      totalSent+=file.size;
+    }
+    if(usingDirectLinkMedia){
+      while(dc.bufferedAmount>0){await sleep(10)}
+    }
+    await sendFn(encode(MSG_SESSION_END,new Uint8Array(0)));
+
+    phase='batch-done';
+    $('batch-done-name').textContent=files.length===1?files[0].name:(String(files.length)+' files');
+    $('batch-done-size').textContent=formatSize(totalSent);
+    $('batch-done-transport').textContent=usingDirectLinkMedia?'direct · WebRTC':'via Secure Gateway';
+    show('batch-done');
+  }catch(err){
+    showError(err.message||String(err));
+  }
+}
+
+async function negotiateDirectLink(){
+  pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  dc=pc.createDataChannel('transfera',{ordered:true,id:1,negotiated:true});
+  dc.binaryType='arraybuffer';
+
+  pc.onicecandidate=(evt)=>{
+    if(evt.candidate){
+      const raw=new TextEncoder().encode(JSON.stringify(evt.candidate.toJSON()));
+      ws.send(encrypt(encode(MSG_ICE_CANDIDATE,raw),keyBytes));
+    }
+  };
+
+  const offer=await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  ws.send(encrypt(encode(MSG_SDP_OFFER,new TextEncoder().encode(offer.sdp)),keyBytes));
+
+  await new Promise((resolve,reject)=>{
+    const t=setTimeout(()=>reject(new Error('datachannel open timeout')),NEGOTIATE_TIMEOUT_MS);
+    dc.onopen=()=>{clearTimeout(t);resolve()};
+    dc.onerror=(e)=>{clearTimeout(t);reject(e)};
+  });
+}
+
+async function streamFile(file,sendFn){
+  const meta={filename:file.name,size:file.size,chunks:Math.ceil(file.size/CHUNK)};
+  await sendFn(encode(MSG_METADATA,new TextEncoder().encode(JSON.stringify(meta))));
+
+  let offset=0;
+  const startTime=performance.now();
+  let lastUIUpdate=0;
+
+  while(offset<file.size){
+    const end=Math.min(offset+CHUNK,file.size);
+    const chunk=await file.slice(offset,end).arrayBuffer();
+    await sendFn(encode(MSG_CHUNK,new Uint8Array(chunk)));
+    offset=end;
+
+    const now=performance.now();
+    if(now-lastUIUpdate>50||offset>=file.size){
+      lastUIUpdate=now;
+      const pct=Math.round(offset/file.size*100);
+      const elapsed=(now-startTime)/1000;
+      const speed=elapsed>0?offset/elapsed:0;
+      await new Promise(resolve=>requestAnimationFrame(()=>{
+        $('progress').style.width=pct+'%';
+        $('ptext').textContent=pct+'% · '+formatSize(offset)+' / '+formatSize(file.size);
+        $('speed').textContent=formatSpeed(speed);
+        resolve();
+      }));
+    }
+  }
+
+  await sendFn(encode(MSG_COMPLETE,new Uint8Array(0)));
+}
+
+async function sendDC(plaintext){
+  while(dc.bufferedAmount>8*1024*1024){await sleep(5)}
+  dc.send(encrypt(plaintext,keyBytes));
+}
+
+function sendWS(plaintext){
+  ws.send(encrypt(plaintext,keyBytes));
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function show(id){
+  ['connecting','select','preparing','negotiating','sending','batch-done','complete','error'].forEach(x=>$(x).classList.add('hidden'));
+  $(id).classList.remove('hidden');
+}
+
+function showError(msg){
+  phase='error';
+  show('error');
+  $('errmsg').textContent=msg;
+}
+
+function b64decode(s){
+  s=s.replace(/-/g,'+').replace(/_/g,'/');
+  while(s.length%4)s+='=';
+  const b=atob(s);
+  const r=new Uint8Array(b.length);
+  for(let i=0;i<b.length;i++)r[i]=b.charCodeAt(i);
+  return r;
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+FROM golang:1.25-alpine AS build
+ARG VERSION=dev
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -ldflags "-X main.buildVersion=${VERSION}" -o /gateway ./cmd/relay
+
+FROM alpine:3.19
+COPY --from=build /gateway /gateway
+EXPOSE 8080
+ENTRYPOINT ["/gateway"]
