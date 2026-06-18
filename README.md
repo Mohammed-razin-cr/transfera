@@ -21,7 +21,7 @@ The server never sees plaintext. Ever.
 | | |
 |---|---|
 | 🔒 **E2E Encrypted** | NaCl secretbox, 256-bit keys derived from your Access Key |
-| ⚡ **Direct P2P** | WebRTC DataChannel — no relay overhead when NAT allows |
+| ⚡ **Direct P2P** | WebRTC DataChannel - no relay overhead when NAT allows |
 | 📱 **QR Pairing** | Scan to join instantly, no typing required |
 | 📦 **Multi-file** | Send entire batches in one session |
 | 🕐 **Vault Storage** | Holds encrypted files for 10 min when receiver is offline |
