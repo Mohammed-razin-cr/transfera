@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Mohammed-razin-cr/transfera/internal/crypto"
+	"github.com/Mohammed-razin-cr/transfera/internal/p2p"
 	"github.com/gorilla/websocket"
-	"github.com/sanyam-g/transfera/internal/crypto"
-	"github.com/sanyam-g/transfera/internal/p2p"
 )
 
 func SafeFilename(raw string) (string, error) {

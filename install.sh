@@ -10,20 +10,20 @@ case "$ARCH" in
     *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-URL="https://github.com/Sanyam-G/Airpipe/releases/latest/download/airpipe-${OS}-${ARCH}"
+URL="https://github.com/Mohammed-razin-cr/transfera/releases/latest/download/transfera-${OS}-${ARCH}"
 
-echo "Downloading airpipe for ${OS}-${ARCH}..."
-curl -sL "$URL" -o /tmp/airpipe
-chmod +x /tmp/airpipe
+echo "Downloading transfera for ${OS}-${ARCH}..."
+curl -sL "$URL" -o /tmp/transfera
+chmod +x /tmp/transfera
 
 # Install to /usr/local/bin, use sudo if needed
 if [ -w /usr/local/bin ]; then
-    mv /tmp/airpipe /usr/local/bin/airpipe
-    echo "Installed to /usr/local/bin/airpipe"
+    mv /tmp/transfera /usr/local/bin/transfera
+    echo "Installed to /usr/local/bin/transfera"
 else
     echo "Need sudo to install to /usr/local/bin"
-    sudo mv /tmp/airpipe /usr/local/bin/airpipe
-    echo "Installed to /usr/local/bin/airpipe"
+    sudo mv /tmp/transfera /usr/local/bin/transfera
+    echo "Installed to /usr/local/bin/transfera"
 fi
 
-echo "Done! Run: airpipe send <file>"
+echo "Done! Run: transfera send <file>"

@@ -22,9 +22,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Mohammed-razin-cr/transfera/internal/transfer"
+	"github.com/Mohammed-razin-cr/transfera/web"
 	"github.com/gorilla/websocket"
-	"github.com/sanyam-g/transfera/internal/transfer"
-	"github.com/sanyam-g/transfera/web"
 	"golang.org/x/time/rate"
 )
 

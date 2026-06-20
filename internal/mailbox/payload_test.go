@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sanyam-g/transfera/internal/mailbox"
+	"github.com/Mohammed-razin-cr/transfera/internal/mailbox"
 )
 
 // Canonical fixtures pinning the wire format. The same hex strings live in

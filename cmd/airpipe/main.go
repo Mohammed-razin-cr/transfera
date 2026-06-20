@@ -19,12 +19,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sanyam-g/transfera/internal/archive"
-	"github.com/sanyam-g/transfera/internal/crypto"
-	"github.com/sanyam-g/transfera/internal/mailbox"
-	"github.com/sanyam-g/transfera/internal/passphrase"
-	"github.com/sanyam-g/transfera/internal/qr"
-	"github.com/sanyam-g/transfera/internal/transfer"
+	"github.com/Mohammed-razin-cr/transfera/internal/archive"
+	"github.com/Mohammed-razin-cr/transfera/internal/crypto"
+	"github.com/Mohammed-razin-cr/transfera/internal/mailbox"
+	"github.com/Mohammed-razin-cr/transfera/internal/passphrase"
+	"github.com/Mohammed-razin-cr/transfera/internal/qr"
+	"github.com/Mohammed-razin-cr/transfera/internal/transfer"
 )
 
 const defaultRelay = "https://transfera.onrender.com"
@@ -685,7 +685,7 @@ func cmdUpdate() error {
 	if goos == "windows" {
 		ext = ".exe"
 	}
-	url := fmt.Sprintf("https://github.com/Sanyam-G/Transfera/releases/latest/download/transfera-%s-%s%s", goos, goarch, ext)
+	url := fmt.Sprintf("https://github.com/Mohammed-razin-cr/transfera/releases/latest/download/transfera-%s-%s%s", goos, goarch, ext)
 
 	fmt.Printf("  Downloading latest for %s/%s...\n", goos, goarch)
 

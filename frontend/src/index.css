@@ -10,8 +10,8 @@
   
   body {
     font-family: 'Inter', sans-serif;
-    background: #0a0808;
-    color: #e8e0d5;
+    background: #080707;
+    color: #f6efe4;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -42,10 +42,10 @@
 @layer components {
   /* ── Glass panels ── */
   .glass-panel {
-    background: rgba(18, 14, 14, 0.7);
+    background: rgba(24, 20, 18, 0.82);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.11);
   }
   
   .glass-panel-strong {
@@ -69,7 +69,7 @@
 
   /* ── Typography ── */
   .gradient-text {
-    background: linear-gradient(135deg, #e8d5d5 0%, #b41e1e 60%, #7a1212 100%);
+    background: linear-gradient(135deg, #f3c7c7 0%, #e74646 48%, #a81d1d 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -79,13 +79,13 @@
   .btn-primary {
     @apply relative inline-flex items-center justify-center gap-3 overflow-hidden transition-all duration-300;
     padding: 13px 28px;
-    background: linear-gradient(180deg, #c42424 0%, #8f1414 100%);
-    border: 1px solid rgba(220, 70, 70, 0.45);
+    background: linear-gradient(180deg, #ef3b3b 0%, #b71520 100%);
+    border: 1px solid rgba(255, 110, 110, 0.55);
     border-bottom-color: rgba(80, 10, 10, 0.8);
     box-shadow:
       0 1px 0 rgba(255,255,255,0.12) inset,
       0 -1px 0 rgba(0,0,0,0.4) inset,
-      0 4px 20px rgba(180, 30, 30, 0.3);
+      0 8px 28px rgba(220, 35, 35, 0.34);
     color: #fff;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -110,7 +110,7 @@
   }
 
   .btn-primary:hover {
-    background: linear-gradient(180deg, #d42828 0%, #9f1818 100%);
+    background: linear-gradient(180deg, #ff4d4d 0%, #c91e2a 100%);
     box-shadow:
       0 1px 0 rgba(255,255,255,0.15) inset,
       0 -1px 0 rgba(0,0,0,0.4) inset,
@@ -135,8 +135,9 @@
     @apply relative inline-flex items-center justify-center gap-3 overflow-hidden transition-all duration-300;
     padding: 13px 28px;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #7a6e6e;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.035);
+    color: #d4c8bd;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     font-family: 'IBM Plex Mono', monospace;
@@ -162,8 +163,8 @@
   }
 
   .btn-secondary:hover {
-    border-color: rgba(180, 30, 30, 0.45);
-    color: #e8e0d5;
+    border-color: rgba(239, 59, 59, 0.55);
+    color: #fff7ec;
     transform: translateY(-1px);
   }
 
@@ -235,10 +236,11 @@
 
   /* ── Nav ── */
   .nav-shell {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(10, 8, 8, 0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    background: rgba(8, 7, 7, 0.86);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    box-shadow: 0 18px 70px rgba(0, 0, 0, 0.42);
   }
 
   .nav-shell-scrolled {
@@ -250,9 +252,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #c84040;
-    border: 1px solid rgba(180, 30, 30, 0.3);
-    background: rgba(180, 30, 30, 0.08);
+    color: #ff5959;
+    border: 1px solid rgba(255, 85, 85, 0.38);
+    background: rgba(239, 59, 59, 0.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
   .nav-link {
@@ -260,12 +263,12 @@
     letter-spacing: 0.06em;
     font-size: 10px;
     text-transform: uppercase;
-    color: #6e6464;
+    color: #b7aaa2;
     transition: color 0.2s;
   }
 
   .nav-link:hover {
-    color: #e8e0d5;
+    color: #fff7ec;
   }
 
   /* ── Hero typography ── */
@@ -280,7 +283,8 @@
     font-family: 'EB Garamond', serif;
     font-style: italic;
     font-weight: 400;
-    color: #b8acac;
+    color: #dfd4cb;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.6);
   }
 
   .eyebrow-label {
@@ -288,13 +292,28 @@
     font-size: 9px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #b41e1e;
+    color: #ff5a5a;
+    text-shadow: 0 0 18px rgba(255, 60, 60, 0.18);
+  }
+
+  .hero-trust-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 11px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.035);
+    backdrop-filter: blur(12px);
   }
 
   /* ── Network console ── */
   .network-console {
-    border: 1px solid rgba(255,255,255,0.06);
-    background: rgba(8, 6, 6, 0.9);
+    border: 1px solid rgba(255,255,255,0.13);
+    background: rgba(10, 9, 9, 0.94);
+    box-shadow:
+      0 34px 90px rgba(0, 0, 0, 0.54),
+      inset 0 1px 0 rgba(255,255,255,0.06);
   }
 
   /* ── Section headings ── */

@@ -53,7 +53,7 @@ export default function Navbar() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <div className="flex items-center gap-2 text-[10px] font-mono text-[#8c7e7b] tracking-widest uppercase">
+            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-[10px] font-mono text-[#e1d5ca] tracking-widest uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Gateway Online
             </div>

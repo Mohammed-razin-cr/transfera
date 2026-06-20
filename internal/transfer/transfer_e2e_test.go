@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Mohammed-razin-cr/transfera/internal/crypto"
+	"github.com/Mohammed-razin-cr/transfera/internal/transfer"
 	"github.com/gorilla/websocket"
-	"github.com/sanyam-g/transfera/internal/crypto"
-	"github.com/sanyam-g/transfera/internal/transfer"
 )
 
 // Minimal relay that broadcasts between two clients in a room.

@@ -27,26 +27,7 @@
     letter-spacing: 0.01em;
   }
 
-  .bottom-strip {
-    border-top: 1px solid rgba(255,255,255,0.05);
-    padding: 0 32px;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #2a1a1a;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(6,4,4,0.97);
-  }
-  .bottom-strip a { color: #3a2a2a; transition: color 0.2s; }
-  .bottom-strip a:hover { color: #e8e0d5; }
-  .bottom-strip .spacer { flex: 1; }
+  .bottom-strip { margin-top: 44px; }
 
   /* ── Content block ── */
   .grid.single { max-width: 600px; padding-top: 20px; }
@@ -317,10 +298,16 @@
   </div>
 </main>
 
-<footer class="bottom-strip">
-  <span class="strip-cell" style="font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.18em;color:#2a1a1a">End-to-end encrypted</span>
-  <span class="spacer"></span>
-  <span class="strip-cell"><a href="/">Home</a></span>
+<footer class="bottom-strip live-footer">
+  <div class="footer-brand">
+    <span class="footer-mark" aria-hidden="true">T</span>
+    <span>Transfera</span>
+  </div>
+  <div class="footer-status">
+    <span><i></i> End-to-end encrypted</span>
+    <span>Local decrypt only</span>
+  </div>
+  <a class="footer-home" href="/">Home <span aria-hidden="true">↗</span></a>
 </footer>
 
 <script src="/static/nacl-fast.min.js"></script>

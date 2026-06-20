@@ -1,4 +1,4 @@
-module github.com/sanyam-g/transfera
+module github.com/Mohammed-razin-cr/transfera
 
 go 1.25.0
 

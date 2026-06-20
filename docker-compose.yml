@@ -1,6 +1,6 @@
 services:
   gateway:
-    image: ghcr.io/sanyam-g/transfera-gateway:latest
+    image: ghcr.io/mohammed-razin-cr/transfera-gateway:latest
     container_name: transfera-gateway
     restart: unless-stopped
     ports:

@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Mohammed-razin-cr/transfera/internal/crypto"
+	"github.com/Mohammed-razin-cr/transfera/internal/p2p"
+	"github.com/Mohammed-razin-cr/transfera/internal/transfer"
 	"github.com/gorilla/websocket"
-	"github.com/sanyam-g/transfera/internal/crypto"
-	"github.com/sanyam-g/transfera/internal/p2p"
-	"github.com/sanyam-g/transfera/internal/transfer"
 )
 
 func writeOneFileWS(t *testing.T, write func(transfer.Message), content []byte, filename string) {

@@ -43,7 +43,7 @@ export default function HeroSection() {
         if (node.y < 0 || node.y > canvas.height) node.vy *= -1
       })
 
-      ctx.strokeStyle = 'rgba(180, 30, 30, 0.14)'
+      ctx.strokeStyle = 'rgba(255, 90, 90, 0.24)'
       ctx.lineWidth = 0.5
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
@@ -79,24 +79,24 @@ export default function HeroSection() {
 
         ctx.beginPath()
         ctx.arc(x, y, 2.5, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(180, 30, 30, 0.9)'
+        ctx.fillStyle = 'rgba(255, 74, 74, 0.95)'
         ctx.fill()
 
         ctx.beginPath()
         ctx.arc(x, y, 7, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(180, 30, 30, 0.12)'
+        ctx.fillStyle = 'rgba(255, 74, 74, 0.2)'
         ctx.fill()
       }
 
       nodes.forEach((node) => {
         ctx.beginPath()
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(180, 30, 30, 0.6)'
+        ctx.fillStyle = 'rgba(255, 74, 74, 0.78)'
         ctx.fill()
 
         ctx.beginPath()
         ctx.arc(node.x, node.y, node.radius + 5, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(180, 30, 30, 0.08)'
+        ctx.fillStyle = 'rgba(255, 74, 74, 0.16)'
         ctx.fill()
       })
 
@@ -125,9 +125,12 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-[96vh] flex items-center overflow-hidden pt-14">
-      {/* Subtle red glow top-left */}
-      <div className="absolute top-0 left-0 w-[600px] h-[500px] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 0% 0%, rgba(180,30,30,0.1) 0%, transparent 65%)' }} />
+      <div className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(90deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.28) 46%, rgba(0,0,0,0.52) 100%), radial-gradient(ellipse at 10% 18%, rgba(255,70,70,0.16) 0%, transparent 42%)'
+        }}
+      />
       {/* Vertical rule — editorial accent */}
       <div className="absolute left-0 top-0 bottom-0 w-px opacity-20"
         style={{ background: 'linear-gradient(to bottom, transparent, #b41e1e 30%, #b41e1e 70%, transparent)' }} />
@@ -147,13 +150,14 @@ export default function HeroSection() {
                 <Sparkles className="w-2.5 h-2.5" />
                 Private transfer protocol · v3
               </span>
-              <div className="flex-1 h-px" style={{ background: 'rgba(180,30,30,0.2)' }} />
+              <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(255,90,90,0.42), transparent)' }} />
             </motion.div>
 
             {/* Main headline */}
             <motion.h1
               variants={itemVariants}
-              className="hero-title text-[clamp(44px,8vw,120px)] leading-none mb-6 text-white"
+              className="hero-title text-[clamp(54px,8vw,126px)] leading-none mb-6 text-white"
+              style={{ textShadow: '0 8px 40px rgba(0,0,0,0.72)' }}
             >
               Transfer
               <br />
@@ -165,14 +169,14 @@ export default function HeroSection() {
             {/* Sub */}
             <motion.p
               variants={itemVariants}
-              className="hero-subtitle text-xl sm:text-2xl mb-10 max-w-lg leading-relaxed"
+              className="hero-subtitle text-xl sm:text-2xl mb-10 max-w-xl leading-relaxed"
             >
               A private passage for your files. Encrypted in the browser, delivered directly, and never retained by the gateway.
             </motion.p>
 
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap gap-4 mb-12 justify-start lg:justify-end"
+              className="flex flex-wrap gap-4 mb-12"
             >
               <a href="/live" className="btn-primary group">
                 <span>Start Secure Transfer</span>
@@ -191,18 +195,18 @@ export default function HeroSection() {
             {/* Meta row */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap gap-6 text-[11px] font-mono tracking-widest uppercase"
-              style={{ color: '#8c7e7b' }}
+              className="flex flex-wrap gap-4 text-[11px] font-mono tracking-widest uppercase"
+              style={{ color: '#d0c3b8' }}
             >
-              <span className="flex items-center gap-2">
+              <span className="hero-trust-pill">
                 <Radio className="h-3 w-3 text-emerald-500" />
                 Secure Gateway Online
               </span>
-              <span className="flex items-center gap-2">
+              <span className="hero-trust-pill">
                 <ShieldCheck className="h-3 w-3 text-transfera-neonBlue" />
                 End-to-end encrypted
               </span>
-              <span className="flex items-center gap-2">
+              <span className="hero-trust-pill">
                 <Fingerprint className="h-3 w-3 text-transfera-neonPurple" />
                 No account required
               </span>
@@ -220,10 +224,10 @@ export default function HeroSection() {
             <div className="absolute -top-6 -left-8 font-mono text-[120px] leading-none font-bold select-none pointer-events-none"
               style={{ color: 'rgba(180,30,30,0.06)', letterSpacing: '-0.05em' }}>01</div>
 
-            <div className="network-console relative overflow-hidden rounded-sm">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5">
+            <div className="network-console relative overflow-hidden rounded-lg">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
                 <div className="w-2 h-2 rounded-full bg-transfera-red" />
-                <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#8c7e7b' }}>
+                <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#d5c7bc' }}>
                   Live Network · 6 nodes
                 </span>
                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -231,16 +235,16 @@ export default function HeroSection() {
               <canvas
                 ref={canvasRef}
                 className="w-full h-72"
-                style={{ background: 'rgba(6,4,4,0.95)' }}
+                style={{ background: 'radial-gradient(circle at 50% 40%, rgba(55,18,18,0.28), rgba(4,3,3,0.96) 62%)' }}
               />
-              <div className="flex justify-between items-center px-4 py-3 border-t border-white/5">
-                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8c7e7b' }}>
+              <div className="flex justify-between items-center px-4 py-3 border-t border-white/10">
+                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#cfc1b7' }}>
                   Network: <span className="text-transfera-red">Active</span>
                 </span>
-                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8c7e7b' }}>
-                  Nodes: <span style={{ color: '#9a6060' }}>6</span>
+                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#cfc1b7' }}>
+                  Nodes: <span style={{ color: '#ff8a8a' }}>6</span>
                 </span>
-                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8c7e7b' }}>
+                <span className="font-mono text-[10px] tracking-wider" style={{ color: '#cfc1b7' }}>
                   Latency: <span className="text-emerald-500">12ms</span>
                 </span>
               </div>
