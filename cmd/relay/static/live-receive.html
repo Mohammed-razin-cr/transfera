@@ -249,7 +249,7 @@
       </div>
       <h2>Receiving</h2>
       <div class="transport" id="transport"></div>
-      <div class="filename" id="filename">—</div>
+      <div class="filename" id="filename">-</div>
       <div class="size-info" id="recv-size"></div>
       <p class="block-sub" id="recv-session-hint"></p>
       <div class="progress-wrap">
@@ -263,14 +263,14 @@
       <div class="checkmark">✓ Batch delivered</div>
       <div class="recv-status-row" style="margin-top:16px">
         <span class="recv-status-tag success">Complete</span>
-        <span class="recv-status-tag" id="paused-transport-tag">—</span>
+        <span class="recv-status-tag" id="paused-transport-tag">-</span>
       </div>
       <h2>Batch<br><em style="color:rgba(180,30,30,0.8)">Complete</em></h2>
       <div class="transport" id="paused-transport"></div>
-      <div class="filename" id="paused-name">—</div>
+      <div class="filename" id="paused-name">-</div>
       <div class="size-info" id="paused-size"></div>
       <p class="block-sub" id="paused-total-session"></p>
-      <p class="block-sub">Stay on this page — the Origin Node can send another batch using the same session.</p>
+      <p class="block-sub">Stay on this page - the Origin Node can send another batch using the same session.</p>
       <div class="dots"><span></span><span></span><span></span></div>
     </section>
 
@@ -281,7 +281,7 @@
       </div>
       <h2>Transfer<br><em style="color:rgba(180,30,30,0.8)">Complete</em></h2>
       <div class="transport" id="done-transport"></div>
-      <div class="filename" id="done-name">—</div>
+      <div class="filename" id="done-name">-</div>
       <div class="size-info" id="done-size"></div>
       <p class="block-sub">If downloads were blocked, check your downloads folder or allow multiple downloads for this site.</p>
     </section>
@@ -291,7 +291,7 @@
         <span class="recv-status-tag active">Error</span>
       </div>
       <h2>Connection<br>Failed</h2>
-      <div id="errmsg">—</div>
+      <div id="errmsg">-</div>
       <p class="block-sub" style="margin-top:16px">Reload to try again.</p>
     </section>
 
@@ -455,7 +455,14 @@ ws.onmessage=async(evt)=>{
 };
 
 async function answerOffer(offerSDP){
-  pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  const iceServers=[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun1.l.google.com:19302'},
+    {urls:'stun:stun2.l.google.com:19302'},
+    {urls:'stun:stun.cloudflare.com:3478'},
+    {urls:'stun:stun.stunprotocol.org:3478'},
+  ];
+  pc=new RTCPeerConnection({iceServers,iceCandidatePoolSize:10});
   dc=pc.createDataChannel('transfera',{ordered:true,id:1,negotiated:true});
   dc.binaryType='arraybuffer';
 

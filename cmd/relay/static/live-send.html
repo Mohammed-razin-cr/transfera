@@ -68,7 +68,7 @@
   <section id="negotiating" class="block hidden">
     <h2>Connecting peer</h2>
     <div class="filename" id="neg-name">-</div>
-    <p class="block-sub">Trying a direct WebRTC link. Falls back to streaming through the Secure Gateway after 15 seconds if NAT punching fails.</p>
+    <p class="block-sub">Trying a direct WebRTC link. Falls back to streaming through the Secure Gateway after 5 seconds if NAT punching fails.</p>
     <div class="dots"><span></span><span></span><span></span></div>
   </section>
 
@@ -90,7 +90,7 @@
     <div class="transport" id="batch-done-transport"></div>
     <div class="filename" id="batch-done-name">-</div>
     <div class="size-info" id="batch-done-size"></div>
-    <p class="block-sub">Same secure link — send another batch whenever you’re ready.</p>
+    <p class="block-sub">Same secure link - send another batch whenever you’re ready.</p>
     <div class="batch-actions">
       <button type="button" class="cta cta-primary" id="send-more-btn">Send more files</button>
     </div>
@@ -136,8 +136,8 @@ if(!window.isSecureContext){
   w.textContent='This page needs HTTPS (or localhost) to encrypt files. Put the Secure Gateway behind a reverse proxy with TLS, or access it locally.';
   document.body.prepend(w);
 }
-const CHUNK=64*1024;
-const NEGOTIATE_TIMEOUT_MS=15000;
+const CHUNK=256*1024;
+const NEGOTIATE_TIMEOUT_MS=5000;
 
 function $(id){return document.getElementById(id)}
 
@@ -380,7 +380,14 @@ async function sendFiles(fileList){
 }
 
 async function negotiateDirectLink(){
-  pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  const iceServers=[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun1.l.google.com:19302'},
+    {urls:'stun:stun2.l.google.com:19302'},
+    {urls:'stun:stun.cloudflare.com:3478'},
+    {urls:'stun:stun.stunprotocol.org:3478'},
+  ];
+  pc=new RTCPeerConnection({iceServers,iceCandidatePoolSize:10});
   dc=pc.createDataChannel('transfera',{ordered:true,id:1,negotiated:true});
   dc.binaryType='arraybuffer';
 
@@ -435,7 +442,7 @@ async function streamFile(file,sendFn){
 }
 
 async function sendDC(plaintext){
-  while(dc.bufferedAmount>8*1024*1024){await sleep(5)}
+  while(dc.bufferedAmount>32*1024*1024){await sleep(5)}
   dc.send(encrypt(plaintext,keyBytes));
 }
 
