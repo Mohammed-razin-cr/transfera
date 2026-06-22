@@ -733,6 +733,11 @@ func main() {
 	mux.Handle("GET /site/", http.StripPrefix("/site/", http.FileServer(http.FS(web.FS()))))
 	mux.Handle("GET /assets/", http.FileServer(http.FS(web.FS())))
 	mux.HandleFunc("GET /", s.handleLandingPage)
+	mux.HandleFunc("GET /robots.txt", s.handleRobots)
+	mux.HandleFunc("GET /sitemap.xml", s.handleSitemap)
+	for path := range seoPages {
+		mux.HandleFunc("GET "+path, s.handleSEOPage)
+	}
 	mux.HandleFunc("GET /development", s.handleDevelopmentPage)
 	mux.HandleFunc("GET /send", s.handleSendPage)
 	mux.HandleFunc("GET /install.sh", s.handleInstall)
