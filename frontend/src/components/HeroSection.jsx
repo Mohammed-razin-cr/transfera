@@ -134,8 +134,17 @@ export default function HeroSection() {
       const h = canvas.offsetHeight
       ctx.clearRect(0, 0, w, h)
 
+      const isMatrix = document.documentElement.getAttribute('data-theme') === 'matrix'
+      const r = isMatrix ? 34 : 255
+      const g = isMatrix ? 197 : 90
+      const b = isMatrix ? 94 : 90
+      
+      const rGlow = isMatrix ? 34 : 255
+      const gGlow = isMatrix ? 197 : 100
+      const bGlow = isMatrix ? 94 : 100
+
       // Draw Grid Mesh (Tactical coordinates)
-      ctx.strokeStyle = 'rgba(255, 90, 90, 0.015)'
+      ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.015)`
       ctx.lineWidth = 0.5
       for (let x = 40; x < w; x += 40) {
         ctx.beginPath()
@@ -153,7 +162,7 @@ export default function HeroSection() {
       // Radar Scanline sweep
       const scanY = (animTime * 120) % (h + 40) - 20
       if (scanY >= 0 && scanY <= h) {
-        ctx.strokeStyle = 'rgba(255, 90, 90, 0.06)'
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.06)`
         ctx.lineWidth = 1.2
         ctx.beginPath()
         ctx.moveTo(0, scanY)
@@ -162,8 +171,8 @@ export default function HeroSection() {
 
         // Glow trail for scan sweep
         const scanGrd = ctx.createLinearGradient(0, scanY - 35, 0, scanY)
-        scanGrd.addColorStop(0, 'rgba(255, 90, 90, 0)')
-        scanGrd.addColorStop(1, 'rgba(255, 90, 90, 0.025)')
+        scanGrd.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`)
+        scanGrd.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.025)`)
         ctx.fillStyle = scanGrd
         ctx.fillRect(0, scanY - 35, w, 35)
       }
@@ -186,7 +195,7 @@ export default function HeroSection() {
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < 180) {
             const alpha = (1 - dist / 180) * 0.28
-            ctx.strokeStyle = `rgba(255, 90, 90, ${alpha})`
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`
             ctx.lineWidth = 0.6
             ctx.beginPath()
             ctx.moveTo(nodes[i].x, nodes[i].y)
@@ -204,7 +213,7 @@ export default function HeroSection() {
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < 150) {
             const alpha = (1 - dist / 150) * 0.35
-            ctx.strokeStyle = `rgba(255, 100, 100, ${alpha})`
+            ctx.strokeStyle = `rgba(${rGlow}, ${gGlow}, ${bGlow}, ${alpha})`
             ctx.lineWidth = 0.8
             ctx.beginPath()
             ctx.moveTo(node.x, node.y)
@@ -240,8 +249,8 @@ export default function HeroSection() {
 
         // Draw glowing vector trail from the source node to the packet's current position
         const trailGrd = ctx.createLinearGradient(x, y, fromX, fromY)
-        trailGrd.addColorStop(0, 'rgba(255, 90, 90, 0.55)')
-        trailGrd.addColorStop(1, 'rgba(255, 90, 90, 0)')
+        trailGrd.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.55)`)
+        trailGrd.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`)
         ctx.strokeStyle = trailGrd
         ctx.lineWidth = 1.0
         ctx.beginPath()
@@ -250,8 +259,8 @@ export default function HeroSection() {
         ctx.stroke()
 
         const grd = ctx.createRadialGradient(x, y, 0, x, y, 9)
-        grd.addColorStop(0, 'rgba(255, 80, 80, 0.9)')
-        grd.addColorStop(1, 'rgba(255, 80, 80, 0)')
+        grd.addColorStop(0, `rgba(${rGlow}, ${gGlow}, ${bGlow}, 0.9)`)
+        grd.addColorStop(1, `rgba(${rGlow}, ${gGlow}, ${bGlow}, 0)`)
         ctx.beginPath()
         ctx.arc(x, y, 9, 0, Math.PI * 2)
         ctx.fillStyle = grd
@@ -259,7 +268,7 @@ export default function HeroSection() {
 
         ctx.beginPath()
         ctx.arc(x, y, 2.5, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(255, 100, 100, 1)'
+        ctx.fillStyle = `rgba(${rGlow}, ${gGlow}, ${bGlow}, 1)`
         ctx.fill()
       }
 
@@ -277,14 +286,14 @@ export default function HeroSection() {
         const outerGrd = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, glowRadius)
         
         if (isDragged) {
-          outerGrd.addColorStop(0, 'rgba(255, 60, 60, 0.35)')
-          outerGrd.addColorStop(1, 'rgba(255, 60, 60, 0)')
+          outerGrd.addColorStop(0, isMatrix ? 'rgba(34, 197, 94, 0.35)' : 'rgba(255, 60, 60, 0.35)')
+          outerGrd.addColorStop(1, isMatrix ? 'rgba(34, 197, 94, 0)' : 'rgba(255, 60, 60, 0)')
         } else if (isHovered) {
-          outerGrd.addColorStop(0, 'rgba(255, 100, 100, 0.28)')
-          outerGrd.addColorStop(1, 'rgba(255, 100, 100, 0)')
+          outerGrd.addColorStop(0, isMatrix ? 'rgba(34, 197, 94, 0.28)' : 'rgba(255, 100, 100, 0.28)')
+          outerGrd.addColorStop(1, isMatrix ? 'rgba(34, 197, 94, 0)' : 'rgba(255, 100, 100, 0)')
         } else {
-          outerGrd.addColorStop(0, 'rgba(220, 60, 60, 0.18)')
-          outerGrd.addColorStop(1, 'rgba(220, 60, 60, 0)')
+          outerGrd.addColorStop(0, isMatrix ? 'rgba(21, 128, 61, 0.18)' : 'rgba(220, 60, 60, 0.18)')
+          outerGrd.addColorStop(1, isMatrix ? 'rgba(21, 128, 61, 0)' : 'rgba(220, 60, 60, 0)')
         }
 
         ctx.beginPath()
@@ -294,18 +303,22 @@ export default function HeroSection() {
 
         ctx.beginPath()
         ctx.arc(node.x, node.y, pulseR, 0, Math.PI * 2)
-        ctx.fillStyle = isDragged || isHovered ? 'rgba(255, 120, 120, 0.95)' : 'rgba(255, 80, 80, 0.85)'
+        ctx.fillStyle = isDragged || isHovered 
+          ? (isMatrix ? 'rgba(74, 222, 128, 0.95)' : 'rgba(255, 120, 120, 0.95)') 
+          : (isMatrix ? 'rgba(34, 197, 94, 0.85)' : 'rgba(255, 80, 80, 0.85)')
         ctx.fill()
 
         // Draw Monospace tech coordinates [x, y]
-        ctx.fillStyle = isDragged || isHovered ? 'rgba(255, 150, 150, 0.6)' : 'rgba(255, 90, 90, 0.38)'
+        ctx.fillStyle = isDragged || isHovered 
+          ? (isMatrix ? 'rgba(187, 247, 208, 0.6)' : 'rgba(255, 150, 150, 0.6)') 
+          : (isMatrix ? 'rgba(34, 197, 94, 0.38)' : 'rgba(255, 90, 90, 0.38)')
         ctx.font = '7px IBM Plex Mono, monospace'
         ctx.textAlign = 'left'
         ctx.fillText(`[${Math.round(node.x)}, ${Math.round(node.y)}]`, node.x + pulseR + 6, node.y + 2)
 
         // Draw rotating dashed target ring for hover/drag states
         if (isHovered || isDragged) {
-          ctx.strokeStyle = 'rgba(255, 90, 90, 0.45)'
+          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.45)`
           ctx.lineWidth = 0.8
           ctx.setLineDash([2, 4])
           ctx.beginPath()
@@ -351,11 +364,11 @@ export default function HeroSection() {
       <div className="absolute inset-0 pointer-events-none">
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse at 8% 15%, rgba(180,30,30,0.22) 0%, transparent 45%)',
+          background: 'radial-gradient(ellipse at 8% 15%, rgba(var(--accent),0.22) 0%, transparent 45%)',
         }} />
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse at 90% 80%, rgba(120,15,15,0.14) 0%, transparent 40%)',
+          background: 'radial-gradient(ellipse at 90% 80%, rgba(var(--accent),0.06) 0%, transparent 40%)',
         }} />
         <div style={{
           position: 'absolute', inset: 0,
@@ -365,11 +378,11 @@ export default function HeroSection() {
 
       {/* Vertical accent */}
       <div className="absolute left-0 top-0 bottom-0 w-px"
-        style={{ background: 'linear-gradient(to bottom, transparent, rgba(180,30,30,0.5) 30%, rgba(180,30,30,0.5) 70%, transparent)' }} />
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(var(--accent),0.5) 30%, rgba(var(--accent),0.5) 70%, transparent)' }} />
 
       {/* Horizontal scan line */}
       <div className="absolute left-0 right-0 h-px animate-scan pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,60,60,0.12) 50%, transparent 100%)', top: '30%' }} />
+        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(var(--accent),0.12) 50%, transparent 100%)', top: '30%' }} />
 
       <div className="section-container relative z-10 py-20 lg:py-28">
         <div className="grid lg:grid-cols-[1fr_0.9fr] gap-12 lg:gap-20 items-center max-w-7xl mx-auto">
@@ -448,14 +461,14 @@ export default function HeroSection() {
           >
             {/* Large editorial number */}
             <div className="absolute -top-8 -left-10 font-mono text-[130px] leading-none font-bold select-none pointer-events-none"
-              style={{ color: 'rgba(180,30,30,0.05)', letterSpacing: '-0.05em' }}>01</div>
+              style={{ color: 'rgba(var(--accent),0.05)', letterSpacing: '-0.05em' }}>01</div>
 
             {/* Glow behind console */}
             <div className="absolute -inset-8 rounded-2xl pointer-events-none"
-              style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(180,30,30,0.12) 0%, transparent 70%)' }} />
+              style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(var(--accent),0.12) 0%, transparent 70%)' }} />
 
             <div className="network-console relative overflow-hidden rounded-xl"
-              style={{ boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 50px rgba(180,30,30,0.05)' }}>
+              style={{ boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 50px rgba(var(--accent),0.05)' }}>
               {/* Title bar */}
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/[0.07]"
                 style={{ background: 'rgba(14,10,10,0.8)' }}>
@@ -476,20 +489,20 @@ export default function HeroSection() {
               <canvas
                 ref={canvasRef}
                 className="w-full h-72 sm:h-80 lg:h-[380px] xl:h-[450px]"
-                style={{ background: 'radial-gradient(ellipse at 50% 35%, rgba(60,18,18,0.3), rgba(4,2,2,0.98) 65%)' }}
+                style={{ background: 'radial-gradient(ellipse at 50% 35%, rgba(var(--accent),0.04), rgba(4,2,2,0.98) 65%)' }}
               />
 
               {/* Footer bar */}
               <div className="flex justify-between items-center px-5 py-3 border-t border-white/[0.07]"
                 style={{ background: 'rgba(14,10,10,0.8)' }}>
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-transfera-red animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'rgb(var(--accent))' }} />
                   <span className="font-mono text-[10px] tracking-wider" style={{ color: '#a89088' }}>
                     E2E Encrypted
                   </span>
                 </div>
                 <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8a7a72' }}>
-                  Nodes: <span style={{ color: '#ff8a8a' }}>8</span>
+                  Nodes: <span style={{ color: 'var(--accent-solid)' }}>8</span>
                 </span>
                 <span className="font-mono text-[10px] tracking-wider" style={{ color: '#8a7a72' }}>
                   Latency: <span className="text-emerald-400">12ms</span>
@@ -501,11 +514,11 @@ export default function HeroSection() {
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-4 -right-4 glass-panel rounded-lg px-4 py-2.5 border border-transfera-red/25 shadow-lg"
-              style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(180,30,30,0.12)' }}
+              className="absolute -top-4 -right-4 glass-panel rounded-lg px-4 py-2.5 shadow-lg border"
+              style={{ borderColor: 'rgba(var(--accent),0.25)', boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(var(--accent),0.12)' }}
             >
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-transfera-red animate-pulse-glow" />
+                <div className="w-2 h-2 rounded-full animate-pulse-glow" style={{ backgroundColor: 'rgb(var(--accent))' }} />
                 <span className="text-[10px] font-mono text-white/70 tracking-wider">DirectLink Active</span>
               </div>
             </motion.div>

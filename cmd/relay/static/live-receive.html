@@ -208,6 +208,9 @@
   <div class="strip-cell brand"><a href="/"><em>Transfera</em></a></div>
   <div class="strip-cell spacer"></div>
   <div class="strip-cell status" id="ws-status"><span class="dot"></span>CONNECTING</div>
+  <button type="button" id="theme-toggle" class="strip-cell port-btn" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;letter-spacing:inherit;text-transform:inherit;display:flex;align-items:center;gap:4px;">
+    THEME <span id="theme-icon">●</span>
+  </button>
   <a href="https://github.com/Mohammed-razin-cr/transfera" target="_blank" rel="noopener" class="strip-cell port-btn">GITHUB <span class="arrow">↗</span></a>
 </header>
 
@@ -274,6 +277,23 @@
       <div class="dots"><span></span><span></span><span></span></div>
     </section>
 
+    <section id="received-text" class="block hidden">
+      <div class="recv-status-row">
+        <span class="recv-status-tag success">Delivered</span>
+        <span class="recv-status-tag" id="text-transport-tag">DirectLink</span>
+      </div>
+      <h2>Received Text</h2>
+      <p class="block-sub">The sender shared a text snippet or web link. Decrypted in browser.</p>
+      <div style="margin:20px 0;">
+        <textarea id="textoutput" readonly style="width:100%;height:140px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;color:var(--fg);padding:12px;font-family:var(--mono);font-size:0.85rem;resize:vertical;outline:none;border-left:2px solid var(--accent);"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button type="button" class="cta cta-primary" id="copy-text-btn" style="flex:1;justify-content:center;">Copy to Clipboard</button>
+        <a href="#" target="_blank" rel="noopener" id="open-link-btn" class="cta" style="display:none;border:1px solid var(--border);justify-content:center;align-items:center;text-decoration:none;font-family:var(--mono);font-size:0.75rem;padding:0 20px;text-transform:uppercase;letter-spacing:0.05em;">Open Link ↗</a>
+        <button type="button" class="cta" id="continue-session-btn" style="display:none;border:1px solid var(--border);justify-content:center;align-items:center;text-transform:uppercase;font-family:var(--mono);font-size:0.75rem;letter-spacing:0.05em;padding:0 20px;">Continue</button>
+      </div>
+    </section>
+
     <section id="complete" class="block hidden">
       <div class="checkmark">✓ Session ended</div>
       <div class="recv-status-row" style="margin-top:16px">
@@ -331,7 +351,7 @@ function formatSpeed(bps){
   return (bps/1048576).toFixed(1)+' MB/s';
 }
 function show(id){
-  ['joining','waiting','negotiating','receiving','ready-more','complete','error'].forEach(x=>$(x).classList.add('hidden'));
+  ['joining','waiting','negotiating','receiving','ready-more','complete','error','received-text'].forEach(x=>$(x).classList.add('hidden'));
   $(id).classList.remove('hidden');
 }
 function showError(msg){
@@ -565,6 +585,34 @@ function handleDataMessage(msg){
     finishOneFile();
     return;
   }
+  if(msg.type===MSG_CLIPBOARD){
+    try {
+      const text = new TextDecoder().decode(msg.payload);
+      $('textoutput').value = text;
+      
+      const openLinkBtn = $('open-link-btn');
+      const isUrl = /^(https?:\/\/[^\s]+)$/i.test(text.trim());
+      if (isUrl) {
+        openLinkBtn.href = text.trim();
+        openLinkBtn.style.display = 'inline-flex';
+      } else {
+        openLinkBtn.style.display = 'none';
+      }
+      
+      $('text-transport-tag').textContent = transport==='DirectLink' ? 'direct · WebRTC' : 'via Secure Gateway';
+      show('received-text');
+      
+      filesReceived++;
+      lastSavedName = 'Text Snippet';
+      lastSavedSize = msg.payload.length;
+      totalSavedBytes += msg.payload.length;
+      filesThisBatch++;
+      batchBytesSent += msg.payload.length;
+    } catch(e) {
+      showError('Failed to parse incoming text clipboard: '+e);
+    }
+    return;
+  }
   if(msg.type===MSG_SESSION_END){
     pauseBetweenBatches();
     return;
@@ -613,7 +661,12 @@ function pauseBetweenBatches(){
   if(pt) pt.textContent=filesReceived>0?`${filesReceived} saved this session (${formatSize(totalSavedBytes)})`:'';
   filesThisBatch=0;
   batchBytesSent=0;
-  show('ready-more');
+  
+  if (lastSavedName !== 'Text Snippet') {
+    show('ready-more');
+  } else {
+    $('continue-session-btn').style.display = 'inline-flex';
+  }
 }
 
 function finalizeSessionTotals(){
@@ -625,6 +678,48 @@ function finalizeSessionTotals(){
   $('done-transport').textContent=transport==='DirectLink'?'direct · WebRTC':'via Secure Gateway';
   show('complete');
 }
+
+// Theme switcher
+const themeToggle = $('theme-toggle');
+const themeIcon = $('theme-icon');
+let activeTheme = localStorage.getItem('theme') || 'obsidian';
+document.documentElement.setAttribute('data-theme', activeTheme);
+updateThemeUI();
+
+themeToggle.addEventListener('click', () => {
+  activeTheme = activeTheme === 'matrix' ? 'obsidian' : 'matrix';
+  document.documentElement.setAttribute('data-theme', activeTheme);
+  localStorage.setItem('theme', activeTheme);
+  updateThemeUI();
+});
+
+function updateThemeUI() {
+  if (activeTheme === 'matrix') {
+    themeIcon.style.color = '#22c55e';
+  } else {
+    themeIcon.style.color = '#ef4444';
+  }
+}
+
+// Clipboard action buttons
+$('copy-text-btn').addEventListener('click', () => {
+  navigator.clipboard.writeText($('textoutput').value);
+  const btn = $('copy-text-btn');
+  const oldText = btn.textContent;
+  btn.textContent = 'Copied!';
+  btn.style.borderColor = '#4caf6a';
+  btn.style.color = '#4caf6a';
+  setTimeout(() => {
+    btn.textContent = oldText;
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 1500);
+});
+
+$('continue-session-btn').addEventListener('click', () => {
+  $('continue-session-btn').style.display = 'none';
+  show('ready-more');
+});
 </script>
 </body>
 </html>

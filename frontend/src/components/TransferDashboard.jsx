@@ -35,6 +35,8 @@ export default function TransferDashboard() {
       const h = canvas.offsetHeight
       const baseY = h - 28
 
+      const isMatrix = document.documentElement.getAttribute('data-theme') === 'matrix'
+
       // Horizontal grid lines
       for (let i = 0; i < 4; i++) {
         const lineY = baseY - (i + 1) * (baseY / 5)
@@ -78,8 +80,8 @@ export default function TransferDashboard() {
       ctx.closePath()
 
       const areaGrd = ctx.createLinearGradient(0, 16, 0, baseY)
-      areaGrd.addColorStop(0, 'rgba(239, 68, 68, 0.16)')
-      areaGrd.addColorStop(1, 'rgba(239, 68, 68, 0.0)')
+      areaGrd.addColorStop(0, isMatrix ? 'rgba(34, 197, 94, 0.16)' : 'rgba(239, 68, 68, 0.16)')
+      areaGrd.addColorStop(1, isMatrix ? 'rgba(34, 197, 94, 0.0)' : 'rgba(239, 68, 68, 0.0)')
       ctx.fillStyle = areaGrd
       ctx.fill()
 
@@ -93,10 +95,10 @@ export default function TransferDashboard() {
       }
       ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y)
 
-      ctx.strokeStyle = '#ef4444'
+      ctx.strokeStyle = isMatrix ? '#22c55e' : '#ef4444'
       ctx.lineWidth = 2
       ctx.shadowBlur = 10
-      ctx.shadowColor = 'rgba(239, 68, 68, 0.5)'
+      ctx.shadowColor = isMatrix ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)'
       ctx.stroke()
       ctx.shadowBlur = 0 // reset shadow
 
@@ -106,7 +108,7 @@ export default function TransferDashboard() {
         ctx.arc(pt.x, pt.y, 2.8, 0, Math.PI * 2)
         ctx.fillStyle = '#ffffff'
         ctx.shadowBlur = 6
-        ctx.shadowColor = '#ef4444'
+        ctx.shadowColor = isMatrix ? '#22c55e' : '#ef4444'
         ctx.fill()
         ctx.shadowBlur = 0
       })
@@ -122,10 +124,10 @@ export default function TransferDashboard() {
   }, [])
 
   const stats = [
-    { icon: Activity, label: 'Active Transfers', value: '12', unit: 'live', accent: 'rgba(220,60,60,0.6)' },
+    { icon: Activity, label: 'Active Transfers', value: '12', unit: 'live', accent: 'rgba(var(--accent),0.6)' },
     { icon: Shield,   label: 'Encryption',       value: 'NaCl',   unit: 'secretbox', accent: 'rgba(100,140,255,0.6)' },
     { icon: Clock,    label: 'Avg Latency',       value: '14',   unit: 'ms',    accent: 'rgba(80,200,120,0.6)' },
-    { icon: FileCheck,label: 'Data Transferred',  value: '1.2',  unit: 'TB',    accent: 'rgba(220,60,60,0.6)' },
+    { icon: FileCheck,label: 'Data Transferred',  value: '1.2',  unit: 'TB',    accent: 'rgba(var(--accent),0.6)' },
   ]
 
   return (
@@ -134,7 +136,7 @@ export default function TransferDashboard() {
 
       {/* Editorial bg number */}
       <div className="absolute right-0 top-8 font-mono text-[200px] leading-none font-bold select-none pointer-events-none"
-        style={{ color: 'rgba(180,30,30,0.035)', letterSpacing: '-0.05em' }}>04</div>
+        style={{ color: 'rgba(var(--accent),0.035)', letterSpacing: '-0.05em' }}>04</div>
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -173,14 +175,14 @@ export default function TransferDashboard() {
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.05]">
                 <div className="flex items-center gap-3">
-                  <Activity className="w-4 h-4" style={{ color: 'rgba(180,30,30,0.6)' }} />
+                  <Activity className="w-4 h-4" style={{ color: 'rgba(var(--accent),0.6)' }} />
                   <span className="font-mono text-[11px] tracking-widest uppercase" style={{ color: '#5e4e4e' }}>
                     Transfer Throughput
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-transfera-red animate-pulse" />
-                  <span className="font-mono text-[10px]" style={{ color: '#8c7e7b' }}>Live</span>
+                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'rgb(var(--accent))' }} />
+                  <span className="font-mono text-[10px] style-label" style={{ color: '#8c7e7b' }}>Live</span>
                 </div>
               </div>
               <canvas ref={canvasRef} className="w-full h-56"
@@ -205,7 +207,7 @@ export default function TransferDashboard() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-md transition-all duration-300 group-hover:scale-110"
-                      style={{ background: 'rgba(180,30,30,0.08)', border: '1px solid rgba(180,30,30,0.15)' }}>
+                      style={{ background: 'rgba(var(--accent),0.08)', border: '1px solid rgba(var(--accent),0.15)' }}>
                       <stat.icon className="w-3.5 h-3.5" style={{ color: stat.accent }} />
                     </div>
                     <div>
@@ -215,7 +217,7 @@ export default function TransferDashboard() {
                       <p className="section-heading text-xl text-white">{stat.value}</p>
                     </div>
                   </div>
-                  <span className="font-mono text-[10px] tracking-widest" style={{ color: 'rgba(180,30,30,0.4)' }}>
+                  <span className="font-mono text-[10px] tracking-widest" style={{ color: 'rgba(var(--accent),0.4)' }}>
                     {stat.unit}
                   </span>
                 </motion.div>

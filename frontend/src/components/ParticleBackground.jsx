@@ -80,6 +80,7 @@ const fragment = /* glsl */ `
   precision highp float;
 
   uniform float uTime;
+  uniform vec3 uAccentColor;
   varying vec4 vRandom;
   varying vec3 vColor;
   varying float vDepth;
@@ -99,9 +100,8 @@ const fragment = /* glsl */ `
     // Pulse brightness slowly
     float pulse = sin(uTime * 1.5 + vRandom.z * 6.28) * 0.15 + 0.85;
     
-    // Color shift dynamically from crimson to deep warm burgundy/violet
-    vec3 accentColor = vec3(0.35, 0.06, 0.42); 
-    vec3 finalColor = mix(vColor, accentColor, sin(uTime * 0.45 + vRandom.y * 6.28) * 0.35 + 0.35);
+    // Color shift dynamically from crimson/green to deep background glow accent
+    vec3 finalColor = mix(vColor, uAccentColor, sin(uTime * 0.45 + vRandom.y * 6.28) * 0.35 + 0.35);
     
     // Closer particles get slightly highlighted
     float depthFactor = smoothstep(5.0, 25.0, vDepth);
@@ -125,6 +125,7 @@ function Particles({
   disableRotation = false,
   pixelRatio = 1,
   className = '',
+  theme = 'obsidian',
 }) {
   const containerRef = useRef(null)
   const mouseRef = useRef({ x: 0, y: 0 })
@@ -203,6 +204,7 @@ function Particles({
         uMouse: { value: [0, 0] },
         uHoverStrength: { value: 2.5 },
         uHoverRadius: { value: 4.8 },
+        uAccentColor: { value: theme === 'matrix' ? [0.05, 0.35, 0.12] : [0.35, 0.06, 0.42] },
       },
       transparent: true,
       depthTest: false,
@@ -272,18 +274,27 @@ function Particles({
     pixelRatio,
     sizeRandomness,
     speed,
+    theme,
   ])
 
   return <div ref={containerRef} className={`relative h-full w-full ${className}`} />
 }
 
-export default function ParticleBackground() {
+export default function ParticleBackground({ theme = 'obsidian' }) {
+  const isMatrix = theme === 'matrix'
+  const colors = isMatrix 
+    ? ['#15803d', '#166534', '#22c55e', '#14532d', '#86efac']
+    : ['#c82424', '#8f1414', '#b41e1e', '#5a0a0a', '#a82c44']
+
   return (
     <div className="fixed inset-0 z-0 pointer-events-auto overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_8%,rgba(180,30,30,0.075),transparent_40%),linear-gradient(180deg,#0a0707_0%,#060404_52%,#0c0909_100%)]" />
+      <div 
+        className="absolute inset-0 bg-[radial-gradient(circle_at_28%_8%,rgba(var(--accent),0.075),transparent_40%),linear-gradient(180deg,#0a0707_0%,#060404_52%,#0c0909_100%)]" 
+        style={{ transition: 'background-image 0.5s ease' }}
+      />
       <Particles
         className="absolute inset-0 opacity-80"
-        particleColors={defaultColors}
+        particleColors={colors}
         particleCount={680}
         particleSpread={15}
         speed={0.06}
@@ -294,6 +305,7 @@ export default function ParticleBackground() {
         particleHoverFactor={0.45}
         alphaParticles
         pixelRatio={Math.min(window.devicePixelRatio || 1, 1.5)}
+        theme={theme}
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,8,8,0.52),rgba(10,8,8,0.12)_42%,rgba(10,8,8,0.48))]" />
     </div>

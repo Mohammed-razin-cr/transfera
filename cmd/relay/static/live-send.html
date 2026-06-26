@@ -15,6 +15,9 @@
   <div class="strip-cell brand"><a href="/"><em>Transfera</em></a></div>
   <div class="strip-cell spacer"></div>
   <div class="strip-cell status" id="ws-status"><span class="dot"></span>CONNECTING</div>
+  <button type="button" id="theme-toggle" class="strip-cell port-btn" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;letter-spacing:inherit;text-transform:inherit;display:flex;align-items:center;gap:4px;">
+    THEME <span id="theme-icon">●</span>
+  </button>
   <a href="/" class="strip-cell port-btn">HOME <span class="arrow">↗</span></a>
 </header>
 
@@ -55,14 +58,30 @@
   </section>
 
   <section id="select" class="block hidden">
-    <h2>Drop file(s)</h2>
-    <p class="block-sub">It encrypts in your browser, negotiates a direct connection, and streams to the Destination Node. Falls back through the Secure Gateway if a direct link fails. Multiple files send in one connection.</p>
-    <div class="drop-zone" id="dropzone">
-      <div class="drop-icon">+</div>
-      <div class="drop-label">tap to select or <strong>drop files</strong></div>
-      <div class="drop-hint">any type · any size</div>
+    <div class="tabs-header" style="display:flex;gap:16px;border-bottom:1px solid var(--border);margin-bottom:24px;padding-bottom:12px;">
+      <button type="button" id="tab-files-btn" class="tab-btn active" style="background:none;border:none;color:var(--fg);font-family:var(--mono);font-size:0.8rem;text-transform:uppercase;cursor:pointer;border-bottom:2px solid var(--accent);padding:4px 8px;font-weight:600;letter-spacing:0.05em;">Files</button>
+      <button type="button" id="tab-clip-btn" class="tab-btn" style="background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:0.8rem;text-transform:uppercase;cursor:pointer;padding:4px 8px;letter-spacing:0.05em;">Text Clipboard</button>
     </div>
-    <input type="file" id="fileinput" multiple>
+
+    <div id="tab-files-content">
+      <h2>Drop file(s)</h2>
+      <p class="block-sub">It encrypts in your browser, negotiates a direct connection, and streams to the Destination Node. Falls back through the Secure Gateway if a direct link fails. Multiple files send in one connection.</p>
+      <div class="drop-zone" id="dropzone">
+        <div class="drop-icon">+</div>
+        <div class="drop-label">tap to select or <strong>drop files</strong></div>
+        <div class="drop-hint">any type · any size</div>
+      </div>
+      <input type="file" id="fileinput" multiple>
+    </div>
+
+    <div id="tab-clip-content" class="hidden" style="display:none;">
+      <h2>Share Clipboard</h2>
+      <p class="block-sub">Encrypt text snippets, clipboard notes, or links end-to-end and deliver them directly to a copyable card on the receiver.</p>
+      <div style="margin:20px 0;">
+        <textarea id="textinput" placeholder="Type or paste text, links, or notes to share..." style="width:100%;height:140px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;color:var(--fg);padding:12px;font-family:var(--mono);font-size:0.85rem;resize:vertical;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+      <button type="button" class="cta cta-primary" id="send-text-btn" style="width:100%;justify-content:center;">Send Text / Links</button>
+    </div>
   </section>
 
   <section id="negotiating" class="block hidden">
@@ -310,6 +329,7 @@ $('send-more-btn').addEventListener('click',()=>{
   phase='select';
   show('select');
   fileinput.value='';
+  if($('tab-files-btn')) $('tab-files-btn').click();
 });
 dropzone.addEventListener('dragover',(e)=>{e.preventDefault();dropzone.classList.add('dragover')});
 dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
@@ -451,6 +471,114 @@ function sendWS(plaintext){
 }
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+// Theme switcher
+const themeToggle = $('theme-toggle');
+const themeIcon = $('theme-icon');
+let activeTheme = localStorage.getItem('theme') || 'obsidian';
+document.documentElement.setAttribute('data-theme', activeTheme);
+updateThemeUI();
+
+themeToggle.addEventListener('click', () => {
+  activeTheme = activeTheme === 'matrix' ? 'obsidian' : 'matrix';
+  document.documentElement.setAttribute('data-theme', activeTheme);
+  localStorage.setItem('theme', activeTheme);
+  updateThemeUI();
+});
+
+function updateThemeUI() {
+  if (activeTheme === 'matrix') {
+    themeIcon.style.color = '#22c55e';
+  } else {
+    themeIcon.style.color = '#ef4444';
+  }
+}
+
+// Tab switcher
+const tabFilesBtn = $('tab-files-btn');
+const tabClipBtn = $('tab-clip-btn');
+const tabFilesContent = $('tab-files-content');
+const tabClipContent = $('tab-clip-content');
+
+tabFilesBtn.addEventListener('click', () => {
+  tabFilesBtn.style.color = 'var(--fg)';
+  tabFilesBtn.style.borderBottom = '2px solid var(--accent)';
+  tabClipBtn.style.color = 'var(--muted)';
+  tabClipBtn.style.borderBottom = 'none';
+  tabFilesContent.classList.remove('hidden');
+  tabClipContent.classList.add('hidden');
+  tabClipContent.style.display = 'none';
+  tabFilesContent.style.display = 'block';
+});
+
+tabClipBtn.addEventListener('click', () => {
+  tabClipBtn.style.color = 'var(--fg)';
+  tabClipBtn.style.borderBottom = '2px solid var(--accent)';
+  tabFilesBtn.style.color = 'var(--muted)';
+  tabFilesBtn.style.borderBottom = 'none';
+  tabClipContent.classList.remove('hidden');
+  tabFilesContent.classList.add('hidden');
+  tabFilesContent.style.display = 'none';
+  tabClipContent.style.display = 'block';
+});
+
+// Send clipboard notes
+$('send-text-btn').addEventListener('click', async () => {
+  const val = $('textinput').value.trim();
+  if (!val) return;
+  try {
+    if (!transportReady) {
+      phase = 'negotiating';
+      show('negotiating');
+      try {
+        await negotiateDirectLink();
+        usingDirectLinkMedia = true;
+      } catch (e) {
+        console.warn('DirectLink negotiation failed, falling back to Secure Gateway:', e);
+        usingDirectLinkMedia = false;
+        if (pc) { try { pc.close() } catch (_) {} pc = null; dc = null; }
+      }
+      phase = 'sending';
+      show('sending');
+      if (usingDirectLinkMedia) {
+        $('transport').textContent = 'direct · WebRTC DataChannel';
+        ws.send(encrypt(encode(MSG_DirectLink_READY, new Uint8Array(0)), keyBytes));
+      } else {
+        $('transport').textContent = 'via Secure Gateway · DirectLink unavailable';
+        ws.send(encrypt(encode(MSG_DirectLink_FAIL, new TextEncoder().encode('browser DirectLink failed')), keyBytes));
+      }
+      transportReady = true;
+    } else {
+      phase = 'sending';
+      show('sending');
+      $('transport').textContent = usingDirectLinkMedia ? 'direct · WebRTC DataChannel' : 'via Secure Gateway · DirectLink unavailable';
+    }
+
+    const payload = new TextEncoder().encode(val);
+    const sendFn = usingDirectLinkMedia ? sendDC : sendWS;
+    
+    $('filename').textContent = 'Text Snippet';
+    $('send-size').textContent = formatSize(payload.length);
+    $('progress').style.width = '50%';
+    $('ptext').textContent = 'Sending text...';
+    $('speed').textContent = '';
+
+    await sendFn(encode(MSG_CLIPBOARD, payload));
+    if (usingDirectLinkMedia) {
+      while (dc.bufferedAmount > 0) { await sleep(10); }
+    }
+    await sendFn(encode(MSG_SESSION_END, new Uint8Array(0)));
+
+    phase = 'batch-done';
+    $('batch-done-name').textContent = 'Text Snippet';
+    $('batch-done-size').textContent = formatSize(payload.length);
+    $('batch-done-transport').textContent = usingDirectLinkMedia ? 'direct · WebRTC' : 'via Secure Gateway';
+    show('batch-done');
+    $('textinput').value = '';
+  } catch (err) {
+    showError(err.message || String(err));
+  }
+});
 </script>
 </body>
 </html>

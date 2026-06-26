@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShieldCheck, Menu, X, Send, Radio } from 'lucide-react'
+import { ShieldCheck, Menu, X, Send, Radio, Palette } from 'lucide-react'
 
-export default function Navbar() {
+export default function Navbar({ theme = 'obsidian', setTheme }) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -35,10 +35,10 @@ export default function Navbar() {
           {/* Brand */}
           <a href="/" className="flex items-center gap-3 group">
             <div className="brand-seal h-8 w-8 rounded-md transition-all duration-300 group-hover:shadow-lg"
-              style={{ '--tw-shadow': '0 0 20px rgba(180,30,30,0.3)' }}>
+              style={{ '--tw-shadow': '0 0 20px rgba(var(--accent),0.3)' }}>
               <ShieldCheck className="w-4 h-4" />
             </div>
-            <span className="brand-wordmark text-[15px] text-white tracking-wide group-hover:text-red-300 transition-colors duration-300">
+            <span className="brand-wordmark text-[15px] text-white tracking-wide group-hover:text-[var(--accent-solid)] transition-colors duration-300">
               Transfera
             </span>
           </a>
@@ -54,6 +54,13 @@ export default function Navbar() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setTheme(theme === 'matrix' ? 'obsidian' : 'matrix')}
+              className="icon-button h-9 w-9 rounded-md border border-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center"
+              title="Toggle theme"
+            >
+              <Palette className={`w-4 h-4 transition-colors duration-300 ${theme === 'matrix' ? 'text-emerald-400' : 'text-red-500'}`} />
+            </button>
             <div className="status-badge">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Gateway Online
@@ -67,23 +74,32 @@ export default function Navbar() {
           </div>
 
           {/* Mobile toggle */}
-          <button
-            className="icon-button md:hidden h-9 w-9 rounded-md"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle navigation"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={mobileOpen ? 'close' : 'open'}
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              </motion.div>
-            </AnimatePresence>
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={() => setTheme(theme === 'matrix' ? 'obsidian' : 'matrix')}
+              className="icon-button h-9 w-9 rounded-md border border-white/10 flex items-center justify-center hover:bg-white/[0.04] transition-all duration-300"
+              title="Toggle theme"
+            >
+              <Palette className={`w-4 h-4 transition-colors duration-300 ${theme === 'matrix' ? 'text-emerald-400' : 'text-red-500'}`} />
+            </button>
+            <button
+              className="icon-button h-9 w-9 rounded-md"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle navigation"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={mobileOpen ? 'close' : 'open'}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                </motion.div>
+              </AnimatePresence>
+            </button>
+          </div>
         </div>
       </div>
 

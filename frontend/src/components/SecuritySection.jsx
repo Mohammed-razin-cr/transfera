@@ -46,6 +46,8 @@ export default function SecuritySection() {
       const margin = w < 480 ? 36 : 72
       const segmentWidth = (w - 2 * margin) / 3
 
+      const isMatrix = document.documentElement.getAttribute('data-theme') === 'matrix'
+
       // Draw connections
       for (let i = 0; i < nodes.length - 1; i++) {
         const x1 = margin + i * segmentWidth
@@ -53,9 +55,9 @@ export default function SecuritySection() {
 
         // Base line
         const lineGrd = ctx.createLinearGradient(x1, 0, x2, 0)
-        lineGrd.addColorStop(0, 'rgba(180,30,30,0.2)')
-        lineGrd.addColorStop(0.5, 'rgba(180,30,30,0.35)')
-        lineGrd.addColorStop(1, 'rgba(180,30,30,0.2)')
+        lineGrd.addColorStop(0, isMatrix ? 'rgba(34,197,94,0.12)' : 'rgba(180,30,30,0.2)')
+        lineGrd.addColorStop(0.5, isMatrix ? 'rgba(34,197,94,0.25)' : 'rgba(180,30,30,0.35)')
+        lineGrd.addColorStop(1, isMatrix ? 'rgba(34,197,94,0.12)' : 'rgba(180,30,30,0.2)')
         ctx.strokeStyle = lineGrd
         ctx.lineWidth = 1
         ctx.beginPath()
@@ -69,7 +71,7 @@ export default function SecuritySection() {
           const offset = (flowOffset + j * 6) % 24
           const startX = x1 + offset * (segmentWidth / 24)
           if (startX < x2) {
-            ctx.strokeStyle = 'rgba(255, 80, 80, 0.45)'
+            ctx.strokeStyle = isMatrix ? 'rgba(74, 222, 128, 0.45)' : 'rgba(255, 80, 80, 0.45)'
             ctx.lineWidth = 1.5
             ctx.lineCap = 'round'
             ctx.beginPath()
@@ -96,8 +98,8 @@ export default function SecuritySection() {
         const y = h / 2 + p.yOffset
 
         const pgrd = ctx.createRadialGradient(x, y, 0, x, y, 10)
-        pgrd.addColorStop(0, 'rgba(200, 50, 50, 0.6)')
-        pgrd.addColorStop(1, 'rgba(200, 50, 50, 0)')
+        pgrd.addColorStop(0, isMatrix ? 'rgba(74, 222, 128, 0.6)' : 'rgba(200, 50, 50, 0.6)')
+        pgrd.addColorStop(1, isMatrix ? 'rgba(74, 222, 128, 0)' : 'rgba(200, 50, 50, 0)')
         ctx.beginPath()
         ctx.arc(x, y, 10, 0, Math.PI * 2)
         ctx.fillStyle = pgrd
@@ -105,7 +107,7 @@ export default function SecuritySection() {
 
         ctx.beginPath()
         ctx.arc(x, y, 3.5, 0, Math.PI * 2)
-        ctx.fillStyle = '#c82020'
+        ctx.fillStyle = isMatrix ? '#22c55e' : '#c82020'
         ctx.fill()
       }
 
@@ -118,8 +120,8 @@ export default function SecuritySection() {
         // Outer glow rings
         const outerR = 32 + pulse * 6
         const ogrd = ctx.createRadialGradient(nx, ny, 0, nx, ny, outerR)
-        ogrd.addColorStop(0, `rgba(180, 30, 30, ${0.1 + pulse * 0.05})`)
-        ogrd.addColorStop(1, 'rgba(180, 30, 30, 0)')
+        ogrd.addColorStop(0, isMatrix ? `rgba(34, 197, 94, ${0.1 + pulse * 0.05})` : `rgba(180, 30, 30, ${0.1 + pulse * 0.05})`)
+        ogrd.addColorStop(1, isMatrix ? 'rgba(34, 197, 94, 0)' : 'rgba(180, 30, 30, 0)')
         ctx.beginPath()
         ctx.arc(nx, ny, outerR, 0, Math.PI * 2)
         ctx.fillStyle = ogrd
@@ -130,14 +132,16 @@ export default function SecuritySection() {
         ctx.arc(nx, ny, 12, 0, Math.PI * 2)
         ctx.fillStyle = 'rgba(10,6,6,0.95)'
         ctx.fill()
-        ctx.strokeStyle = node.color
+        ctx.strokeStyle = isMatrix 
+          ? (i === 0 || i === 3 ? '#22c55e' : '#15803d')
+          : node.color
         ctx.lineWidth = 1.5
         ctx.stroke()
 
         // Inner highlight
         ctx.beginPath()
         ctx.arc(nx, ny - 3, 4, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255,120,120,${0.15 + pulse * 0.1})`
+        ctx.fillStyle = isMatrix ? `rgba(74,222,128,${0.15 + pulse * 0.1})` : `rgba(255,120,120,${0.15 + pulse * 0.1})`
         ctx.fill()
 
         // Label
@@ -192,12 +196,15 @@ export default function SecuritySection() {
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
 
       {/* Glow */}
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(180,30,30,0.08) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] pointer-events-none select-none"
+        style={{ background: 'radial-gradient(circle, rgba(var(--accent),0.08) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+      
+      <div className="absolute left-0 top-20 pointer-events-none select-none opacity-40">
+        <div className="font-mono text-[240px] leading-none font-bold text-white/[0.015]" style={{ letterSpacing: '-0.05em' }}>03</div>
+      </div>
 
-      {/* Editorial bg number */}
-      <div className="absolute left-0 bottom-0 font-mono text-[200px] leading-none font-bold select-none pointer-events-none"
-        style={{ color: 'rgba(180,30,30,0.035)', letterSpacing: '-0.05em' }}>03</div>
+      <div className="absolute right-12 top-8 font-mono text-[140px] leading-none font-bold select-none pointer-events-none"
+        style={{ color: 'rgba(var(--accent),0.035)', letterSpacing: '-0.05em' }}>03</div>
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -233,7 +240,7 @@ export default function SecuritySection() {
             style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(5,3,3,0.98)' }}
           >
             <div className="px-6 py-3.5 border-b border-white/[0.06] flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-transfera-red animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'rgb(var(--accent))' }} />
               <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#7a6e6b' }}>
                 Encrypted pipeline · live simulation
               </span>
@@ -256,15 +263,16 @@ export default function SecuritySection() {
                 transition={{ duration: 0.6, delay: index * 0.08 }}
                 className="group feature-card"
               >
-                <div className="font-mono text-[10px] tracking-[0.22em] uppercase mb-5"
-                  style={{ color: 'rgba(180,30,30,0.32)' }}>{point.num}</div>
-                <div className="mb-4 relative">
-                  <div className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: 'radial-gradient(circle, rgba(180,30,30,0.15) 0%, transparent 70%)' }} />
-                  <point.icon className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:scale-110"
-                    style={{ color: 'rgba(180,30,30,0.55)' }} />
+                <div className="font-mono text-[24px] font-bold"
+                  style={{ color: 'rgba(var(--accent),0.32)' }}>{point.num}</div>
+                <div className="flex shrink-0 items-center justify-center w-9 h-9 rounded-md relative"
+                  style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: 'radial-gradient(circle, rgba(var(--accent),0.15) 0%, transparent 70%)' }} />
+                  <point.icon className="w-4 h-4 transition-transform duration-500 group-hover:scale-110 relative z-10"
+                    style={{ color: 'rgba(var(--accent),0.55)' }} />
                 </div>
-                <h3 className="section-heading text-base text-white mb-2 transition-colors duration-300 group-hover:text-red-400">
+                <h3 className="section-heading text-base text-white mb-2 transition-colors duration-300 group-hover:text-[var(--accent-solid)]">
                   {point.title}
                 </h3>
                 <p className="text-sm leading-relaxed" style={{ color: '#9a8c88' }}>{point.desc}</p>
