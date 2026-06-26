@@ -574,3 +574,49 @@
     border-right: none !important;
   }
 }
+
+/* Dashboard Stats Grid Responsiveness */
+.dashboard-stats-grid {
+  display: grid;
+  background: #080606;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.dashboard-stats-grid > div {
+  border-bottom: 1px solid rgba(255,255,255,0.055);
+  border-right: 1px solid rgba(255,255,255,0.055);
+}
+
+.dashboard-stats-grid > div:nth-child(2n) {
+  border-right: none;
+}
+
+.dashboard-stats-grid > div:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+
+@media (min-width: 768px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .dashboard-stats-grid > div {
+    border-bottom: none !important;
+    border-right: 1px solid rgba(255,255,255,0.055) !important;
+  }
+  .dashboard-stats-grid > div:last-child {
+    border-right: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-stats-grid > div {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.055) !important;
+  }
+  .dashboard-stats-grid > div:last-child {
+    border-bottom: none !important;
+  }
+}

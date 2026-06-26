@@ -182,7 +182,7 @@ export default function HeroSection() {
             {/* Main headline */}
             <motion.h1
               variants={itemVariants}
-              className="hero-title text-[clamp(52px,7.5vw,120px)] leading-none mb-8 text-white"
+              className="hero-title text-[clamp(40px,6.5vw,90px)] leading-none mb-8 text-white"
               style={{ textShadow: '0 12px 50px rgba(0,0,0,0.8)' }}
             >
               Secure File
@@ -268,7 +268,7 @@ export default function HeroSection() {
 
               <canvas
                 ref={canvasRef}
-                className="w-full h-72"
+                className="w-full h-72 sm:h-80 lg:h-[380px] xl:h-[450px]"
                 style={{ background: 'radial-gradient(ellipse at 50% 35%, rgba(60,18,18,0.3), rgba(4,2,2,0.98) 65%)' }}
               />
 

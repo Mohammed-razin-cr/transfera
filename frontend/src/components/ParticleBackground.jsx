@@ -163,7 +163,7 @@ function Particles({
     }
 
     if (moveParticlesOnHover) {
-      container.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mousemove', handleMouseMove)
     }
 
     const positions = new Float32Array(particleCount * 3)
@@ -252,7 +252,7 @@ function Particles({
     return () => {
       window.removeEventListener('resize', resize)
       if (moveParticlesOnHover) {
-        container.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('mousemove', handleMouseMove)
       }
       cancelAnimationFrame(animationFrameId)
       if (container.contains(gl.canvas)) {

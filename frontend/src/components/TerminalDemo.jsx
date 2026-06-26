@@ -118,7 +118,7 @@ export default function TerminalDemo() {
               </div>
 
               {/* Terminal body */}
-              <div className="p-6 min-h-[300px] font-mono text-sm leading-relaxed">
+              <div className="p-6 min-h-[300px] font-mono text-xs sm:text-sm leading-relaxed">
                 <div className="mb-3 font-mono text-[10px] tracking-widest uppercase" style={{ color: '#8c7e7b' }}>
                   ~/documents $
                 </div>

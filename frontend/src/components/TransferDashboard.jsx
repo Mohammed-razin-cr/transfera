@@ -155,7 +155,7 @@ export default function TransferDashboard() {
             </motion.div>
 
             {/* Stats column */}
-            <div style={{ background: '#080606' }}>
+            <div className="dashboard-stats-grid">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
@@ -164,7 +164,6 @@ export default function TransferDashboard() {
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.5, delay: index * 0.08 }}
                   className="group flex items-center justify-between px-6 py-6 transition-colors duration-300 hover:bg-white/[0.02] cursor-default"
-                  style={{ borderBottom: index < 3 ? '1px solid rgba(255,255,255,0.055)' : 'none' }}
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-md transition-all duration-300 group-hover:scale-110"
