@@ -42,7 +42,7 @@ export default function Footer() {
                   style={{ boxShadow: '0 0 0px rgba(var(--accent),0)' }}
                   onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(var(--accent),0.35)'}
                   onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 0px rgba(var(--accent),0)'}>
-                  <img src="/logo.png" alt="Transfera Logo" className="w-full h-full object-cover" />
+                  <img src="/static/logo.png" alt="Transfera Logo" className="w-full h-full object-cover" />
                 </div>
                 <span className="brand-wordmark text-[16px] text-white tracking-wide group-hover:text-[var(--accent-solid)] transition-colors duration-300">
                   Transfera
