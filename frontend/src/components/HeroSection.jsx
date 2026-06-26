@@ -32,6 +32,98 @@ export default function HeroSection() {
       })
     }
 
+    const mouse = { x: -1000, y: -1000, isDown: false }
+    let draggedNode = null
+
+    const getCoords = (e) => {
+      const rect = canvas.getBoundingClientRect()
+      let clientX, clientY
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX
+        clientY = e.touches[0].clientY
+      } else {
+        clientX = e.clientX
+        clientY = e.clientY
+      }
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+      }
+    }
+
+    const onMouseDown = (e) => {
+      mouse.isDown = true
+      const coords = getCoords(e)
+      mouse.x = coords.x
+      mouse.y = coords.y
+
+      // Find closest node to click within 35px threshold
+      let closestNode = null
+      let minDist = 35
+      nodes.forEach((node) => {
+        const dx = node.x - mouse.x
+        const dy = node.y - mouse.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < minDist) {
+          minDist = dist
+          closestNode = node
+        }
+      })
+
+      if (closestNode) {
+        draggedNode = closestNode
+        draggedNode.vx = 0
+        draggedNode.vy = 0
+      } else {
+        // Spawn a new node if user clicks an empty area, up to a limit of 15 nodes
+        if (nodes.length < 15) {
+          nodes.push({
+            x: mouse.x,
+            y: mouse.y,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            radius: 2.5 + Math.random() * 2.5,
+            pulse: Math.random() * Math.PI * 2,
+          })
+        }
+      }
+    }
+
+    const onMouseMove = (e) => {
+      const coords = getCoords(e)
+      mouse.x = coords.x
+      mouse.y = coords.y
+
+      if (draggedNode) {
+        draggedNode.x = mouse.x
+        draggedNode.y = mouse.y
+      }
+    }
+
+    const onMouseUp = () => {
+      if (draggedNode) {
+        draggedNode.vx = (Math.random() - 0.5) * 0.35
+        draggedNode.vy = (Math.random() - 0.5) * 0.35
+        draggedNode = null
+      }
+      mouse.isDown = false
+    }
+
+    const onMouseLeave = () => {
+      onMouseUp()
+      mouse.x = -1000
+      mouse.y = -1000
+    }
+
+    canvas.addEventListener('mousedown', onMouseDown)
+    canvas.addEventListener('mousemove', onMouseMove)
+    canvas.addEventListener('mouseup', onMouseUp)
+    canvas.addEventListener('mouseleave', onMouseLeave)
+
+    canvas.addEventListener('touchstart', onMouseDown, { passive: true })
+    canvas.addEventListener('touchmove', onMouseMove, { passive: true })
+    canvas.addEventListener('touchend', onMouseUp, { passive: true })
+
     const dataPackets = []
     let packetTimer = 0
 
@@ -41,14 +133,16 @@ export default function HeroSection() {
       ctx.clearRect(0, 0, w, h)
 
       nodes.forEach((node) => {
-        node.x += node.vx
-        node.y += node.vy
+        if (node !== draggedNode) {
+          node.x += node.vx
+          node.y += node.vy
+          if (node.x < 0 || node.x > w) node.vx *= -1
+          if (node.y < 0 || node.y > h) node.vy *= -1
+        }
         node.pulse += 0.03
-        if (node.x < 0 || node.x > w) node.vx *= -1
-        if (node.y < 0 || node.y > h) node.vy *= -1
       })
 
-      // connections
+      // connections between nodes
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x
@@ -64,6 +158,24 @@ export default function HeroSection() {
             ctx.stroke()
           }
         }
+      }
+
+      // connections to user pointer
+      if (mouse.x >= 0 && mouse.y >= 0 && mouse.x <= w && mouse.y <= h) {
+        nodes.forEach((node) => {
+          const dx = node.x - mouse.x
+          const dy = node.y - mouse.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          if (dist < 150) {
+            const alpha = (1 - dist / 150) * 0.35
+            ctx.strokeStyle = `rgba(255, 100, 100, ${alpha})`
+            ctx.lineWidth = 0.8
+            ctx.beginPath()
+            ctx.moveTo(node.x, node.y)
+            ctx.lineTo(mouse.x, mouse.y)
+            ctx.stroke()
+          }
+        })
       }
 
       // packets
@@ -82,6 +194,7 @@ export default function HeroSection() {
         if (p.progress >= 1) { dataPackets.splice(i, 1); continue }
         const from = nodes[p.from]
         const to = nodes[p.to]
+        if (!from || !to) { dataPackets.splice(i, 1); continue }
         const x = from.x + (to.x - from.x) * p.progress
         const y = from.y + (to.y - from.y) * p.progress
 
@@ -101,18 +214,36 @@ export default function HeroSection() {
 
       // nodes
       nodes.forEach((node) => {
-        const pulseR = node.radius + Math.sin(node.pulse) * 1.5
-        const outerGrd = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 20)
-        outerGrd.addColorStop(0, 'rgba(220, 60, 60, 0.18)')
-        outerGrd.addColorStop(1, 'rgba(220, 60, 60, 0)')
+        const isHovered = !draggedNode && (() => {
+          const dx = node.x - mouse.x
+          const dy = node.y - mouse.y
+          return Math.sqrt(dx * dx + dy * dy) < 22
+        })()
+        const isDragged = node === draggedNode
+
+        const pulseR = node.radius + Math.sin(node.pulse) * 1.5 + (isHovered || isDragged ? 2.0 : 0)
+        const glowRadius = isDragged ? 36 : isHovered ? 26 : 20
+        const outerGrd = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, glowRadius)
+        
+        if (isDragged) {
+          outerGrd.addColorStop(0, 'rgba(255, 60, 60, 0.35)')
+          outerGrd.addColorStop(1, 'rgba(255, 60, 60, 0)')
+        } else if (isHovered) {
+          outerGrd.addColorStop(0, 'rgba(255, 100, 100, 0.28)')
+          outerGrd.addColorStop(1, 'rgba(255, 100, 100, 0)')
+        } else {
+          outerGrd.addColorStop(0, 'rgba(220, 60, 60, 0.18)')
+          outerGrd.addColorStop(1, 'rgba(220, 60, 60, 0)')
+        }
+
         ctx.beginPath()
-        ctx.arc(node.x, node.y, 20, 0, Math.PI * 2)
+        ctx.arc(node.x, node.y, glowRadius, 0, Math.PI * 2)
         ctx.fillStyle = outerGrd
         ctx.fill()
 
         ctx.beginPath()
         ctx.arc(node.x, node.y, pulseR, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(255, 80, 80, 0.85)'
+        ctx.fillStyle = isDragged || isHovered ? 'rgba(255, 120, 120, 0.95)' : 'rgba(255, 80, 80, 0.85)'
         ctx.fill()
       })
 
@@ -123,6 +254,13 @@ export default function HeroSection() {
     return () => {
       cancelAnimationFrame(animationId)
       window.removeEventListener('resize', resize)
+      canvas.removeEventListener('mousedown', onMouseDown)
+      canvas.removeEventListener('mousemove', onMouseMove)
+      canvas.removeEventListener('mouseup', onMouseUp)
+      canvas.removeEventListener('mouseleave', onMouseLeave)
+      canvas.removeEventListener('touchstart', onMouseDown)
+      canvas.removeEventListener('touchmove', onMouseMove)
+      canvas.removeEventListener('touchend', onMouseUp)
     }
   }, [])
 
