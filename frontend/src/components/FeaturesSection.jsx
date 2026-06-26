@@ -101,18 +101,13 @@ export default function FeaturesSection() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-40px' }}
-            className="grid sm:grid-cols-2 lg:grid-cols-3"
-            style={{ border: '1px solid rgba(255,255,255,0.055)', borderBottom: 'none' }}
+            className="features-grid"
           >
             {features.map((feature, index) => (
               <motion.div
                 key={index}
                 variants={itemVariants}
                 className="group feature-card cursor-default"
-                style={{
-                  borderRight: index % 3 !== 2 ? '1px solid rgba(255,255,255,0.055)' : 'none',
-                  borderBottom: '1px solid rgba(255,255,255,0.055)',
-                }}
               >
                 {/* Number */}
                 <div className="font-mono text-[10px] tracking-[0.22em] uppercase mb-7"

@@ -238,7 +238,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, x: 50, scale: 0.96 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative hidden lg:block"
+            className="relative w-full max-w-xl mx-auto lg:max-w-none"
           >
             {/* Large editorial number */}
             <div className="absolute -top-8 -left-10 font-mono text-[130px] leading-none font-bold select-none pointer-events-none"

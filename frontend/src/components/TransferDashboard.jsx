@@ -130,8 +130,8 @@ export default function TransferDashboard() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.7 }}
-              className="lg:col-span-2"
-              style={{ background: '#080606', borderRight: '1px solid rgba(255,255,255,0.055)' }}
+              className="lg:col-span-2 border-b lg:border-b-0 lg:border-r border-white/[0.055]"
+              style={{ background: '#080606' }}
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.05]">
                 <div className="flex items-center gap-3">

@@ -246,8 +246,7 @@ export default function SecuritySection() {
           </motion.div>
 
           {/* Four cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4"
-            style={{ border: '1px solid rgba(255,255,255,0.055)', borderBottom: 'none' }}>
+          <div className="security-grid">
             {securityPoints.map((point, index) => (
               <motion.div
                 key={index}
@@ -256,10 +255,6 @@ export default function SecuritySection() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.6, delay: index * 0.08 }}
                 className="group feature-card"
-                style={{
-                  borderRight: index < 3 ? '1px solid rgba(255,255,255,0.055)' : 'none',
-                  borderBottom: '1px solid rgba(255,255,255,0.055)',
-                }}
               >
                 <div className="font-mono text-[10px] tracking-[0.22em] uppercase mb-5"
                   style={{ color: 'rgba(180,30,30,0.32)' }}>{point.num}</div>
