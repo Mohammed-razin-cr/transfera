@@ -30,7 +30,7 @@ export default function Footer() {
 
       {/* Background glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(180,30,30,0.06) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(var(--accent),0.06) 0%, transparent 70%)' }} />
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -38,13 +38,13 @@ export default function Footer() {
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
               <a href="/" className="flex items-center gap-3 mb-6 group w-fit">
-                <div className="brand-seal h-9 w-9 rounded-md transition-all duration-300 group-hover:shadow-lg"
-                  style={{ boxShadow: '0 0 0px rgba(180,30,30,0)' }}
-                  onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(180,30,30,0.35)'}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 0px rgba(180,30,30,0)'}>
-                  <ShieldCheck className="w-4.5 h-4.5" />
+                <div className="brand-seal h-9 w-9 rounded-md transition-all duration-300 group-hover:shadow-lg overflow-hidden flex items-center justify-center bg-transparent"
+                  style={{ boxShadow: '0 0 0px rgba(var(--accent),0)' }}
+                  onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(var(--accent),0.35)'}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 0px rgba(var(--accent),0)'}>
+                  <img src="/logo.png" alt="Transfera Logo" className="w-full h-full object-cover" />
                 </div>
-                <span className="brand-wordmark text-[16px] text-white tracking-wide group-hover:text-red-300 transition-colors duration-300">
+                <span className="brand-wordmark text-[16px] text-white tracking-wide group-hover:text-[var(--accent-solid)] transition-colors duration-300">
                   Transfera
                 </span>
               </a>
@@ -52,8 +52,8 @@ export default function Footer() {
                 Secure, browser-based file transfer with end-to-end encryption, QR pairing, and no signup.
               </p>
               <div className="flex items-center gap-2 mb-6">
-                <Zap className="w-3 h-3" style={{ color: 'rgba(180,30,30,0.5)' }} />
-                <span className="font-mono text-[10px] tracking-wider" style={{ color: 'rgba(180,30,30,0.5)' }}>
+                <Zap className="w-3 h-3" style={{ color: 'rgba(var(--accent),0.5)' }} />
+                <span className="font-mono text-[10px] tracking-wider" style={{ color: 'rgba(var(--accent),0.5)' }}>
                   Open source · MIT License
                 </span>
               </div>

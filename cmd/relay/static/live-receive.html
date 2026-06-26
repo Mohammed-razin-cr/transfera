@@ -205,7 +205,12 @@
 <body>
 
 <header class="top-strip">
-  <div class="strip-cell brand"><a href="/"><em>Transfera</em></a></div>
+  <div class="strip-cell brand" style="display:flex;align-items:center;gap:8px;">
+    <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+      <img src="/static/logo.png" alt="logo" style="width:20px;height:20px;object-fit:cover;border-radius:3px;" />
+      <em>Transfera</em>
+    </a>
+  </div>
   <div class="strip-cell spacer"></div>
   <div class="strip-cell status" id="ws-status"><span class="dot"></span>CONNECTING</div>
   <button type="button" id="theme-toggle" class="strip-cell port-btn" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;letter-spacing:inherit;text-transform:inherit;display:flex;align-items:center;gap:4px;">
