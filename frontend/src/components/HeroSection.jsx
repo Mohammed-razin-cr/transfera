@@ -126,11 +126,47 @@ export default function HeroSection() {
 
     const dataPackets = []
     let packetTimer = 0
+    let animTime = 0
 
     const animate = () => {
+      animTime += 0.015
       const w = canvas.offsetWidth
       const h = canvas.offsetHeight
       ctx.clearRect(0, 0, w, h)
+
+      // Draw Grid Mesh (Tactical coordinates)
+      ctx.strokeStyle = 'rgba(255, 90, 90, 0.015)'
+      ctx.lineWidth = 0.5
+      for (let x = 40; x < w; x += 40) {
+        ctx.beginPath()
+        ctx.moveTo(x, 0)
+        ctx.lineTo(x, h)
+        ctx.stroke()
+      }
+      for (let y = 40; y < h; y += 40) {
+        ctx.beginPath()
+        ctx.moveTo(0, y)
+        ctx.lineTo(w, y)
+        ctx.stroke()
+      }
+
+      // Radar Scanline sweep
+      const scanY = (animTime * 120) % (h + 40) - 20
+      if (scanY >= 0 && scanY <= h) {
+        ctx.strokeStyle = 'rgba(255, 90, 90, 0.06)'
+        ctx.lineWidth = 1.2
+        ctx.beginPath()
+        ctx.moveTo(0, scanY)
+        ctx.lineTo(w, scanY)
+        ctx.stroke()
+
+        // Glow trail for scan sweep
+        const scanGrd = ctx.createLinearGradient(0, scanY - 35, 0, scanY)
+        scanGrd.addColorStop(0, 'rgba(255, 90, 90, 0)')
+        scanGrd.addColorStop(1, 'rgba(255, 90, 90, 0.025)')
+        ctx.fillStyle = scanGrd
+        ctx.fillRect(0, scanY - 35, w, 35)
+      }
 
       nodes.forEach((node) => {
         if (node !== draggedNode) {
@@ -260,6 +296,23 @@ export default function HeroSection() {
         ctx.arc(node.x, node.y, pulseR, 0, Math.PI * 2)
         ctx.fillStyle = isDragged || isHovered ? 'rgba(255, 120, 120, 0.95)' : 'rgba(255, 80, 80, 0.85)'
         ctx.fill()
+
+        // Draw Monospace tech coordinates [x, y]
+        ctx.fillStyle = isDragged || isHovered ? 'rgba(255, 150, 150, 0.6)' : 'rgba(255, 90, 90, 0.38)'
+        ctx.font = '7px IBM Plex Mono, monospace'
+        ctx.textAlign = 'left'
+        ctx.fillText(`[${Math.round(node.x)}, ${Math.round(node.y)}]`, node.x + pulseR + 6, node.y + 2)
+
+        // Draw rotating dashed target ring for hover/drag states
+        if (isHovered || isDragged) {
+          ctx.strokeStyle = 'rgba(255, 90, 90, 0.45)'
+          ctx.lineWidth = 0.8
+          ctx.setLineDash([2, 4])
+          ctx.beginPath()
+          ctx.arc(node.x, node.y, glowRadius + 5, animTime * 1.5, animTime * 1.5 + Math.PI * 2)
+          ctx.stroke()
+          ctx.setLineDash([])
+        }
       })
 
       animationId = requestAnimationFrame(animate)
@@ -401,14 +454,15 @@ export default function HeroSection() {
             <div className="absolute -inset-8 rounded-2xl pointer-events-none"
               style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(180,30,30,0.12) 0%, transparent 70%)' }} />
 
-            <div className="network-console relative overflow-hidden rounded-xl">
+            <div className="network-console relative overflow-hidden rounded-xl"
+              style={{ boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 50px rgba(180,30,30,0.05)' }}>
               {/* Title bar */}
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/[0.07]"
                 style={{ background: 'rgba(14,10,10,0.8)' }}>
                 <div className="flex gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(200,50,50,0.7)' }} />
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f56' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ffbd2e' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#27c93f' }} />
                 </div>
                 <span className="font-mono text-[10px] tracking-widest uppercase ml-1" style={{ color: '#8a7a72' }}>
                   Live Network · 8 nodes
