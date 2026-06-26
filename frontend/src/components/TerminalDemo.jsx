@@ -100,14 +100,14 @@ export default function TerminalDemo() {
             transition={{ duration: 0.8 }}
             className="max-w-3xl"
           >
-            <div className="border border-white/[0.07] rounded-sm overflow-hidden"
-              style={{ background: 'rgba(4,2,2,0.98)' }}>
+            <div className="glass-panel-strong rounded-lg overflow-hidden">
               {/* Title bar */}
-              <div className="flex items-center gap-3 px-5 py-3 border-b border-white/5">
+              <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.06]"
+                style={{ background: 'rgba(14,10,10,0.4)' }}>
                 <div className="flex gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(180,30,30,0.6)' }} />
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f56' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ffbd2e' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#27c93f' }} />
                 </div>
                 <div className="flex items-center gap-2 ml-3">
                   <Terminal className="w-3 h-3" style={{ color: 'rgba(180,30,30,0.5)' }} />

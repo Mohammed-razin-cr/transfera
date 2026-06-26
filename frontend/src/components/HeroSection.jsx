@@ -195,8 +195,23 @@ export default function HeroSection() {
         const from = nodes[p.from]
         const to = nodes[p.to]
         if (!from || !to) { dataPackets.splice(i, 1); continue }
-        const x = from.x + (to.x - from.x) * p.progress
-        const y = from.y + (to.y - from.y) * p.progress
+        const fromX = from.x
+        const fromY = from.y
+        const toX = to.x
+        const toY = to.y
+        const x = fromX + (toX - fromX) * p.progress
+        const y = fromY + (toY - fromY) * p.progress
+
+        // Draw glowing vector trail from the source node to the packet's current position
+        const trailGrd = ctx.createLinearGradient(x, y, fromX, fromY)
+        trailGrd.addColorStop(0, 'rgba(255, 90, 90, 0.55)')
+        trailGrd.addColorStop(1, 'rgba(255, 90, 90, 0)')
+        ctx.strokeStyle = trailGrd
+        ctx.lineWidth = 1.0
+        ctx.beginPath()
+        ctx.moveTo(x, y)
+        ctx.lineTo(fromX, fromY)
+        ctx.stroke()
 
         const grd = ctx.createRadialGradient(x, y, 0, x, y, 9)
         grd.addColorStop(0, 'rgba(255, 80, 80, 0.9)')

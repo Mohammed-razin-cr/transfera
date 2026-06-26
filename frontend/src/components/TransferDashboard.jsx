@@ -19,27 +19,26 @@ export default function TransferDashboard() {
     resize()
     window.addEventListener('resize', resize)
 
-    const bars = Array.from({ length: 36 }, () => ({
-      height: Math.random() * 55 + 12,
-      speed: Math.random() * 1.8 + 0.8,
-      direction: Math.random() > 0.5 ? 1 : -1,
+    const points = Array.from({ length: 16 }, (_, i) => ({
+      x: 0,
+      y: 0,
       phase: Math.random() * Math.PI * 2,
+      speed: 0.015 + Math.random() * 0.02,
+      amplitude: 15 + Math.random() * 25,
+      baseHeight: 35 + Math.random() * 25,
     }))
 
-    let time = 0
     const animate = () => {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
-      time += 0.04
 
       const w = canvas.offsetWidth
       const h = canvas.offsetHeight
-      const barWidth = (w - 32) / bars.length
       const baseY = h - 28
 
       // Horizontal grid lines
       for (let i = 0; i < 4; i++) {
         const lineY = baseY - (i + 1) * (baseY / 5)
-        ctx.strokeStyle = 'rgba(255,255,255,0.04)'
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
         ctx.lineWidth = 1
         ctx.beginPath()
         ctx.moveTo(16, lineY)
@@ -47,30 +46,69 @@ export default function TransferDashboard() {
         ctx.stroke()
       }
 
-      bars.forEach((bar, i) => {
-        bar.height += bar.speed * bar.direction
-        if (bar.height > 65) bar.direction = -1
-        if (bar.height < 10) bar.direction = 1
-
-        const x = 16 + i * barWidth
-        const barHeight = bar.height + Math.sin(time + bar.phase) * 12
-        const y = baseY - barHeight
-
-        // Gradient bar
-        const gradient = ctx.createLinearGradient(x, baseY, x, y)
-        gradient.addColorStop(0, 'rgba(160, 25, 25, 0.05)')
-        gradient.addColorStop(0.5, 'rgba(180, 30, 30, 0.25)')
-        gradient.addColorStop(1, 'rgba(220, 60, 60, 0.55)')
-
-        ctx.fillStyle = gradient
-        const bw = Math.max(barWidth - 3, 2)
+      // Vertical grid lines
+      for (let i = 0; i < 6; i++) {
+        const lineX = 16 + (i + 1) * ((w - 32) / 7)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
+        ctx.lineWidth = 1
         ctx.beginPath()
-        ctx.roundRect(x, y, bw, barHeight, [2, 2, 0, 0])
-        ctx.fill()
+        ctx.moveTo(lineX, 16)
+        ctx.lineTo(lineX, baseY)
+        ctx.stroke()
+      }
 
-        // Top cap glow
-        ctx.fillStyle = `rgba(220, 70, 70, ${0.5 + Math.sin(time + bar.phase) * 0.2})`
-        ctx.fillRect(x, y, bw, 1.5)
+      // Update positions
+      points.forEach((pt, i) => {
+        pt.phase += pt.speed
+        pt.x = 16 + i * (w - 32) / (points.length - 1)
+        pt.y = baseY - (pt.baseHeight + Math.sin(pt.phase) * pt.amplitude)
+      })
+
+      // Draw area fill
+      ctx.beginPath()
+      ctx.moveTo(16, baseY)
+      ctx.lineTo(points[0].x, points[0].y)
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2
+        const yc = (points[i].y + points[i + 1].y) / 2
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y)
+      ctx.lineTo(w - 16, baseY)
+      ctx.closePath()
+
+      const areaGrd = ctx.createLinearGradient(0, 16, 0, baseY)
+      areaGrd.addColorStop(0, 'rgba(239, 68, 68, 0.16)')
+      areaGrd.addColorStop(1, 'rgba(239, 68, 68, 0.0)')
+      ctx.fillStyle = areaGrd
+      ctx.fill()
+
+      // Draw bezier stroke line
+      ctx.beginPath()
+      ctx.moveTo(points[0].x, points[0].y)
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2
+        const yc = (points[i].y + points[i + 1].y) / 2
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y)
+
+      ctx.strokeStyle = '#ef4444'
+      ctx.lineWidth = 2
+      ctx.shadowBlur = 10
+      ctx.shadowColor = 'rgba(239, 68, 68, 0.5)'
+      ctx.stroke()
+      ctx.shadowBlur = 0 // reset shadow
+
+      // Draw glowing data points
+      points.forEach((pt) => {
+        ctx.beginPath()
+        ctx.arc(pt.x, pt.y, 2.8, 0, Math.PI * 2)
+        ctx.fillStyle = '#ffffff'
+        ctx.shadowBlur = 6
+        ctx.shadowColor = '#ef4444'
+        ctx.fill()
+        ctx.shadowBlur = 0
       })
 
       animationId = requestAnimationFrame(animate)
