@@ -424,7 +424,12 @@ export default function HeroSection() {
               <a href="/live" className="btn-primary group">
                 <span>Start Secure Transfer</span>
                 <span className="btn-icon">
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <motion.div
+                    whileHover={{ x: 3, y: -3 }}
+                    transition={{ duration: 0.2, type: "spring", stiffness: 400 }}
+                  >
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </motion.div>
                 </span>
               </a>
               <a href="#security" className="btn-secondary group">

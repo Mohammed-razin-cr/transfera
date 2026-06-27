@@ -59,7 +59,17 @@ export default function Navbar({ theme = 'obsidian', setTheme }) {
               className="icon-button h-10 w-10 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center"
               title="Toggle theme"
             >
-              <Palette className={`w-5 h-5 transition-colors duration-300 ${theme === 'matrix' ? 'text-emerald-400' : 'text-red-500'}`} />
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={theme}
+                  initial={{ scale: 0.8, rotate: -30, opacity: 0 }}
+                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0.8, rotate: 30, opacity: 0 }}
+                  transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <Palette className={`w-5 h-5 ${theme === 'matrix' ? 'text-emerald-400' : 'text-red-500'}`} />
+                </motion.div>
+              </AnimatePresence>
             </button>
             <div className="status-badge">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -68,7 +78,12 @@ export default function Navbar({ theme = 'obsidian', setTheme }) {
             <a href="/live" className="btn-primary group" style={{ padding: '12px 24px', fontSize: '11px' }}>
               <span>Start Transfer</span>
               <span className="btn-icon" style={{ width: '24px', height: '24px' }}>
-                <Send className="w-4 h-4" />
+                <motion.div
+                  whileHover={{ x: 3, y: -3 }}
+                  transition={{ duration: 0.2, type: "spring", stiffness: 400 }}
+                >
+                  <Send className="w-4 h-4" />
+                </motion.div>
               </span>
             </a>
           </div>
@@ -80,7 +95,17 @@ export default function Navbar({ theme = 'obsidian', setTheme }) {
               className="icon-button h-10 w-10 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/[0.04] transition-all duration-300"
               title="Toggle theme"
             >
-              <Palette className={`w-5 h-5 transition-colors duration-300 ${theme === 'matrix' ? 'text-emerald-400' : 'text-red-500'}`} />
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={theme}
+                  initial={{ scale: 0.8, rotate: -30, opacity: 0 }}
+                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0.8, rotate: 30, opacity: 0 }}
+                  transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <Palette className={`w-5 h-5 ${theme === 'matrix' ? 'text-emerald-400' : 'text-red-500'}`} />
+                </motion.div>
+              </AnimatePresence>
             </button>
             <button
               className="icon-button h-10 w-10 rounded-lg"
@@ -138,7 +163,14 @@ export default function Navbar({ theme = 'obsidian', setTheme }) {
               <div className="border-t border-white/[0.06] pt-5 flex flex-col gap-3">
                 <a href="/live" className="btn-primary group text-center justify-center">
                   <span>Start Transfer</span>
-                  <span className="btn-icon"><Send className="w-4 h-4" /></span>
+                  <span className="btn-icon">
+                    <motion.div
+                      whileHover={{ x: 3, y: -3 }}
+                      transition={{ duration: 0.2, type: "spring", stiffness: 400 }}
+                    >
+                      <Send className="w-4 h-4" />
+                    </motion.div>
+                  </span>
                 </a>
                 <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest" style={{ color: '#7a6e6b' }}>
                   <Radio className="h-4 w-4 text-emerald-400" /> Gateway online
