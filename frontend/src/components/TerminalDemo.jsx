@@ -1,17 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Terminal } from 'lucide-react'
+import { useTheme } from '../App'
 
 const commands = [
   { text: 'transfera send report.pdf', delay: 0 },
-  { text: '>> Generating Access Key...', delay: 800, color: 'text-transfera-red' },
+  { text: '>> Generating Access Key...', delay: 800, isAccent: true },
   { text: '>> Access Key: AURORA VORTEX 73', delay: 400, color: 'text-transfera-neonPurple' },
-  { text: '>> Encrypting with NaCl secretbox...', delay: 600, color: 'text-transfera-red' },
+  { text: '>> Encrypting with NaCl secretbox...', delay: 600, isAccent: true },
   { text: '>> Encrypted OK', delay: 300, color: 'text-emerald-500' },
   { text: '>> DirectLink mode active', delay: 400, color: 'text-yellow-600' },
   { text: '>> Waiting for Destination Node...', delay: 500, color: 'text-white/30' },
   { text: '>> Destination Node joined', delay: 2000, color: 'text-emerald-500' },
-  { text: '>> Transferring: 100% (14.2 MB)', delay: 600, color: 'text-transfera-red' },
+  { text: '>> Transferring: 100% (14.2 MB)', delay: 600, isAccent: true },
   { text: '>> Done. File delivered securely.', delay: 400, color: 'text-emerald-500' },
 ]
 
@@ -21,6 +22,10 @@ export default function TerminalDemo() {
   const [lineIndex, setLineIndex] = useState(0)
   const [charIndex, setCharIndex] = useState(0)
   const intervalRef = useRef(null)
+
+  const { theme } = useTheme()
+  const isMatrix = theme === 'matrix'
+  const accentColor = isMatrix ? '34, 197, 94' : '180, 30, 30'
 
   useEffect(() => {
     if (lineIndex >= commands.length) {
@@ -58,13 +63,21 @@ export default function TerminalDemo() {
     }
   }, [lineIndex, charIndex])
 
+  const getLineStyle = (line) => {
+    if (line.color) return {}
+    if (line.isAccent) {
+      return { color: `rgba(${accentColor}, 1)` }
+    }
+    return {}
+  }
+
   return (
     <section id="terminal" className="relative py-24 lg:py-36 overflow-hidden">
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
 
       {/* Editorial bg number */}
       <div className="absolute left-0 bottom-0 font-mono text-[200px] leading-none font-bold select-none pointer-events-none"
-        style={{ color: 'rgba(180,30,30,0.04)', letterSpacing: '-0.05em' }}>05</div>
+        style={{ color: `rgba(${accentColor},0.04)`, letterSpacing: '-0.05em' }}>05</div>
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -110,7 +123,7 @@ export default function TerminalDemo() {
                   <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#27c93f' }} />
                 </div>
                 <div className="flex items-center gap-2 ml-3">
-                  <Terminal className="w-3 h-3" style={{ color: 'rgba(180,30,30,0.5)' }} />
+                  <Terminal className="w-3 h-3" style={{ color: `rgba(${accentColor},0.5)` }} />
                   <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#8c7e7b' }}>
                     transfera-cli
                   </span>
@@ -124,22 +137,22 @@ export default function TerminalDemo() {
                 </div>
                 {displayedLines.map((line, index) => (
                   <div key={index} className="mb-1.5">
-                    <span className={line.color || 'text-white/40'}>{line.text}</span>
+                    <span className={line.color || 'text-white/40'} style={getLineStyle(line)}>{line.text}</span>
                   </div>
                 ))}
                 {currentLine && (
                   <div className="mb-1.5">
-                    <span className={commands[lineIndex]?.color || 'text-white/40'}>
+                    <span className={commands[lineIndex]?.color || 'text-white/40'} style={getLineStyle(commands[lineIndex])}>
                       {currentLine}
                     </span>
                     <span className="inline-block w-1.5 h-4 ml-0.5 animate-pulse"
-                      style={{ background: 'rgba(180,30,30,0.8)', verticalAlign: 'text-bottom' }} />
+                      style={{ background: `rgba(${accentColor},0.8)`, verticalAlign: 'text-bottom' }} />
                   </div>
                 )}
                 {!currentLine && lineIndex === 0 && (
                   <div>
                     <span className="inline-block w-1.5 h-4 animate-pulse"
-                      style={{ background: 'rgba(180,30,30,0.8)', verticalAlign: 'text-bottom' }} />
+                      style={{ background: `rgba(${accentColor},0.8)`, verticalAlign: 'text-bottom' }} />
                   </div>
                 )}
               </div>

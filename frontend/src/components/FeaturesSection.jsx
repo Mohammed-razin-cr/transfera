@@ -7,6 +7,7 @@ import {
   FolderSync,
   BarChart3,
 } from 'lucide-react'
+import { useTheme } from '../App'
 
 const features = [
   {
@@ -58,15 +59,20 @@ const itemVariants = {
 }
 
 export default function FeaturesSection() {
+  const { theme } = useTheme()
+  const isMatrix = theme === 'matrix'
+  const accentColor = isMatrix ? '34, 197, 94' : '180, 30, 30'
+  const accentSolid = isMatrix ? '22c55e' : 'ef4444'
+
   return (
     <section id="features" className="relative py-28 lg:py-40">
       {/* Editorial background number */}
       <div className="absolute right-0 top-12 font-mono text-[200px] leading-none font-bold select-none pointer-events-none"
-        style={{ color: 'rgba(180,30,30,0.035)', letterSpacing: '-0.05em' }}>02</div>
+        style={{ color: `rgba(${accentColor},0.035)`, letterSpacing: '-0.05em' }}>02</div>
 
       {/* Subtle top glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(180,30,30,0.4), transparent)' }} />
+        style={{ background: `linear-gradient(90deg, transparent, rgba(${accentColor},0.4), transparent)` }} />
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -111,22 +117,22 @@ export default function FeaturesSection() {
               >
                 {/* Number */}
                 <div className="font-mono text-[10px] tracking-[0.22em] uppercase mb-7"
-                  style={{ color: 'rgba(180,30,30,0.38)' }}>
+                  style={{ color: `rgba(${accentColor},0.38)` }}>
                   {feature.num}
                 </div>
 
                 {/* Icon with glow */}
                 <div className="mb-5 relative">
                   <div className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: 'radial-gradient(circle, rgba(180,30,30,0.15) 0%, transparent 70%)' }} />
+                    style={{ background: `radial-gradient(circle, rgba(${accentColor},0.15) 0%, transparent 70%)` }} />
                   <feature.icon
                     className="w-5 h-5 relative z-10 transition-all duration-500 group-hover:scale-110"
-                    style={{ color: 'rgba(200,60,60,0.55)' }}
+                    style={{ color: `rgba(${accentColor},0.55)` }}
                   />
                 </div>
 
                 {/* Title */}
-                <h3 className="section-heading text-[1.1rem] text-white mb-3 transition-colors duration-300 group-hover:text-red-400">
+                <h3 className="section-heading text-[1.1rem] text-white mb-3 transition-colors duration-300 group-hover:text-[var(--accent-solid)]">
                   {feature.title}
                 </h3>
 
@@ -137,7 +143,7 @@ export default function FeaturesSection() {
 
                 {/* Hover bottom accent */}
                 <div className="absolute bottom-0 left-0 right-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-                  style={{ background: 'linear-gradient(90deg, rgba(180,30,30,0.6), rgba(180,30,30,0.2))' }} />
+                  style={{ background: `linear-gradient(90deg, rgba(${accentColor},0.6), rgba(${accentColor},0.2))` }} />
               </motion.div>
             ))}
           </motion.div>

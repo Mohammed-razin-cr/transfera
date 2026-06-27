@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion'
 import { ShieldCheck, Github, Instagram, Heart, ArrowUpRight, Zap } from 'lucide-react'
+import { useTheme } from '../App'
 
 export default function Footer() {
+  const { theme } = useTheme()
+  const isMatrix = theme === 'matrix'
+  const accentColor = isMatrix ? '34, 197, 94' : '180, 30, 30'
+
   const links = {
     Product: [
       { label: 'Live Transfer', href: '/live' },
@@ -26,7 +31,7 @@ export default function Footer() {
     <footer className="relative pt-24 pb-12" style={{ borderTop: '1px solid rgba(255,255,255,0.055)' }}>
       {/* Top gradient fade */}
       <div className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(180,30,30,0.3), transparent)' }} />
+        style={{ background: `linear-gradient(90deg, transparent, rgba(${accentColor},0.3), transparent)` }} />
 
       {/* Background glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] pointer-events-none"
@@ -38,11 +43,9 @@ export default function Footer() {
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
               <a href="/" className="flex items-center gap-3 mb-6 group w-fit">
-                <div className="brand-seal h-9 w-9 rounded-md transition-all duration-300 group-hover:shadow-lg overflow-hidden flex items-center justify-center bg-transparent"
-                  style={{ boxShadow: '0 0 0px rgba(var(--accent),0)' }}
-                  onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(var(--accent),0.35)'}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 0px rgba(var(--accent),0)'}>
-                  <img src="/static/logo.png" alt="Transfera Logo" className="w-full h-full object-cover" />
+                <div className="brand-seal h-14 w-14 rounded-md transition-all duration-300 group-hover:scale-105 flex items-center justify-center bg-transparent"
+                  style={{ boxShadow: 'none', border: 'none', background: 'transparent' }}>
+                  <img src={theme === 'matrix' ? '/static/logo.green.png' : '/static/logo.png'} alt="Transfera Logo" className="w-full h-full object-contain" style={{ background: 'transparent', backgroundColor: 'transparent', mixBlendMode: 'screen' }} />
                 </div>
                 <span className="brand-wordmark text-[16px] text-white tracking-wide group-hover:text-[var(--accent-solid)] transition-colors duration-300">
                   Transfera
@@ -117,7 +120,7 @@ export default function Footer() {
             </div>
             <p className="font-mono text-[10px] tracking-wider flex items-center gap-1.5"
               style={{ color: '#4e4040' }}>
-              Built with <Heart className="w-2.5 h-2.5" style={{ color: 'rgba(180,30,30,0.45)' }} /> for the privacy community
+              Built with <Heart className="w-2.5 h-2.5" style={{ color: `rgba(${accentColor},0.45)` }} /> for the privacy community
             </p>
           </div>
         </div>

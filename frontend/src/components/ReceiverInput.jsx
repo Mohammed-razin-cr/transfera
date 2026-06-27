@@ -1,11 +1,17 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Key, AlertCircle } from 'lucide-react'
+import { useTheme } from '../App'
 
 export default function ReceiverInput() {
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
   const inputRef = useRef(null)
+
+  const { theme } = useTheme()
+  const isMatrix = theme === 'matrix'
+  const accentColor = isMatrix ? '34, 197, 94' : '180, 30, 30'
+  const errorColor = isMatrix ? '22c55e' : 'c84040'
 
   function norm(p) {
     return p.toUpperCase().trim().replace(/\s+/g, ' ')
@@ -57,7 +63,7 @@ export default function ReceiverInput() {
 
       {/* Editorial bg number */}
       <div className="absolute right-0 top-0 font-mono text-[200px] leading-none font-bold select-none pointer-events-none"
-        style={{ color: 'rgba(180,30,30,0.04)', letterSpacing: '-0.05em' }}>06</div>
+        style={{ color: `rgba(${accentColor},0.04)`, letterSpacing: '-0.05em' }}>06</div>
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -96,7 +102,7 @@ export default function ReceiverInput() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-                    style={{ color: 'rgba(180,30,30,0.4)' }} />
+                    style={{ color: `rgba(${accentColor},0.4)` }} />
                   <input
                     ref={inputRef}
                     type="text"
@@ -112,7 +118,7 @@ export default function ReceiverInput() {
                       border: '1px solid rgba(255,255,255,0.07)',
                       color: '#e8e0d5',
                     }}
-                    onFocus={e => e.target.style.borderColor = 'rgba(180,30,30,0.4)'}
+                    onFocus={e => e.target.style.borderColor = `rgba(${accentColor},0.4)`}
                     onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.07)'}
                   />
                 </div>
@@ -126,7 +132,7 @@ export default function ReceiverInput() {
 
               {error && (
                 <div className="flex items-center gap-2 mt-4 font-mono text-[11px] tracking-wide"
-                  style={{ color: '#c84040' }}>
+                  style={{ color: `#${errorColor}` }}>
                   <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
                   {error}
                 </div>

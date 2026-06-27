@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import ParticleBackground from './components/ParticleBackground'
 import MouseGlow from './components/MouseGlow'
 import Navbar from './components/Navbar'
@@ -11,8 +11,14 @@ import Footer from './components/Footer'
 import ReceiverInput from './components/ReceiverInput'
 import SEOContent from './components/SEOContent'
 
+const ThemeContext = createContext()
+
+export function useTheme() {
+  return useContext(ThemeContext)
+}
+
 export default function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'obsidian')
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'matrix')
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -20,20 +26,22 @@ export default function App() {
   }, [theme])
 
   return (
-    <div className="relative min-h-screen bg-transfera-darker text-[#f5ead7]">
-      <ParticleBackground theme={theme} />
-      <MouseGlow />
-      <Navbar theme={theme} setTheme={setTheme} />
-      <main>
-        <HeroSection />
-        <FeaturesSection />
-        <SecuritySection />
-        <TransferDashboard />
-        <TerminalDemo />
-        <ReceiverInput />
-        <SEOContent />
-      </main>
-      <Footer />
-    </div>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <div className="relative min-h-screen bg-transfera-darker text-[#f5ead7]">
+        <ParticleBackground theme={theme} />
+        <MouseGlow />
+        <Navbar theme={theme} setTheme={setTheme} />
+        <main>
+          <HeroSection />
+          <FeaturesSection />
+          <SecuritySection />
+          <TransferDashboard />
+          <TerminalDemo />
+          <ReceiverInput />
+          <SEOContent />
+        </main>
+        <Footer />
+      </div>
+    </ThemeContext.Provider>
   )
 }
