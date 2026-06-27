@@ -492,18 +492,18 @@
 .seo-grid-three { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .seo-item { background: #080606; padding: 2.25rem; min-height: 250px; transition: background 0.3s; }
 .seo-item:hover { background: #0e0a0a; }
-.seo-item > svg { width: 1.25rem; color: #e74646; margin-bottom: 2rem; }
+.seo-item > svg { width: 1.25rem; color: var(--accent-glow-strong); margin-bottom: 2rem; }
 .seo-item h3 { font-family: 'Playfair Display',serif; font-size: 1.45rem; color: #fff; margin-bottom: .85rem; }
 .seo-item p { color: #9f918b; line-height: 1.7; font-size: .92rem; }
-.seo-index { display: block; font: 10px 'IBM Plex Mono',monospace; color: #7a4b4b; letter-spacing: .18em; margin-bottom: 1.5rem; }
+.seo-index { display: block; font: 10px 'IBM Plex Mono',monospace; color: var(--accent-glow-strong); letter-spacing: .18em; margin-bottom: 1.5rem; }
 .seo-prose ul { display: grid; gap: .9rem; margin: 2rem 0; color: #ddd1c7; }
 .seo-prose li { display: flex; gap: .75rem; align-items: center; }
-.seo-prose li svg { width: 1rem; color: #27c57a; }
-.text-link { display: inline-flex; align-items: center; gap: .5rem; color: #ff7373; font: 11px 'IBM Plex Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
+.seo-prose li svg { width: 1rem; color: var(--accent-hex); }
+.text-link { display: inline-flex; align-items: center; gap: .5rem; color: var(--brand-color); font: 11px 'IBM Plex Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
 .text-link svg { width: 14px; }
 .seo-section-title { margin: 1.5rem 0 3.5rem; }
 .seo-related { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-top: 2.25rem; }
-.seo-related a { color: #cbbdb5; border-bottom: 1px solid rgba(255,90,90,.32); padding-bottom: .25rem; transition: color 0.2s; }
+.seo-related a { color: #cbbdb5; border-bottom: 1px solid rgba(var(--accent),.32); padding-bottom: .25rem; transition: color 0.2s; }
 .seo-related a:hover { color: #fff; }
 .seo-faq-list details { border-top: 1px solid rgba(255,255,255,.08); padding: 1.25rem 0; }
 .seo-faq-list summary { color: #f5ede5; cursor: pointer; font-family: 'Playfair Display',serif; font-size: 1.15rem; }

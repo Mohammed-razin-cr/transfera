@@ -1,3 +1,4 @@
+import { useTheme } from '../App'
 import { ArrowUpRight, Check, KeyRound, QrCode, ShieldCheck, Smartphone, Wifi } from 'lucide-react'
 
 const steps = [
@@ -20,6 +21,10 @@ const faqs = [
 ]
 
 export default function SEOContent() {
+  const { theme } = useTheme()
+  const isMatrix = theme === 'matrix'
+  const accentHex = isMatrix ? '#22c55e' : '#b41e1e'
+  
   return (
     <>
       <section id="how-it-works" className="seo-band">
@@ -32,7 +37,8 @@ export default function SEOContent() {
           <div className="seo-grid seo-grid-three">
             {steps.map(({ icon: Icon, title, text }, index) => (
               <article className="seo-item" key={title}>
-                <span className="seo-index">0{index + 1}</span><Icon aria-hidden="true" />
+                <span className="seo-index">0{index + 1}</span>
+                <Icon aria-hidden="true" style={{ color: accentHex }} />
                 <h3>{title}</h3><p>{text}</p>
               </article>
             ))}
@@ -49,11 +55,11 @@ export default function SEOContent() {
           <div className="seo-prose">
             <p>Conventional sharing tools often upload a file first and create a link that can be forwarded or remain available. Transfera starts with a temporary device pairing instead.</p>
             <ul>
-              <li><Check /> No signup or recipient account</li>
-              <li><Check /> Browser-based encryption and secure transport</li>
-              <li><Check /> QR code or access-key pairing</li>
-              <li><Check /> Direct WebRTC transfer when the network allows it</li>
-              <li><Check /> Temporary encrypted relay fallback</li>
+              <li><Check style={{ color: accentHex }} /> No signup or recipient account</li>
+              <li><Check style={{ color: accentHex }} /> Browser-based encryption and secure transport</li>
+              <li><Check style={{ color: accentHex }} /> QR code or access-key pairing</li>
+              <li><Check style={{ color: accentHex }} /> Direct WebRTC transfer when the network allows it</li>
+              <li><Check style={{ color: accentHex }} /> Temporary encrypted relay fallback</li>
             </ul>
             <a className="text-link" href="/wetransfer-alternative">Compare Transfera with WeTransfer <ArrowUpRight /></a>
           </div>
@@ -65,7 +71,12 @@ export default function SEOContent() {
           <span className="eyebrow-label">Built for everyday handoffs</span>
           <h2 className="section-heading seo-section-title">Transfer files between devices without installing an app</h2>
           <div className="seo-grid seo-grid-three">
-            {useCases.map(([title, text]) => <article className="seo-item" key={title}><Smartphone /><h3>{title}</h3><p>{text}</p></article>)}
+            {useCases.map(([title, text]) => (
+              <article className="seo-item" key={title}>
+                <Smartphone style={{ color: accentHex }} />
+                <h3>{title}</h3><p>{text}</p>
+              </article>
+            ))}
           </div>
           <div className="seo-related">
             <a href="/transfer-files-between-devices">Transfer files between devices</a>
@@ -77,7 +88,11 @@ export default function SEOContent() {
 
       <section id="faq" className="seo-band seo-band-muted">
         <div className="section-container"><div className="section-inner seo-split">
-          <div><span className="eyebrow-label">Common questions</span><h2 className="section-heading">Secure file transfer FAQ</h2><ShieldCheck className="seo-large-icon" /></div>
+          <div>
+            <span className="eyebrow-label">Common questions</span>
+            <h2 className="section-heading">Secure file transfer FAQ</h2>
+            <ShieldCheck className="seo-large-icon" style={{ color: accentHex }} />
+          </div>
           <div className="seo-faq-list">
             {faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}
             <a className="text-link" href="/faq">Read all frequently asked questions <ArrowUpRight /></a>
