@@ -77,15 +77,15 @@
   /* ── Glass panels ── */
   .glass-panel {
     background: rgba(18, 14, 14, 0.80);
-    backdrop-filter: blur(24px) saturate(1.4);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
     border: 1px solid rgba(255, 255, 255, 0.09);
   }
   
   .glass-panel-strong {
     background: rgba(10, 7, 7, 0.92);
-    backdrop-filter: blur(32px) saturate(1.5);
     -webkit-backdrop-filter: blur(32px) saturate(1.5);
+    backdrop-filter: blur(32px) saturate(1.5);
     border: 1px solid rgba(255, 255, 255, 0.07);
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
@@ -174,8 +174,8 @@
     letter-spacing: 0.03em;
     text-transform: uppercase;
     border-radius: 8px;
-    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
 
   .btn-secondary::before {
@@ -263,8 +263,8 @@
   .nav-shell {
     border: 1px solid rgba(255, 255, 255, 0.09);
     background: rgba(6, 5, 5, 0.88);
-    backdrop-filter: blur(28px) saturate(1.3);
     -webkit-backdrop-filter: blur(28px) saturate(1.3);
+    backdrop-filter: blur(28px) saturate(1.3);
     box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255,255,255,0.03) inset;
   }
 
@@ -344,6 +344,7 @@
     border: 1px solid rgba(255,255,255,0.09);
     border-radius: 999px;
     background: rgba(255,255,255,0.03);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     transition: all 0.3s ease;
   }
@@ -517,7 +518,6 @@
   .seo-band { padding: 5rem 0; }
   .seo-heading-row, .seo-split, .seo-grid-three { grid-template-columns: 1fr; }
   .seo-heading-row, .seo-split { gap: 2rem; }
-  .seo-item { min-height: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
