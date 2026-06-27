@@ -392,10 +392,22 @@ export default function HeroSection() {
             {/* Eyebrow */}
             <motion.div variants={itemVariants} className="flex items-center gap-4 mb-10">
               <span className="eyebrow-label flex items-center gap-2">
-                <Zap className="w-2.5 h-2.5" />
+                <motion.div
+                  animate={{
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <ShieldCheck className="w-2.5 h-2.5" />
+                </motion.div>
                 Private transfer protocol · v3
               </span>
-              <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(255,90,90,0.45), transparent)' }} />
+              <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(var(--accent),0.45), transparent)' }} />
             </motion.div>
 
             {/* Main headline */}
