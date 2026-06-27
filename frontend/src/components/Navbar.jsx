@@ -36,7 +36,7 @@ export default function Navbar({ theme = 'obsidian', setTheme }) {
           <a href="/" className="flex items-center gap-4 group">
                 <div className="brand-seal h-16 w-16 rounded-xl transition-all duration-300 group-hover:scale-105 flex items-center justify-center bg-transparent"
                   style={{ '--tw-shadow': 'none', border: 'none', background: 'transparent' }}>
-                  <img src={theme === 'matrix' ? '/static/logo.green.png' : '/static/logo.png'} alt="Transfera Logo" className="w-full h-full object-contain" style={{ background: 'transparent', backgroundColor: 'transparent', mixBlendMode: 'screen' }} />
+                  <img src={theme === 'matrix' ? '/logo.green.png' : '/logo.png'} alt="Transfera Logo" className="w-full h-full object-contain" style={{ background: 'transparent', backgroundColor: 'transparent' }} />
                 </div>
                 <span className="brand-wordmark text-[18px] text-white tracking-wide group-hover:text-[var(--accent-solid)] transition-colors duration-300">
                   Transfera

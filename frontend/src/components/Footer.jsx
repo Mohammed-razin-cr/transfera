@@ -45,7 +45,7 @@ export default function Footer() {
               <a href="/" className="flex items-center gap-3 mb-6 group w-fit">
                 <div className="brand-seal h-14 w-14 rounded-md transition-all duration-300 group-hover:scale-105 flex items-center justify-center bg-transparent"
                   style={{ boxShadow: 'none', border: 'none', background: 'transparent' }}>
-                  <img src={theme === 'matrix' ? '/static/logo.green.png' : '/static/logo.png'} alt="Transfera Logo" className="w-full h-full object-contain" style={{ background: 'transparent', backgroundColor: 'transparent', mixBlendMode: 'screen' }} />
+                  <img src={theme === 'matrix' ? '/logo.green.png' : '/logo.png'} alt="Transfera Logo" className="w-full h-full object-contain" style={{ background: 'transparent', backgroundColor: 'transparent' }} />
                 </div>
                 <span className="brand-wordmark text-[16px] text-white tracking-wide group-hover:text-[var(--accent-solid)] transition-colors duration-300">
                   Transfera
