@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ShieldCheck, Github, Instagram, Heart, ArrowUpRight, Zap } from 'lucide-react'
 import { useTheme } from '../App'
 

@@ -40,8 +40,9 @@
         <div class="panel-label"><span>01</span> Access key</div>
         <div class="phrase-display">
           <div class="phrase-words" id="phrase-display" onclick="copyPhrase()">-</div>
-          <div class="phrase-hint">select to copy</div>
+          <div class="phrase-hint">tap or press button to copy</div>
         </div>
+        <button type="button" class="cta cta-primary" id="copy-phrase-btn" onclick="copyPhrase()" style="width:100%;justify-content:center;margin-top:16px;">Copy Access Key</button>
         <p class="block-sub">Enter this key on <code id="phrase-domain">transfera.onrender.com</code> or use the Transfera CLI.</p>
         <div class="code-block" onclick="copyURL()">
           <code id="share-url">-</code>
@@ -224,6 +225,12 @@ function copyURL(){
 }
 function copyPhrase(){
   navigator.clipboard.writeText(currentPhrase);
+  const btn=document.getElementById('copy-phrase-btn');
+  if(btn){
+    const prev=btn.textContent;
+    btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent=prev,1500);
+  }
 }
 
 async function init(){

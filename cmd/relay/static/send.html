@@ -56,8 +56,10 @@
 
     <div class="phrase-display">
       <div class="phrase-words" id="phrase-display" onclick="copyPhrase()">RIVER FALCON MARBLE 42</div>
-      <div class="phrase-hint">tap to copy · expires 10 min</div>
+      <div class="phrase-hint">tap or press button to copy · expires 10 min</div>
     </div>
+
+    <button type="button" class="cta cta-primary" id="copy-phrase-btn" onclick="copyPhrase()" style="width:100%;justify-content:center;margin-top:16px;">Copy Access Key</button>
 
     <div class="qr-wrap" id="qr"></div>
 
@@ -133,6 +135,12 @@ function copyURL(){
 
 function copyPhrase(){
   navigator.clipboard.writeText(currentPhrase);
+  const btn=document.getElementById('copy-phrase-btn');
+  if(btn){
+    const prev=btn.textContent;
+    btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent=prev,1500);
+  }
 }
 
 function generateAccessKey(){
