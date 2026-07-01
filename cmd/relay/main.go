@@ -55,6 +55,7 @@ func loadConfig() config {
 		c.allowedOrigins = []string{
 			"http://localhost:8080",
 			"http://127.0.0.1:8080",
+			"http://127.0.0.1:65223", // Browser preview port
 		}
 	} else if raw == "*" {
 		c.allowAnyOrigin = true
@@ -240,6 +241,7 @@ type Room struct {
 	clients      []*websocket.Conn
 	mu           sync.Mutex
 	lastActivity time.Time
+	isOrigin     bool // Track if origin node is in the room
 }
 
 type RoomManager struct {
@@ -268,12 +270,12 @@ func (rm *RoomManager) GetOrCreateRoom(token string) *Room {
 	if room, exists := rm.rooms[token]; exists {
 		return room
 	}
-	room := &Room{token: token, clients: make([]*websocket.Conn, 0, 2), lastActivity: time.Now()}
+	room := &Room{token: token, clients: make([]*websocket.Conn, 0, 10), lastActivity: time.Now()}
 	rm.rooms[token] = room
 	return room
 }
 
-// Waiting reports whether a room exists with exactly one connected client.
+// Waiting reports whether a room exists with at least one connected client.
 func (rm *RoomManager) Waiting(token string) bool {
 	rm.mu.RLock()
 	room, exists := rm.rooms[token]
@@ -283,7 +285,7 @@ func (rm *RoomManager) Waiting(token string) bool {
 	}
 	room.mu.Lock()
 	defer room.mu.Unlock()
-	return len(room.clients) == 1
+	return len(room.clients) >= 1
 }
 
 func (rm *RoomManager) DeleteRoom(token string) {
@@ -338,20 +340,26 @@ func (rm *RoomManager) Shutdown() {
 	}
 }
 
-func (room *Room) AddClient(conn *websocket.Conn) bool {
+func (room *Room) AddClient(conn *websocket.Conn, isOrigin bool) bool {
 	room.mu.Lock()
 	defer room.mu.Unlock()
-	if len(room.clients) >= 2 {
-		return false
+	// Allow multiple recipients, but only one origin
+	if isOrigin && room.isOrigin {
+		return false // Origin already exists
+	}
+	if !isOrigin && len(room.clients) >= 10 {
+		return false // Max 10 recipients
 	}
 	room.clients = append(room.clients, conn)
+	if isOrigin {
+		room.isOrigin = true
+	}
 	room.lastActivity = time.Now()
 	return true
 }
 
 func (room *Room) RemoveClient(conn *websocket.Conn) {
 	room.mu.Lock()
-	nBefore := len(room.clients)
 	idx := -1
 	for i, c := range room.clients {
 		if c == conn {
@@ -364,18 +372,8 @@ func (room *Room) RemoveClient(conn *websocket.Conn) {
 		return
 	}
 	room.clients = append(room.clients[:idx], room.clients[idx+1:]...)
-
-	var toKick []*websocket.Conn
-	if nBefore == 2 && len(room.clients) == 1 {
-		toKick = append(toKick, room.clients[0])
-		room.clients = room.clients[:0]
-	}
+	room.lastActivity = time.Now()
 	room.mu.Unlock()
-
-	for _, oc := range toKick {
-		_ = oc.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "peer disconnected"))
-		oc.Close()
-	}
 }
 
 func (room *Room) Broadcast(sender *websocket.Conn, message []byte) {
@@ -390,6 +388,13 @@ func (room *Room) Broadcast(sender *websocket.Conn, message []byte) {
 			}
 		}
 	}
+}
+
+// GetClientCount returns the number of clients in the room
+func (room *Room) GetClientCount() int {
+	room.mu.Lock()
+	defer room.mu.Unlock()
+	return len(room.clients)
 }
 
 type ipLimiter struct {
@@ -503,14 +508,17 @@ func (s *server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
+	// Check if this is an origin or recipient
+	isOrigin := r.URL.Query().Get("role") == "origin"
+
 	room := s.roomManager.GetOrCreateRoom(token)
-	if !room.AddClient(conn) {
-		conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "room full"))
+	if !room.AddClient(conn, isOrigin) {
+		conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "room full or origin exists"))
 		return
 	}
 	defer room.RemoveClient(conn)
 
-	s.log.Info("client joined room", "token", shortToken(token), "ip", clientIP(r))
+	s.log.Info("client joined room", "token", shortToken(token), "ip", clientIP(r), "role", map[bool]string{true: "origin", false: "recipient"}[isOrigin])
 
 	for {
 		messageType, message, err := conn.ReadMessage()

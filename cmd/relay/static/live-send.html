@@ -48,6 +48,16 @@
           <code id="share-url">-</code>
           <span class="copied" id="copy-badge">copied</span>
         </div>
+        
+        <!-- Multi-recipient toggle -->
+        <div class="multi-recipient-toggle" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--mono);font-size:0.7rem;color:var(--fg);">
+            <input type="checkbox" id="multi-recipient-check" style="accent-color:var(--accent);">
+            <span>Enable multi-recipient mode</span>
+          </label>
+          <p class="block-sub" style="margin-top:8px;margin-bottom:0;font-size:0.75rem;">Allow multiple devices to receive the same files simultaneously.</p>
+        </div>
+        
         <div class="live-trust-row">
           <span><i class="trust-dot"></i> End-to-end encrypted</span>
           <span>Expires with this session</span>
@@ -76,8 +86,27 @@
         <div class="drop-icon">+</div>
         <div class="drop-label">tap to select or <strong>drop files</strong></div>
         <div class="drop-hint">any type · any size</div>
+        <div class="drop-status" id="drop-status"></div>
       </div>
       <input type="file" id="fileinput" multiple>
+      
+      <!-- File list with organization -->
+      <div id="file-list-container" class="file-list-container hidden">
+        <div class="file-list-header">
+          <span class="file-count" id="file-count">0 files</span>
+          <div class="file-list-controls">
+            <button type="button" class="sort-btn" id="sort-name-btn" title="Sort by name">Name</button>
+            <button type="button" class="sort-btn" id="sort-size-btn" title="Sort by size">Size</button>
+            <button type="button" class="sort-btn" id="sort-type-btn" title="Sort by type">Type</button>
+            <button type="button" class="clear-btn" id="clear-files-btn" title="Clear all">✕</button>
+          </div>
+        </div>
+        <div class="file-list" id="file-list"></div>
+        <div class="file-list-footer">
+          <div class="total-size" id="total-size">Total: 0 B</div>
+          <button type="button" class="cta cta-primary" id="send-selected-btn">Send Selected</button>
+        </div>
+      </div>
     </div>
 
     <div id="tab-clip-content" class="hidden" style="display:none;">
@@ -216,6 +245,10 @@ let phase='waiting';
 let peerJoined=false;
 let transportReady=false;
 let usingDirectLinkMedia=false;
+let selectedFiles=[];
+let currentSort='name';
+let recipientCount=0;
+let multiRecipientMode=false;
 
 function copyURL(){
   navigator.clipboard.writeText(shareURL);
@@ -269,7 +302,8 @@ async function init(){
   $('qr').appendChild(canvas);
 
   // open the WS room at the derived token; Destination Node joins it via /d/ fallback
-  ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token);
+  const wsUrl=(location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token+'?role=origin';
+  ws=new WebSocket(wsUrl);
   ws.binaryType='arraybuffer';
   attachWS();
 }
@@ -312,6 +346,9 @@ function attachWS(){
         peerJoined=true;
         phase='select';
         show('select');
+      }else{
+        // Additional recipient joined in multi-recipient mode
+        updateRecipientCount();
       }
       return;
     }
@@ -336,28 +373,170 @@ init().catch(e=>showError(e.message||String(e)));
 const dropzone=$('dropzone');
 const fileinput=$('fileinput');
 dropzone.addEventListener('click',()=>fileinput.click());
-fileinput.addEventListener('change',(e)=>{if(e.target.files.length)sendFiles(e.target.files)});
+fileinput.addEventListener('change',(e)=>{if(e.target.files.length)addFiles(e.target.files)});
 $('send-more-btn').addEventListener('click',()=>{
   phase='select';
   show('select');
   fileinput.value='';
+  selectedFiles=[];
+  updateFileList();
   if($('tab-files-btn')) $('tab-files-btn').click();
 });
-dropzone.addEventListener('dragover',(e)=>{e.preventDefault();dropzone.classList.add('dragover')});
-dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+
+// File list management
+function addFiles(fileList){
+  const files=[...fileList];
+  files.forEach(f=>{
+    if(!selectedFiles.some(sf=>sf.name===f.name&&sf.size===f.size)){
+      selectedFiles.push(f);
+    }
+  });
+  updateFileList();
+}
+
+function updateFileList(){
+  const container=$('file-list-container');
+  const list=$('file-list');
+  const count=$('file-count');
+  const total=$('total-size');
+  
+  if(selectedFiles.length===0){
+    container.classList.add('hidden');
+    return;
+  }
+  
+  container.classList.remove('hidden');
+  count.textContent=selectedFiles.length+' file'+(selectedFiles.length>1?'s':'');
+  
+  let totalBytes=0;
+  selectedFiles.forEach(f=>totalBytes+=f.size);
+  total.textContent='Total: '+formatSize(totalBytes);
+  
+  // Sort files
+  const sorted=[...selectedFiles];
+  if(currentSort==='name'){
+    sorted.sort((a,b)=>a.name.localeCompare(b.name));
+  }else if(currentSort==='size'){
+    sorted.sort((a,b)=>b.size-a.size);
+  }else if(currentSort==='type'){
+    sorted.sort((a,b)=>{
+      const extA=a.name.split('.').pop().toLowerCase();
+      const extB=b.name.split('.').pop().toLowerCase();
+      return extA.localeCompare(extB);
+    });
+  }
+  
+  list.innerHTML='';
+  sorted.forEach((file,index)=>{
+    const item=document.createElement('div');
+    item.className='file-item';
+    item.innerHTML=`
+      <div class="file-icon">${getFileIcon(file.name)}</div>
+      <div class="file-info">
+        <div class="file-name">${file.name}</div>
+        <div class="file-meta">${formatSize(file.size)} · ${getFileExtension(file.name).toUpperCase()}</div>
+      </div>
+      <button type="button" class="file-remove" data-index="${index}" title="Remove">✕</button>
+    `;
+    list.appendChild(item);
+  });
+  
+  // Add remove listeners
+  list.querySelectorAll('.file-remove').forEach(btn=>{
+    btn.addEventListener('click',(e)=>{
+      const idx=parseInt(e.target.dataset.index);
+      const originalIndex=selectedFiles.indexOf(sorted[idx]);
+      if(originalIndex>-1){
+        selectedFiles.splice(originalIndex,1);
+        updateFileList();
+      }
+    });
+  });
+}
+
+function getFileIcon(filename){
+  const ext=getFileExtension(filename).toLowerCase();
+  const icons={
+    'pdf':'📄','doc':'📝','docx':'📝','txt':'📝','jpg':'🖼️','jpeg':'🖼️','png':'🖼️','gif':'🖼️','svg':'🖼️',
+    'mp4':'🎬','mov':'🎬','avi':'🎬','mkv':'🎬','mp3':'🎵','wav':'🎵','flac':'🎵',
+    'zip':'📦','rar':'📦','7z':'📦','tar':'📦','gz':'📦',
+    'js':'📜','html':'🌐','css':'🎨','json':'📋','xml':'📋',
+    'exe':'⚙️','dmg':'⚙️','app':'⚙️'
+  };
+  return icons[ext]||'📁';
+}
+
+function getFileExtension(filename){
+  const parts=filename.split('.');
+  return parts.length>1?parts.pop():'';
+}
+
+// Sort buttons
+$('sort-name-btn').addEventListener('click',()=>{currentSort='name';updateFileList();});
+$('sort-size-btn').addEventListener('click',()=>{currentSort='size';updateFileList();});
+$('sort-type-btn').addEventListener('click',()=>{currentSort='type';updateFileList();});
+$('clear-files-btn').addEventListener('click',()=>{selectedFiles=[];updateFileList();});
+$('send-selected-btn').addEventListener('click',()=>{
+  if(selectedFiles.length>0){
+    sendFiles(selectedFiles);
+  }
+});
+
+// Multi-recipient mode handling
+$('multi-recipient-check').addEventListener('change',(e)=>{
+  multiRecipientMode=e.target.checked;
+  if(multiRecipientMode){
+    // In multi-recipient mode, we don't establish P2P connections
+    // Files are broadcast to all recipients via the gateway
+    console.log('Multi-recipient mode enabled');
+  }else{
+    console.log('Multi-recipient mode disabled');
+  }
+});
+
+function updateRecipientCount(){
+  recipientCount++;
+  const status=$('ws-status');
+  if(status){
+    status.innerHTML='<span class="dot"></span>SECURE GATEWAY ONLINE · '+recipientCount+' recipient'+(recipientCount>1?'s':'')+' connected';
+  }
+}
+dropzone.addEventListener('dragover',(e)=>{
+  e.preventDefault();
+  dropzone.classList.add('dragover');
+  const status=$('drop-status');
+  status.textContent=e.dataTransfer.files.length+' file'+(e.dataTransfer.files.length>1?'s':'');
+});
+dropzone.addEventListener('dragleave',(e)=>{
+  e.preventDefault();
+  if(e.relatedTarget&&!dropzone.contains(e.relatedTarget)){
+    dropzone.classList.remove('dragover');
+    $('drop-status').textContent='';
+  }
+});
 dropzone.addEventListener('drop',(e)=>{
   e.preventDefault();
   dropzone.classList.remove('dragover');
-  if(e.dataTransfer.files.length)sendFiles(e.dataTransfer.files);
+  $('drop-status').textContent='';
+  if(e.dataTransfer.files.length)addFiles(e.dataTransfer.files);
 });
 
 async function sendFiles(fileList){
   const files=[...fileList];
   if(!files.length)return;
+  selectedFiles=[];
+  updateFileList();
   $('neg-name').textContent=files.length===1?files[0].name:(files.length+' files');
 
   try{
-    if(!transportReady){
+    // In multi-recipient mode, always use gateway for broadcasting
+    if(multiRecipientMode){
+      phase='sending';
+      show('sending');
+      $('transport').textContent='via Secure Gateway · Multi-recipient broadcast';
+      usingDirectLinkMedia=false;
+      transportReady=true;
+    }else if(!transportReady){
       phase='negotiating';
       show('negotiating');
       try{

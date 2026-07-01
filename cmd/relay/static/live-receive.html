@@ -390,8 +390,9 @@ let totalSavedBytes=0;
 let sessionFinalized=false;
 let filesThisBatch=0;
 let batchBytesSent=0;
+let isMultiRecipient=false;
 
-ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token);
+ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token+'?role=recipient');
 ws.binaryType='arraybuffer';
 
 ws.onopen=()=>{
