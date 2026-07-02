@@ -395,6 +395,10 @@ $('send-more-btn').addEventListener('click',()=>{
 function addFiles(fileList){
   const files=[...fileList];
   files.forEach(f=>{
+    if(!validateFileSize(f)){
+      console.warn('File too large:',f.name);
+      return;
+    }
     if(!selectedFiles.some(sf=>sf.name===f.name&&sf.size===f.size)){
       selectedFiles.push(f);
     }
