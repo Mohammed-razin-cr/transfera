@@ -318,16 +318,19 @@ function attachWS(){
     const s=$('ws-status');
     s.classList.remove('err');s.classList.add('live');
     s.innerHTML='<span class="dot"></span>SECURE GATEWAY ONLINE';
+    console.log('[WS] Connected to gateway');
   };
 
-  ws.onerror=()=>{
+  ws.onerror=(error)=>{
     const s=$('ws-status');
     s.classList.remove('live');s.classList.add('err');
     s.innerHTML='<span class="dot"></span>SECURE GATEWAY OFFLINE';
+    console.error('[WS] Connection error:', error);
     showError('Connection to Secure Gateway lost. Reload to retry.');
   };
 
-  ws.onclose=()=>{
+  ws.onclose=(event)=>{
+    console.log('[WS] Connection closed, code:', event.code);
     if(phase==='sending'||phase==='negotiating'){
       showError('Connection closed during '+phase+'. Destination Node may have disconnected.');
       return;
