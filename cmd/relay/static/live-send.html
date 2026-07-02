@@ -479,6 +479,11 @@ function getFileExtension(filename){
   return parts.length>1?parts.pop():'';
 }
 
+function validateFileSize(file){
+  const maxSize=5*1024*1024*1024;
+  return file.size<=maxSize;
+}
+
 // Sort buttons
 $('sort-name-btn').addEventListener('click',()=>{currentSort='name';updateFileList();});
 $('sort-size-btn').addEventListener('click',()=>{currentSort='size';updateFileList();});
