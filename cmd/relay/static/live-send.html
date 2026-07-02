@@ -680,6 +680,11 @@ function sendWS(plaintext){
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
+// Utility: Log transfer events for debugging
+function logTransferEvent(event, data){
+  console.log(`[Transfer] ${event}:`, data);
+}
+
 // Theme switcher
 const themeToggle = $('theme-toggle');
 const themeIcon = $('theme-icon');
