@@ -40,7 +40,7 @@ export default function Footer() {
             <div className="sm:col-span-2 lg:col-span-1">
               <a href="/" className="flex items-center gap-3 mb-6 group w-fit">
                 <div className="brand-seal transition-all duration-300 group-hover:scale-105">
-                  <img src="/logo.png" alt="Transfera Logo" className="w-full h-full object-contain" style={{ background: 'transparent' }} />
+                  <img src="/static/logo.png" alt="Transfera Logo" className="w-full h-full object-contain" style={{ background: 'transparent' }} />
                 </div>
                 <span className="brand-wordmark group-hover:opacity-80 transition-opacity duration-300">Transfera</span>
               </a>

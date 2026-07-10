@@ -91,13 +91,29 @@
     background: var(--color-dark-mulberry);
     border-radius: var(--radius-cards);
     padding: var(--card-padding);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: none;
+    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glow-card:hover {
     box-shadow: var(--shadow-xl);
+    border-color: rgba(255,0,104,0.3);
+    transform: translateY(-2px);
   }
 
   .glow-card-subtle {
     background: var(--color-dark-mulberry);
     border-radius: var(--radius-cards);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: none;
+    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glow-card-subtle:hover {
     box-shadow: var(--shadow-xl-2);
+    border-color: rgba(255,0,104,0.2);
+    transform: translateY(-2px);
   }
 
   /* ── Pill Button ── */
@@ -262,13 +278,16 @@
     padding: var(--card-padding);
     background: var(--color-dark-mulberry);
     border-radius: var(--radius-featureblock);
-    box-shadow: var(--shadow-xl-2);
-    transition: box-shadow 0.4s ease;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: none;
+    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
   }
 
   .feature-card:hover {
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-xl-2);
+    border-color: rgba(255,0,104,0.25);
+    transform: translateY(-2px);
   }
 
   /* ── Nav shell ── */
@@ -289,7 +308,14 @@
     background: var(--color-dark-mulberry);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: var(--radius-cards);
+    box-shadow: none;
+    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .network-console:hover {
     box-shadow: var(--shadow-xl);
+    border-color: rgba(255,0,104,0.3);
+    transform: translateY(-2px);
   }
 
   /* ── Glass panel ── */

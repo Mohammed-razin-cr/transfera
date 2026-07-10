@@ -78,12 +78,7 @@ export default function ReceiverInput() {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="max-w-2xl"
           >
-            <div style={{
-              background: 'var(--color-dark-mulberry)',
-              borderRadius: 'var(--radius-cards)',
-              padding: '32px',
-              boxShadow: 'var(--shadow-xl-2)',
-            }}>
+            <div className="glow-card-subtle" style={{ padding: '32px' }}>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5"

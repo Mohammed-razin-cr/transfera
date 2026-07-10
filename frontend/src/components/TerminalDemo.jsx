@@ -90,7 +90,7 @@ export default function TerminalDemo() {
             transition={{ duration: 0.8 }}
             className="max-w-3xl"
           >
-            <div style={{ background: 'var(--color-dark-mulberry)', borderRadius: 'var(--radius-cards)', boxShadow: 'var(--shadow-xl)', overflow: 'hidden' }}>
+            <div className="glow-card overflow-hidden" style={{ padding: 0 }}>
               {/* Title bar */}
               <div className="flex items-center gap-3 px-5 py-3.5"
                 style={{ background: 'rgba(16,2,10,0.5)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>

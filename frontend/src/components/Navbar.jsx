@@ -40,7 +40,7 @@ export default function Navbar() {
               style={{ width: '36px', height: '36px' }}
             >
               <img
-                src="/logo.png"
+                src="/static/logo.png"
                 alt="Transfera Logo"
                 className="w-full h-full object-contain"
                 style={{ background: 'transparent' }}

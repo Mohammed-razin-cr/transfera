@@ -127,8 +127,8 @@ export default function TransferDashboard() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.7 }}
-              className="lg:col-span-2 overflow-hidden"
-              style={{ background: 'var(--color-dark-mulberry)', borderRadius: 'var(--radius-cards)', boxShadow: 'var(--shadow-xl)' }}
+              className="lg:col-span-2 overflow-hidden glow-card"
+              style={{ padding: 0 }}
             >
               <div className="flex items-center justify-between px-6 py-4"
                 style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
@@ -158,8 +158,8 @@ export default function TransferDashboard() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="overflow-hidden"
-              style={{ background: 'var(--color-dark-mulberry)', borderRadius: 'var(--radius-cards)', boxShadow: 'var(--shadow-xl-2)' }}
+              className="overflow-hidden glow-card-subtle"
+              style={{ padding: 0 }}
             >
               <div className="dashboard-stats-grid h-full">
                 {stats.map((stat, index) => (

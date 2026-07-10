@@ -146,8 +146,8 @@ export default function SecuritySection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.8 }}
-            className="mb-10 overflow-hidden"
-            style={{ background: 'var(--color-dark-mulberry)', borderRadius: 'var(--radius-cards)', boxShadow: 'var(--shadow-xl)' }}
+            className="mb-10 overflow-hidden glow-card"
+            style={{ padding: 0 }}
           >
             <div className="px-6 py-3.5 flex items-center gap-3"
               style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
