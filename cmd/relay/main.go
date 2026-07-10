@@ -635,6 +635,12 @@ func (s *server) handleLandingPage(w http.ResponseWriter, r *http.Request) {
 	writeFromFS(w, web.FS(), "index.html")
 }
 
+// handleSPAPage serves the React SPA index.html for client-side routes
+// so that React Router can handle navigation on the frontend.
+func (s *server) handleSPAPage(w http.ResponseWriter, r *http.Request) {
+	writeFromFS(w, web.FS(), "index.html")
+}
+
 func (s *server) handleDevelopmentPage(w http.ResponseWriter, r *http.Request) {
 	writeFromFS(w, web.FS(), "development.html")
 }
@@ -741,9 +747,17 @@ func main() {
 	mux.Handle("GET /site/", http.StripPrefix("/site/", http.FileServer(http.FS(web.FS()))))
 	mux.Handle("GET /assets/", http.FileServer(http.FS(web.FS())))
 	mux.HandleFunc("GET /", s.handleLandingPage)
+	// SPA routes — serve index.html so React Router handles client-side navigation
+	mux.HandleFunc("GET /features", s.handleSPAPage)
+	mux.HandleFunc("GET /how-it-works", s.handleSPAPage)
+	mux.HandleFunc("GET /security", s.handleSPAPage)
+	mux.HandleFunc("GET /faq", s.handleSPAPage)
 	mux.HandleFunc("GET /robots.txt", s.handleRobots)
 	mux.HandleFunc("GET /sitemap.xml", s.handleSitemap)
 	for path := range seoPages {
+		if path == "/faq" {
+			continue
+		}
 		mux.HandleFunc("GET "+path, s.handleSEOPage)
 	}
 	mux.HandleFunc("GET /development", s.handleDevelopmentPage)
