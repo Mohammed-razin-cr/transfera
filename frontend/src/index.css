@@ -22,7 +22,9 @@
     --shadow-xl-2: rgba(255,0,104,0.36) 0px 0px 90px 0px;
 
     /* ── Luro Typography Tokens ── */
+    --font-display: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-primary: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Fira Code', monospace;
     --text-caption: 14px;
     --text-body-sm: 16px;
     --text-body: 18px;
@@ -116,14 +118,14 @@
     transform: translateY(-2px);
   }
 
-  /* ── Pill Button ── */
+  /* ── Pill Button (Primary filled) ── */
   .btn-primary {
     @apply relative inline-flex items-center justify-center gap-3 overflow-hidden transition-all duration-300;
     padding: 14px 28px;
-    background: var(--color-dark-mulberry);
-    border: 1px solid rgba(255,255,255,0.10);
+    background: linear-gradient(135deg, #ff0068 0%, #91013d 100%);
+    border: 1px solid rgba(255,0,104,0.4);
     border-radius: var(--radius-buttons);
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 0 24px rgba(255,0,104,0.35), 0 0 60px rgba(255,0,104,0.12);
     color: var(--color-frost-white);
     font-family: var(--font-primary);
     font-size: var(--text-body-sm);
@@ -136,17 +138,17 @@
     content: '';
     position: absolute;
     top: 0; left: -100%; width: 60%; height: 100%;
-    background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.12) 50%, transparent 80%);
-    transition: left 0.6s ease;
+    background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.2) 50%, transparent 80%);
+    transition: left 0.5s ease;
     pointer-events: none;
   }
 
   .btn-primary:hover::before { left: 160%; }
 
   .btn-primary:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-1.5px);
-    border-color: rgba(255,0,104,0.4);
+    box-shadow: 0 0 36px rgba(255,0,104,0.55), 0 0 80px rgba(255,0,104,0.2);
+    transform: translateY(-2px);
+    border-color: rgba(255,0,104,0.7);
   }
 
   .btn-primary:active { transform: translateY(0.5px); }
@@ -205,16 +207,16 @@
     justify-content: center;
     width: 36px; height: 36px;
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    background: transparent !important;
-    box-shadow: none !important;
+    border: 1px solid rgba(255,0,104,0.25) !important;
+    background: rgba(255,0,104,0.08) !important;
+    box-shadow: 0 0 12px rgba(255,0,104,0.15) !important;
   }
 
   .brand-wordmark {
-    font-family: var(--font-primary);
+    font-family: var(--font-display);
     font-weight: 700;
     font-size: 18px;
-    letter-spacing: -0.021em;
+    letter-spacing: -0.03em;
     color: var(--color-frost-white);
   }
 
@@ -241,18 +243,18 @@
 
   /* ── Section headings ── */
   .section-heading {
-    font-family: var(--font-primary);
+    font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.025px;
+    letter-spacing: -0.03em;
     color: var(--color-frost-white);
   }
 
   /* ── Hero title ── */
   .hero-title {
-    font-family: var(--font-primary);
-    font-weight: 700;
-    letter-spacing: -0.046px;
-    line-height: 0.95;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 0.93;
   }
 
   .hero-subtitle {
@@ -330,8 +332,14 @@
     background: rgba(16,2,10,0.96);
     -webkit-backdrop-filter: blur(32px);
     backdrop-filter: blur(32px);
-    border: 1px solid rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.09);
+    box-shadow: var(--shadow-xl-2);
+    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-panel-strong:hover {
     box-shadow: var(--shadow-xl);
+    border-color: rgba(255,0,104,0.25);
   }
 
   /* ── Status badge ── */
