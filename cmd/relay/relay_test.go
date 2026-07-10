@@ -91,27 +91,30 @@ func TestRoomAddClientLimit(t *testing.T) {
 	wsURL := "ws" + srv.URL[4:] + "/ws/limit-test"
 
 	dialer := websocket.Dialer{}
-	conn1, _, err := dialer.Dial(wsURL, nil)
-	if err != nil {
-		t.Fatalf("first client failed to connect: %v", err)
-	}
-	defer conn1.Close()
+	var conns []*websocket.Conn
+	defer func() {
+		for _, c := range conns {
+			c.Close()
+		}
+	}()
 
-	conn2, _, err := dialer.Dial(wsURL, nil)
-	if err != nil {
-		t.Fatalf("second client failed to connect: %v", err)
+	for i := 0; i < 10; i++ {
+		c, _, err := dialer.Dial(wsURL, nil)
+		if err != nil {
+			t.Fatalf("client %d failed to connect: %v", i+1, err)
+		}
+		conns = append(conns, c)
 	}
-	defer conn2.Close()
 
-	conn3, _, err := dialer.Dial(wsURL, nil)
+	c11, _, err := dialer.Dial(wsURL, nil)
 	if err != nil {
 		return
 	}
-	defer conn3.Close()
+	defer c11.Close()
 
-	_, _, err = conn3.ReadMessage()
+	_, _, err = c11.ReadMessage()
 	if err == nil {
-		t.Fatal("third client should have been rejected")
+		t.Fatal("11th client should have been rejected")
 	}
 }
 
@@ -404,11 +407,11 @@ func TestRoomStatusEndpoint(t *testing.T) {
 	check("/room/"+token, http.StatusOK, false)
 
 	room := s.roomManager.GetOrCreateRoom(token)
-	room.AddClient(&websocket.Conn{})
+	room.AddClient(&websocket.Conn{}, true)
 	check("/room/"+token, http.StatusOK, true)
 
-	room.AddClient(&websocket.Conn{})
-	check("/room/"+token, http.StatusOK, false)
+	room.AddClient(&websocket.Conn{}, false)
+	check("/room/"+token, http.StatusOK, true)
 
 	check("/room/not-a-token", http.StatusBadRequest, false)
 

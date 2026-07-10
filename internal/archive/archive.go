@@ -86,7 +86,7 @@ func addToZip(zw *zip.Writer, srcPath, name string) error {
 	}
 	defer src.Close()
 
-	w, err := zw.Create(name)
+	w, err := zw.Create(filepath.ToSlash(name))
 	if err != nil {
 		return err
 	}
