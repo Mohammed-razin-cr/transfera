@@ -20,64 +20,43 @@ export default function SecuritySection() {
     window.addEventListener('resize', resize)
 
     const nodes = [
-      { label: 'Origin\nNode',      color: '#c02020' },
-      { label: 'Encrypted\nData',   color: '#8a3535' },
-      { label: 'Secure\nGateway',   color: '#a84040' },
-      { label: 'Destination\nNode', color: '#c02020' },
+      { label: 'Origin\nNode',      color: '#ff0068' },
+      { label: 'Encrypted\nData',   color: '#91013d' },
+      { label: 'Secure\nGateway',   color: '#9f0142' },
+      { label: 'Destination\nNode', color: '#ff0068' },
     ]
 
-    let particles = []
-    let time = 0
+    let particles = [], time = 0
 
     const spawnParticle = () => {
-      particles.push({
-        from: 0, to: 1, progress: 0,
-        speed: 0.007 + Math.random() * 0.005,
-        yOffset: (Math.random() - 0.5) * 12,
-      })
+      particles.push({ from: 0, to: 1, progress: 0, speed: 0.007 + Math.random() * 0.005, yOffset: (Math.random() - 0.5) * 12 })
     }
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
       time += 0.018
-
-      const w = canvas.offsetWidth
-      const h = canvas.offsetHeight
+      const w = canvas.offsetWidth, h = canvas.offsetHeight
       const margin = w < 480 ? 36 : 72
       const segmentWidth = (w - 2 * margin) / 3
 
-      const isMatrix = document.documentElement.getAttribute('data-theme') === 'matrix'
-
       // Draw connections
       for (let i = 0; i < nodes.length - 1; i++) {
-        const x1 = margin + i * segmentWidth
-        const x2 = margin + (i + 1) * segmentWidth
-
-        // Base line
+        const x1 = margin + i * segmentWidth, x2 = margin + (i + 1) * segmentWidth
         const lineGrd = ctx.createLinearGradient(x1, 0, x2, 0)
-        lineGrd.addColorStop(0, isMatrix ? 'rgba(34,197,94,0.12)' : 'rgba(180,30,30,0.2)')
-        lineGrd.addColorStop(0.5, isMatrix ? 'rgba(34,197,94,0.25)' : 'rgba(180,30,30,0.35)')
-        lineGrd.addColorStop(1, isMatrix ? 'rgba(34,197,94,0.12)' : 'rgba(180,30,30,0.2)')
-        ctx.strokeStyle = lineGrd
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(x1, h / 2)
-        ctx.lineTo(x2, h / 2)
-        ctx.stroke()
+        lineGrd.addColorStop(0, 'rgba(255,0,104,0.15)')
+        lineGrd.addColorStop(0.5, 'rgba(255,0,104,0.3)')
+        lineGrd.addColorStop(1, 'rgba(255,0,104,0.15)')
+        ctx.strokeStyle = lineGrd; ctx.lineWidth = 1
+        ctx.beginPath(); ctx.moveTo(x1, h / 2); ctx.lineTo(x2, h / 2); ctx.stroke()
 
-        // Animated flow dashes
+        // Flow dashes
         const flowOffset = (time * 35) % 24
         for (let j = 0; j < 4; j++) {
           const offset = (flowOffset + j * 6) % 24
           const startX = x1 + offset * (segmentWidth / 24)
           if (startX < x2) {
-            ctx.strokeStyle = isMatrix ? 'rgba(74, 222, 128, 0.45)' : 'rgba(255, 80, 80, 0.45)'
-            ctx.lineWidth = 1.5
-            ctx.lineCap = 'round'
-            ctx.beginPath()
-            ctx.moveTo(startX, h / 2)
-            ctx.lineTo(Math.min(startX + 10, x2), h / 2)
-            ctx.stroke()
+            ctx.strokeStyle = 'rgba(255,0,104,0.5)'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'
+            ctx.beginPath(); ctx.moveTo(startX, h / 2); ctx.lineTo(Math.min(startX + 10, x2), h / 2); ctx.stroke()
           }
         }
       }
@@ -91,120 +70,51 @@ export default function SecuritySection() {
           particles[i] = { ...p, from: p.to, to: Math.min(p.to + 1, 3), progress: 0 }
           if (p.to >= 3) { particles.splice(i, 1); continue }
         }
-
-        const fromX = margin + p.from * segmentWidth
-        const toX   = margin + p.to   * segmentWidth
-        const x = fromX + (toX - fromX) * p.progress
-        const y = h / 2 + p.yOffset
-
+        const fromX = margin + p.from * segmentWidth, toX = margin + p.to * segmentWidth
+        const x = fromX + (toX - fromX) * p.progress, y = h / 2 + p.yOffset
         const pgrd = ctx.createRadialGradient(x, y, 0, x, y, 10)
-        pgrd.addColorStop(0, isMatrix ? 'rgba(74, 222, 128, 0.6)' : 'rgba(200, 50, 50, 0.6)')
-        pgrd.addColorStop(1, isMatrix ? 'rgba(74, 222, 128, 0)' : 'rgba(200, 50, 50, 0)')
-        ctx.beginPath()
-        ctx.arc(x, y, 10, 0, Math.PI * 2)
-        ctx.fillStyle = pgrd
-        ctx.fill()
-
-        ctx.beginPath()
-        ctx.arc(x, y, 3.5, 0, Math.PI * 2)
-        ctx.fillStyle = isMatrix ? '#22c55e' : '#c82020'
-        ctx.fill()
+        pgrd.addColorStop(0, 'rgba(255,0,104,0.7)'); pgrd.addColorStop(1, 'rgba(255,0,104,0)')
+        ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.fillStyle = pgrd; ctx.fill()
+        ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.fillStyle = '#ff0068'; ctx.fill()
       }
 
       // Nodes
       nodes.forEach((node, i) => {
-        const nx = margin + i * segmentWidth
-        const ny = h / 2
+        const nx = margin + i * segmentWidth, ny = h / 2
         const pulse = Math.sin(time * 1.5 + i * 0.8) * 0.5 + 0.5
-
-        // Outer glow rings
         const outerR = 32 + pulse * 6
         const ogrd = ctx.createRadialGradient(nx, ny, 0, nx, ny, outerR)
-        ogrd.addColorStop(0, isMatrix ? `rgba(34, 197, 94, ${0.1 + pulse * 0.05})` : `rgba(180, 30, 30, ${0.1 + pulse * 0.05})`)
-        ogrd.addColorStop(1, isMatrix ? 'rgba(34, 197, 94, 0)' : 'rgba(180, 30, 30, 0)')
-        ctx.beginPath()
-        ctx.arc(nx, ny, outerR, 0, Math.PI * 2)
-        ctx.fillStyle = ogrd
-        ctx.fill()
-
-        // Node body
-        ctx.beginPath()
-        ctx.arc(nx, ny, 12, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(10,6,6,0.95)'
-        ctx.fill()
-        ctx.strokeStyle = isMatrix 
-          ? (i === 0 || i === 3 ? '#22c55e' : '#15803d')
-          : node.color
-        ctx.lineWidth = 1.5
-        ctx.stroke()
-
-        // Inner highlight
-        ctx.beginPath()
-        ctx.arc(nx, ny - 3, 4, 0, Math.PI * 2)
-        ctx.fillStyle = isMatrix ? `rgba(74,222,128,${0.15 + pulse * 0.1})` : `rgba(255,120,120,${0.15 + pulse * 0.1})`
-        ctx.fill()
-
-        // Label
-        ctx.fillStyle = 'rgba(230,220,210,0.55)'
-        ctx.font = '400 9px IBM Plex Mono, monospace'
-        ctx.textAlign = 'center'
-        const lines = node.label.split('\n')
-        lines.forEach((line, li) => {
-          ctx.fillText(line, nx, ny + 30 + li * 13)
-        })
+        ogrd.addColorStop(0, `rgba(255,0,104,${0.1 + pulse * 0.06})`); ogrd.addColorStop(1, 'rgba(255,0,104,0)')
+        ctx.beginPath(); ctx.arc(nx, ny, outerR, 0, Math.PI * 2); ctx.fillStyle = ogrd; ctx.fill()
+        ctx.beginPath(); ctx.arc(nx, ny, 12, 0, Math.PI * 2); ctx.fillStyle = 'rgba(16,2,10,0.96)'; ctx.fill()
+        ctx.strokeStyle = node.color; ctx.lineWidth = 1.5; ctx.stroke()
+        ctx.beginPath(); ctx.arc(nx, ny - 3, 4, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(255,0,104,${0.15 + pulse * 0.12})`; ctx.fill()
+        ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '400 9px monospace'; ctx.textAlign = 'center'
+        node.label.split('\n').forEach((line, li) => ctx.fillText(line, nx, ny + 30 + li * 13))
       })
 
       animationId = requestAnimationFrame(animate)
     }
     animate()
 
-    return () => {
-      cancelAnimationFrame(animationId)
-      window.removeEventListener('resize', resize)
-    }
+    return () => { cancelAnimationFrame(animationId); window.removeEventListener('resize', resize) }
   }, [])
 
   const securityPoints = [
-    {
-      icon: User,
-      num: '01',
-      title: 'Origin Node',
-      desc: 'Data originates from your device. The encryption key is generated locally and never transmitted.',
-    },
-    {
-      icon: Lock,
-      num: '02',
-      title: 'Encrypted Data',
-      desc: 'NaCl secretbox (Poly1305 + XSalsa20) with 256-bit keys derived from your Access Key.',
-    },
-    {
-      icon: Server,
-      num: '03',
-      title: 'Secure Gateway',
-      desc: 'Only sees encrypted handshakes and 16-char room tokens. Zero knowledge of file contents.',
-    },
-    {
-      icon: Shield,
-      num: '04',
-      title: 'Destination Node',
-      desc: 'Receives encrypted data and decrypts locally with the shared key derived from the Access Key.',
-    },
+    { icon: User,   num: '01', title: 'Origin Node',       desc: 'Data originates from your device. The encryption key is generated locally and never transmitted.' },
+    { icon: Lock,   num: '02', title: 'Encrypted Data',    desc: 'NaCl secretbox (Poly1305 + XSalsa20) with 256-bit keys derived from your Access Key.' },
+    { icon: Server, num: '03', title: 'Secure Gateway',    desc: 'Only sees encrypted handshakes and 16-char room tokens. Zero knowledge of file contents.' },
+    { icon: Shield, num: '04', title: 'Destination Node',  desc: 'Receives encrypted data and decrypts locally with the shared key derived from the Access Key.' },
   ]
 
   return (
     <section id="security" className="relative py-28 lg:py-40 overflow-hidden">
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
 
-      {/* Glow */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] pointer-events-none select-none"
-        style={{ background: 'radial-gradient(circle, rgba(var(--accent),0.08) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-      
-      <div className="absolute left-0 top-20 pointer-events-none select-none opacity-40">
-        <div className="font-mono text-[240px] leading-none font-bold text-white/[0.015]" style={{ letterSpacing: '-0.05em' }}>03</div>
-      </div>
-
-      <div className="absolute right-12 top-8 font-mono text-[140px] leading-none font-bold select-none pointer-events-none"
-        style={{ color: 'rgba(var(--accent),0.035)', letterSpacing: '-0.05em' }}>03</div>
+      {/* Right ambient glow */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(255,0,104,0.07) 0%, transparent 70%)', filter: 'blur(50px)' }} />
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -221,11 +131,11 @@ export default function SecuritySection() {
               <span className="eyebrow-label">Architecture</span>
               <div className="flex-1 rule-line-full" />
             </div>
-            <h2 className="section-heading text-5xl sm:text-6xl lg:text-7xl text-white leading-none">
+            <h2 className="section-heading text-[clamp(40px,5vw,62px)] leading-none">
               Security<br />
-              <span className="gradient-text italic">Architecture</span>
+              <span className="gradient-text">Architecture</span>
             </h2>
-            <p className="mt-5 text-sm max-w-md leading-relaxed" style={{ color: '#9c8e8a' }}>
+            <p className="mt-5 text-sm max-w-md leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.012px' }}>
               Four-stage encrypted pipeline. Your data never touches unencrypted infrastructure.
             </p>
           </motion.div>
@@ -236,20 +146,22 @@ export default function SecuritySection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.8 }}
-            className="mb-10 overflow-hidden rounded-xl"
-            style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(5,3,3,0.98)' }}
+            className="mb-10 overflow-hidden"
+            style={{ background: 'var(--color-dark-mulberry)', borderRadius: 'var(--radius-cards)', boxShadow: 'var(--shadow-xl)' }}
           >
-            <div className="px-6 py-3.5 border-b border-white/[0.06] flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'rgb(var(--accent))' }} />
-              <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#7a6e6b' }}>
+            <div className="px-6 py-3.5 flex items-center gap-3"
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-plasma-pink)' }} />
+              <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.3)' }}>
                 Encrypted pipeline · live simulation
               </span>
               <div className="ml-auto flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-mono text-[9px] text-emerald-500/60 tracking-wider">LIVE</span>
+                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-plasma-pink)' }} />
+                <span className="font-mono text-[9px] tracking-wider" style={{ color: 'rgba(255,0,104,0.7)' }}>LIVE</span>
               </div>
             </div>
-            <canvas ref={canvasRef} className="w-full h-44 sm:h-56" />
+            <canvas ref={canvasRef} className="w-full h-44 sm:h-56"
+              style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(255,0,104,0.04), rgba(16,2,10,0.98) 70%)' }} />
           </motion.div>
 
           {/* Four cards */}
@@ -263,19 +175,19 @@ export default function SecuritySection() {
                 transition={{ duration: 0.6, delay: index * 0.08 }}
                 className="group feature-card"
               >
-                <div className="font-mono text-[24px] font-bold"
-                  style={{ color: 'rgba(var(--accent),0.32)' }}>{point.num}</div>
-                <div className="flex shrink-0 items-center justify-center w-9 h-9 rounded-md relative"
-                  style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: 'radial-gradient(circle, rgba(var(--accent),0.15) 0%, transparent 70%)' }} />
-                  <point.icon className="w-4 h-4 transition-transform duration-500 group-hover:scale-110 relative z-10"
-                    style={{ color: 'rgba(var(--accent),0.55)' }} />
+                <div className="font-mono text-[22px] font-bold mb-4"
+                  style={{ color: 'rgba(255,0,104,0.3)', letterSpacing: '-0.025px' }}>{point.num}</div>
+                <div className="flex shrink-0 items-center justify-center w-9 h-9 rounded-xl mb-4 relative"
+                  style={{ border: '1px solid rgba(255,0,104,0.2)', background: 'rgba(255,0,104,0.06)' }}>
+                  <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: 'radial-gradient(circle, rgba(255,0,104,0.2) 0%, transparent 70%)' }} />
+                  <point.icon className="w-4 h-4 relative z-10 transition-transform duration-500 group-hover:scale-110"
+                    style={{ color: 'rgba(255,0,104,0.7)' }} />
                 </div>
-                <h3 className="section-heading text-base text-white mb-2 transition-colors duration-300 group-hover:text-[var(--accent-solid)]">
+                <h3 className="section-heading text-base mb-2 transition-colors duration-300 group-hover:text-[var(--color-plasma-pink)]">
                   {point.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#9a8c88' }}>{point.desc}</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{point.desc}</p>
               </motion.div>
             ))}
           </div>

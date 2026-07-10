@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Renderer, Camera, Geometry, Program, Mesh } from 'ogl'
 
-const defaultColors = ['#c82424', '#8f1414', '#b41e1e', '#5a0a0a', '#a82c44']
+const defaultColors = ['#ff0068', '#91013d', '#700130', '#9f0142', '#ff0068']
 
 const hexToRgb = (hex) => {
   hex = hex.replace(/^#/, '')
@@ -204,7 +204,7 @@ function Particles({
         uMouse: { value: [0, 0] },
         uHoverStrength: { value: 2.5 },
         uHoverRadius: { value: 4.8 },
-        uAccentColor: { value: theme === 'matrix' ? [0.05, 0.35, 0.12] : [0.35, 0.06, 0.42] },
+        uAccentColor: { value: [0.56, 0.0, 0.24] },
       },
       transparent: true,
       depthTest: false,
@@ -280,22 +280,19 @@ function Particles({
   return <div ref={containerRef} className={`relative h-full w-full ${className}`} />
 }
 
-export default function ParticleBackground({ theme = 'obsidian' }) {
-  const isMatrix = theme === 'matrix'
-  const colors = isMatrix 
-    ? ['#15803d', '#166534', '#22c55e', '#14532d', '#86efac']
-    : ['#c82424', '#8f1414', '#b41e1e', '#5a0a0a', '#a82c44']
+export default function ParticleBackground() {
+  const colors = ['#ff0068', '#91013d', '#700130', '#9f0142', '#ff0068']
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-auto overflow-hidden">
       <div 
-        className="absolute inset-0 bg-[radial-gradient(circle_at_28%_8%,rgba(var(--accent),0.075),transparent_40%),linear-gradient(180deg,#0a0707_0%,#060404_52%,#0c0909_100%)]" 
-        style={{ transition: 'background-image 0.5s ease' }}
+        className="absolute inset-0"
+        style={{ background: 'radial-gradient(circle at 28% 8%, rgba(255,0,104,0.07), transparent 40%), linear-gradient(180deg, #10020a 0%, #0a0106 52%, #10020a 100%)' }}
       />
       <Particles
-        className="absolute inset-0 opacity-80"
+        className="absolute inset-0 opacity-75"
         particleColors={colors}
-        particleCount={680}
+        particleCount={650}
         particleSpread={15}
         speed={0.06}
         particleBaseSize={125}
@@ -305,9 +302,9 @@ export default function ParticleBackground({ theme = 'obsidian' }) {
         particleHoverFactor={0.45}
         alphaParticles
         pixelRatio={Math.min(window.devicePixelRatio || 1, 1.5)}
-        theme={theme}
+        theme="luro"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,8,8,0.52),rgba(10,8,8,0.12)_42%,rgba(10,8,8,0.48))]" />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(16,2,10,0.5), rgba(16,2,10,0.1) 42%, rgba(16,2,10,0.45))' }} />
     </div>
   )
 }

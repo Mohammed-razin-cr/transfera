@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import ParticleBackground from './components/ParticleBackground'
 import MouseGlow from './components/MouseGlow'
 import Navbar from './components/Navbar'
@@ -12,25 +12,15 @@ import ReceiverInput from './components/ReceiverInput'
 import SEOContent from './components/SEOContent'
 
 const ThemeContext = createContext()
-
-export function useTheme() {
-  return useContext(ThemeContext)
-}
+export function useTheme() { return useContext(ThemeContext) }
 
 export default function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'matrix')
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
-
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      <div className="relative min-h-screen bg-transfera-darker text-[#f5ead7]">
-        <ParticleBackground theme={theme} />
+    <ThemeContext.Provider value={{ theme: 'luro' }}>
+      <div className="relative min-h-screen" style={{ background: 'var(--color-obsidian-void)', color: 'var(--color-frost-white)' }}>
+        <ParticleBackground />
         <MouseGlow />
-        <Navbar theme={theme} setTheme={setTheme} />
+        <Navbar />
         <main>
           <HeroSection />
           <FeaturesSection />

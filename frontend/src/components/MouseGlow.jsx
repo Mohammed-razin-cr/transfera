@@ -15,7 +15,7 @@ export default function MouseGlow() {
     <div
       className="fixed inset-0 pointer-events-none z-0"
       style={{
-        background: `radial-gradient(500px circle at ${position.x}px ${position.y}px, rgba(180, 30, 30, 0.05), transparent 45%)`,
+        background: `radial-gradient(500px circle at ${position.x}px ${position.y}px, rgba(255, 0, 104, 0.04), transparent 45%)`,
       }}
     />
   )

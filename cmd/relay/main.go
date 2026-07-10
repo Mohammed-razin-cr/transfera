@@ -46,15 +46,15 @@ type config struct {
 
 func loadConfig() config {
 	c := config{
-		port:            getenv("PORT", "8080"),
+		port:            getenv("PORT", "8088"),
 		rateLimitPerMin: getenvInt("TRANSFERA_RATE_LIMIT_PER_MIN", 60),
 		logFormat:       getenv("TRANSFERA_LOG_FORMAT", "json"),
 	}
 	raw := strings.TrimSpace(os.Getenv("TRANSFERA_ALLOWED_ORIGINS"))
 	if raw == "" {
 		c.allowedOrigins = []string{
-			"http://localhost:8080",
-			"http://127.0.0.1:8080",
+			"http://localhost:8088",
+			"http://127.0.0.1:8088",
 			"http://127.0.0.1:65223", // Browser preview port
 		}
 	} else if raw == "*" {

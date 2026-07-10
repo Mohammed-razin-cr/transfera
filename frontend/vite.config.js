@@ -5,13 +5,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/live': 'http://localhost:8080',
-      '/ws': 'http://localhost:8080',
-      '/d': 'http://localhost:8080',
-      '/u': 'http://localhost:8080',
-      '/upload': 'http://localhost:8080',
-      '/health': 'http://localhost:8080',
-      '/static': 'http://localhost:8080',
+      '/live': 'http://localhost:8088',
+      '/ws': 'http://localhost:8088',
+      '/d': 'http://localhost:8088',
+      '/u': 'http://localhost:8088',
+      '/upload': 'http://localhost:8088',
+      '/health': 'http://localhost:8088',
+      '/static': 'http://localhost:8088',
     }
   },
   build: {
