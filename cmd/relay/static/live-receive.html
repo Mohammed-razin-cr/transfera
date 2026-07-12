@@ -265,6 +265,9 @@
         <div class="progress-text" id="ptext">0%</div>
       </div>
       <div class="speed-info" id="speed"></div>
+      <div class="speed-chart-container" style="margin-top:24px; position:relative;">
+        <canvas id="speed-chart" width="480" height="120" style="width:100%; height:120px; display:block; border-radius:8px; border:1px solid rgba(255,0,104,0.15); background:rgba(30,3,19,0.8);"></canvas>
+      </div>
     </section>
 
     <section id="ready-more" class="block hidden">
@@ -355,6 +358,108 @@ function formatSpeed(bps){
   if(bps<1048576)return (bps/1024).toFixed(1)+' KB/s';
   return (bps/1048576).toFixed(1)+' MB/s';
 }
+
+// ── Speed Chart Visualizer Class ──
+class SpeedChart {
+  constructor(canvasId) {
+    this.canvas = document.getElementById(canvasId);
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext('2d');
+    this.history = [];
+    this.maxPoints = 50;
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+  }
+
+  resize() {
+    if (!this.canvas) return;
+    const rect = this.canvas.getBoundingClientRect();
+    this.canvas.width = rect.width * (window.devicePixelRatio || 1);
+    this.canvas.height = rect.height * (window.devicePixelRatio || 1);
+    this.draw();
+  }
+
+  addPoint(speedBps) {
+    this.history.push(speedBps);
+    if (this.history.length > this.maxPoints) {
+      this.history.shift();
+    }
+    this.draw();
+  }
+
+  clear() {
+    this.history = [];
+    this.draw();
+  }
+
+  draw() {
+    if (!this.canvas || !this.ctx) return;
+    const ctx = this.ctx;
+    const W = this.canvas.width;
+    const H = this.canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    if (this.history.length === 0) return;
+
+    let maxSpeed = Math.max(...this.history, 1024 * 1024); // at least 1MB/s scale
+
+    // Draw grid lines
+    ctx.strokeStyle = 'rgba(255, 0, 104, 0.08)';
+    ctx.lineWidth = 1;
+    const gridLines = 4;
+    for (let i = 1; i < gridLines; i++) {
+      const y = (H / gridLines) * i;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+
+    const points = this.history;
+    const step = W / (this.maxPoints - 1);
+    
+    // Draw fill area under the line
+    const gradient = ctx.createLinearGradient(0, 0, 0, H);
+    gradient.addColorStop(0, 'rgba(255, 0, 104, 0.25)');
+    gradient.addColorStop(1, 'rgba(255, 0, 104, 0.0)');
+
+    ctx.beginPath();
+    points.forEach((val, idx) => {
+      const x = idx * step;
+      const y = H - (val / maxSpeed) * (H - 30) - 15;
+      if (idx === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    
+    ctx.strokeStyle = '#ff0068';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Fill
+    ctx.lineTo((points.length - 1) * step, H);
+    ctx.lineTo(0, H);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Draw current speed value
+    const currentSpeed = points[points.length - 1];
+    ctx.fillStyle = '#ff69b4';
+    ctx.font = `11px 'IBM Plex Mono', monospace`;
+    ctx.textAlign = 'right';
+    
+    let speedText = '';
+    if (currentSpeed < 1024) speedText = currentSpeed.toFixed(0) + ' B/s';
+    else if (currentSpeed < 1048576) speedText = (currentSpeed / 1024).toFixed(1) + ' KB/s';
+    else speedText = (currentSpeed / 1048576).toFixed(1) + ' MB/s';
+    
+    ctx.fillText('Live: ' + speedText, W - 15, 25);
+  }
+}
 function show(id){
   ['joining','waiting','negotiating','receiving','ready-more','complete','error','received-text'].forEach(x=>$(x).classList.add('hidden'));
   $(id).classList.remove('hidden');
@@ -391,6 +496,7 @@ let sessionFinalized=false;
 let filesThisBatch=0;
 let batchBytesSent=0;
 let isMultiRecipient=false;
+let speedChart=null;
 
 ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token+'?role=recipient');
 ws.binaryType='arraybuffer';
@@ -567,6 +673,12 @@ function handleDataMessage(msg){
     startTime=performance.now();
     $('filename').textContent=metadata.filename;
     $('recv-size').textContent=formatSize(metadata.size);
+    
+    if (!speedChart) {
+      speedChart = new SpeedChart('speed-chart');
+    } else {
+      speedChart.clear();
+    }
     return;
   }
   if(msg.type===MSG_CHUNK){
@@ -579,6 +691,7 @@ function handleDataMessage(msg){
       const pct=total>0?Math.round(bytesReceived/total*100):0;
       const elapsed=(now-startTime)/1000;
       const speed=elapsed>0?bytesReceived/elapsed:0;
+      if (speedChart) speedChart.addPoint(speed);
       requestAnimationFrame(()=>{
         $('progress').style.width=pct+'%';
         $('ptext').textContent=pct+'% · '+formatSize(bytesReceived)+(total?' / '+formatSize(total):'');
