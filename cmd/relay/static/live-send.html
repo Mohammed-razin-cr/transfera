@@ -1286,6 +1286,7 @@ let selectedFiles=[];
 let currentSort='name';
 let recipientCount=0;
 let multiRecipientMode=false;
+let speedChart=null;
 
 function copyURL(){
   navigator.clipboard.writeText(shareURL);
@@ -1412,12 +1413,30 @@ init().catch(e=>showError(e.message||String(e)));
 
 const dropzone=$('dropzone');
 const fileinput=$('fileinput');
-dropzone.addEventListener('click',()=>fileinput.click());
+const folderinput=$('folderinput');
+
+dropzone.addEventListener('click',(e)=>{
+  if (e.target.id === 'select-folder-trigger') {
+    e.preventDefault();
+    e.stopPropagation();
+    folderinput.click();
+  } else if (e.target.id === 'select-files-trigger') {
+    e.preventDefault();
+    e.stopPropagation();
+    fileinput.click();
+  } else {
+    fileinput.click();
+  }
+});
+
 fileinput.addEventListener('change',(e)=>{if(e.target.files.length)addFiles(e.target.files)});
+folderinput.addEventListener('change',(e)=>{if(e.target.files.length)handleFolderFiles(e.target.files)});
+
 $('send-more-btn').addEventListener('click',()=>{
   phase='select';
   show('select');
   fileinput.value='';
+  folderinput.value='';
   selectedFiles=[];
   updateFileList();
   if($('tab-files-btn')) $('tab-files-btn').click();
@@ -1563,11 +1582,32 @@ dropzone.addEventListener('dragleave',(e)=>{
     $('drop-status').textContent='';
   }
 });
-dropzone.addEventListener('drop',(e)=>{
+dropzone.addEventListener('drop',async (e)=>{
   e.preventDefault();
   dropzone.classList.remove('dragover');
   $('drop-status').textContent='';
-  if(e.dataTransfer.files.length)addFiles(e.dataTransfer.files);
+  
+  const items = e.dataTransfer.items;
+  if (items && items.length > 0) {
+    let files = [];
+    for (let i = 0; i < items.length; i++) {
+      const entry = items[i].webkitGetAsEntry();
+      if (entry) {
+        if (entry.isDirectory) {
+          const folderFiles = await traverseDirectoryEntry(entry);
+          await handleFolderFiles(folderFiles);
+        } else {
+          const file = await new Promise((resolve) => entry.file(resolve));
+          files.push(file);
+        }
+      }
+    }
+    if (files.length > 0) {
+      addFiles(files);
+    }
+  } else if (e.dataTransfer.files.length) {
+    addFiles(e.dataTransfer.files);
+  }
 });
 
 async function sendFiles(fileList){
@@ -1610,6 +1650,12 @@ async function sendFiles(fileList){
       phase='sending';
       show('sending');
       $('transport').textContent=usingDirectLinkMedia?'direct · WebRTC DataChannel':'via Secure Gateway · DirectLink unavailable';
+    }
+
+    if (!speedChart) {
+      speedChart = new SpeedChart('speed-chart');
+    } else {
+      speedChart.clear();
     }
 
     const sendFn=usingDirectLinkMedia?sendDC:sendWS;
@@ -1689,6 +1735,7 @@ async function streamFile(file,sendFn){
       const pct=Math.round(offset/file.size*100);
       const elapsed=(now-startTime)/1000;
       const speed=elapsed>0?offset/elapsed:0;
+      if (speedChart) speedChart.addPoint(speed);
       await new Promise(resolve=>requestAnimationFrame(()=>{
         $('progress').style.width=pct+'%';
         $('ptext').textContent=pct+'% · '+formatSize(offset)+' / '+formatSize(file.size);
