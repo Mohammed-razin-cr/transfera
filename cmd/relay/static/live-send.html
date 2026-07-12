@@ -925,11 +925,16 @@ html, body {
       <p class="block-sub">It encrypts in your browser, negotiates a direct connection, and streams to the Destination Node. Falls back through the Secure Gateway if a direct link fails. Multiple files send in one connection.</p>
       <div class="drop-zone" id="dropzone">
         <div class="drop-icon">+</div>
-        <div class="drop-label">tap to select or <strong>drop files</strong></div>
+        <div class="drop-label">
+          <span class="select-trigger" id="select-files-trigger" style="text-decoration:underline; cursor:pointer;">select files</span>,
+          <span class="select-trigger" id="select-folder-trigger" style="text-decoration:underline; cursor:pointer; margin-left: 4px; margin-right: 4px;">select folder</span>,
+          or <strong>drop files/folders</strong>
+        </div>
         <div class="drop-hint">any type · any size</div>
         <div class="drop-status" id="drop-status"></div>
       </div>
-      <input type="file" id="fileinput" multiple>
+      <input type="file" id="fileinput" multiple style="display:none;">
+      <input type="file" id="folderinput" webkitdirectory directory multiple style="display:none;">
       
       <!-- File list with organization -->
       <div id="file-list-container" class="file-list-container hidden">
@@ -977,6 +982,9 @@ html, body {
       <div class="progress-text" id="ptext">0%</div>
     </div>
     <div class="speed-info" id="speed"></div>
+    <div class="speed-chart-container" style="margin-top:24px; position:relative;">
+      <canvas id="speed-chart" width="480" height="120" style="width:100%; height:120px; display:block; border-radius:8px; border:1px solid rgba(255,0,104,0.15); background:rgba(30,3,19,0.8);"></canvas>
+    </div>
   </section>
 
   <section id="batch-done" class="block hidden">
@@ -1020,6 +1028,7 @@ html, body {
   <a class="footer-home" href="/">Home <span aria-hidden="true">↗</span></a>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="/static/nacl-fast.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="/static/words.js"></script>
@@ -1035,6 +1044,187 @@ const CHUNK=256*1024;
 const NEGOTIATE_TIMEOUT_MS=5000;
 
 function $(id){return document.getElementById(id)}
+
+// ── Speed Chart Visualizer Class ──
+class SpeedChart {
+  constructor(canvasId) {
+    this.canvas = document.getElementById(canvasId);
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext('2d');
+    this.history = [];
+    this.maxPoints = 50;
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+  }
+
+  resize() {
+    if (!this.canvas) return;
+    const rect = this.canvas.getBoundingClientRect();
+    this.canvas.width = rect.width * (window.devicePixelRatio || 1);
+    this.canvas.height = rect.height * (window.devicePixelRatio || 1);
+    this.draw();
+  }
+
+  addPoint(speedBps) {
+    this.history.push(speedBps);
+    if (this.history.length > this.maxPoints) {
+      this.history.shift();
+    }
+    this.draw();
+  }
+
+  clear() {
+    this.history = [];
+    this.draw();
+  }
+
+  draw() {
+    if (!this.canvas || !this.ctx) return;
+    const ctx = this.ctx;
+    const W = this.canvas.width;
+    const H = this.canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    if (this.history.length === 0) return;
+
+    let maxSpeed = Math.max(...this.history, 1024 * 1024); // at least 1MB/s scale
+
+    // Draw grid lines
+    ctx.strokeStyle = 'rgba(255, 0, 104, 0.08)';
+    ctx.lineWidth = 1;
+    const gridLines = 4;
+    for (let i = 1; i < gridLines; i++) {
+      const y = (H / gridLines) * i;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+
+    const points = this.history;
+    const step = W / (this.maxPoints - 1);
+    
+    // Draw fill area under the line
+    const gradient = ctx.createLinearGradient(0, 0, 0, H);
+    gradient.addColorStop(0, 'rgba(255, 0, 104, 0.25)');
+    gradient.addColorStop(1, 'rgba(255, 0, 104, 0.0)');
+
+    ctx.beginPath();
+    points.forEach((val, idx) => {
+      const x = idx * step;
+      const y = H - (val / maxSpeed) * (H - 30) - 15;
+      if (idx === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    
+    ctx.strokeStyle = '#ff0068';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Fill
+    ctx.lineTo((points.length - 1) * step, H);
+    ctx.lineTo(0, H);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Draw current speed value
+    const currentSpeed = points[points.length - 1];
+    ctx.fillStyle = '#ff69b4';
+    ctx.font = `11px 'IBM Plex Mono', monospace`;
+    ctx.textAlign = 'right';
+    
+    let speedText = '';
+    if (currentSpeed < 1024) speedText = currentSpeed.toFixed(0) + ' B/s';
+    else if (currentSpeed < 1048576) speedText = (currentSpeed / 1024).toFixed(1) + ' KB/s';
+    else speedText = (currentSpeed / 1048576).toFixed(1) + ' MB/s';
+    
+    ctx.fillText('Live: ' + speedText, W - 15, 25);
+  }
+}
+
+// ── Folder zipping helpers ──
+async function traverseDirectoryEntry(entry, path = "") {
+  let files = [];
+  if (entry.isFile) {
+    const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
+    Object.defineProperty(file, 'webkitRelativePath', {
+      value: path + entry.name,
+      writable: false
+    });
+    files.push(file);
+  } else if (entry.isDirectory) {
+    const reader = entry.createReader();
+    const entries = await new Promise((resolve, reject) => {
+      let results = [];
+      const readAll = () => {
+        reader.readEntries((resultList) => {
+          if (resultList.length === 0) {
+            resolve(results);
+          } else {
+            results = results.concat(resultList);
+            readAll();
+          }
+        }, reject);
+      };
+      readAll();
+    });
+    for (const subEntry of entries) {
+      const subFiles = await traverseDirectoryEntry(subEntry, path + entry.name + "/");
+      files = files.concat(subFiles);
+    }
+  }
+  return files;
+}
+
+async function handleFolderFiles(filesList) {
+  const groups = {};
+  for (const file of filesList) {
+    const relPath = file.webkitRelativePath || file.name;
+    const parts = relPath.split('/');
+    const rootName = parts[0] || 'folder';
+    if (!groups[rootName]) {
+      groups[rootName] = [];
+    }
+    groups[rootName].push(file);
+  }
+
+  const dropStatus = $('drop-status');
+  
+  for (const [folderName, files] of Object.entries(groups)) {
+    if (files.length === 1 && (!files[0].webkitRelativePath || !files[0].webkitRelativePath.includes('/'))) {
+      addFiles(files);
+      continue;
+    }
+    
+    dropStatus.innerHTML = `<span style="color:var(--accent);">Compressing folder: ${folderName}... (0%)</span>`;
+    
+    const zip = new JSZip();
+    for (const file of files) {
+      const relPath = file.webkitRelativePath || file.name;
+      zip.file(relPath, file);
+    }
+    
+    try {
+      const blob = await zip.generateAsync({type: "blob", compression: "DEFLATE"}, (metadata) => {
+        const percent = Math.round(metadata.percent);
+        dropStatus.innerHTML = `<span style="color:var(--accent);">Compressing folder: ${folderName}... (${percent}%)</span>`;
+      });
+      
+      const zipFile = new File([blob], `${folderName}.zip`, {type: "application/zip"});
+      addFiles([zipFile]);
+      dropStatus.innerHTML = `<span style="color:#4caf6a;">Folder compression complete!</span>`;
+      setTimeout(() => { dropStatus.textContent = ''; }, 3000);
+    } catch (err) {
+      console.error("Zipping failed:", err);
+      dropStatus.innerHTML = `<span style="color:var(--accent);">Compression failed: ${err.message}</span>`;
+    }
+  }
+}
 
 function randomHex(nBytes){
   const b=nacl.randomBytes(nBytes);
