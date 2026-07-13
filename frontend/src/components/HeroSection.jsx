@@ -355,31 +355,6 @@ export default function HeroSection() {
                   </span>
                 </div>
               </div>
-
-              {/* Floating badges */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-4 -right-4 glass-panel rounded-xl px-4 py-2.5"
-                style={{ boxShadow: 'var(--shadow-xl)' }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full animate-pulse-glow" style={{ background: 'var(--color-plasma-pink)' }} />
-                  <span className="text-[10px] font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.7)' }}>DirectLink Active</span>
-                </div>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-                className="absolute -bottom-4 -left-4 glass-panel rounded-xl px-4 py-2.5"
-                style={{ boxShadow: 'var(--shadow-xl)' }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full" style={{ background: 'var(--color-plasma-pink)' }} />
-                  <span className="text-[10px] font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.7)' }}>WebRTC P2P Mode</span>
-                </div>
-              </motion.div>
             </motion.div>
           </div>
         </div>
