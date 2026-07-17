@@ -268,6 +268,26 @@
     line-height: 0.93;
   }
 
+  .hero-title-line-mask {
+    display: block;
+    overflow: hidden;
+    perspective: 900px;
+  }
+
+  .hero-title-line {
+    display: block;
+    padding-bottom: 0.055em;
+    transform-origin: left bottom;
+    will-change: transform, opacity;
+  }
+
+  .hero-title-accent {
+    width: fit-content;
+    padding-right: 0.05em;
+    background-size: 220% 100%;
+    animation: hero-accent-sweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both;
+  }
+
   .hero-subtitle {
     font-family: var(--font-primary);
     font-weight: 400;
@@ -470,6 +490,11 @@ main > section:not(:first-child) {
   to   { background-position: -200% 0; }
 }
 
+@keyframes hero-accent-sweep {
+  from { background-position: 100% 50%; }
+  to   { background-position: 0% 50%; }
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-10px); }
@@ -648,6 +673,9 @@ main > section:not(:first-child) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-title-line { will-change: auto; }
+  .hero-title-accent { animation: none !important; }
+
   *, *::before, *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;

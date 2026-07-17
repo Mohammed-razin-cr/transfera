@@ -11,6 +11,21 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] } },
 }
 
+const headlineVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+}
+
+const headlineLineVariants = {
+  hidden: { opacity: 0, y: '110%', rotateX: -12 },
+  visible: {
+    opacity: 1,
+    y: '0%',
+    rotateX: 0,
+    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+  },
+}
+
 export default function HeroSection() {
   return (
     <section className="relative min-h-[96vh] flex items-center overflow-hidden pt-20">
@@ -59,14 +74,25 @@ export default function HeroSection() {
             </motion.div>
 
             <motion.h1
-              variants={itemVariants}
+              variants={headlineVariants}
               className="hero-title text-[clamp(52px,8.2vw,110px)] text-white mb-6"
+              aria-label="Secure File Transfer Between Devices."
             >
-              Secure File
-              <br />
-              <span className="gradient-text">Transfer</span>
-              <br />
-              Between Devices.
+              <span className="hero-title-line-mask" aria-hidden="true">
+                <motion.span variants={headlineLineVariants} className="hero-title-line">
+                  Secure File
+                </motion.span>
+              </span>
+              <span className="hero-title-line-mask" aria-hidden="true">
+                <motion.span variants={headlineLineVariants} className="hero-title-line gradient-text hero-title-accent">
+                  Transfer
+                </motion.span>
+              </span>
+              <span className="hero-title-line-mask" aria-hidden="true">
+                <motion.span variants={headlineLineVariants} className="hero-title-line">
+                  Between Devices.
+                </motion.span>
+              </span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="hero-subtitle mb-8 max-w-xl">
