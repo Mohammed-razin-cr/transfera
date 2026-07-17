@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { MotionConfig } from 'framer-motion'
 import ParticleBackground from './components/ParticleBackground'
 import MouseGlow from './components/MouseGlow'
 import Navbar from './components/Navbar'
@@ -44,15 +45,17 @@ function HomePage() {
 export default function App() {
   return (
     <ThemeContext.Provider value={{ theme: 'luro' }}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/features" element={<FeaturesPage />} />
-          <Route path="/how-it-works" element={<HowItWorksPage />} />
-          <Route path="/security" element={<SecurityPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-        </Routes>
-      </BrowserRouter>
+      <MotionConfig reducedMotion="user">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/features" element={<FeaturesPage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/security" element={<SecurityPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+          </Routes>
+        </BrowserRouter>
+      </MotionConfig>
     </ThemeContext.Provider>
   )
 }

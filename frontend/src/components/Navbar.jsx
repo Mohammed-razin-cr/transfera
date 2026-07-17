@@ -7,9 +7,24 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    let frameId = null
+
+    const updateScrollState = () => {
+      const nextScrolled = window.scrollY > 50
+      setScrolled((current) => current === nextScrolled ? current : nextScrolled)
+      frameId = null
+    }
+
+    const handleScroll = () => {
+      if (frameId === null) frameId = requestAnimationFrame(updateScrollState)
+    }
+
+    updateScrollState()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (frameId !== null) cancelAnimationFrame(frameId)
+    }
   }, [])
 
   const navLinks = [

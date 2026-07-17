@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Shield, Lock, Server, User } from 'lucide-react'
+import { createVisibilityLoop } from '../utils/animation'
 
 export default function SecuritySection() {
   const canvasRef = useRef(null)
@@ -9,15 +10,18 @@ export default function SecuritySection() {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-    let animationId
+    let loop
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth * 2
-      canvas.height = canvas.offsetHeight * 2
-      ctx.scale(2, 2)
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1 : 1.5)
+      canvas.width = Math.round(canvas.offsetWidth * pixelRatio)
+      canvas.height = Math.round(canvas.offsetHeight * pixelRatio)
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      loop?.requestRender()
     }
     resize()
-    window.addEventListener('resize', resize)
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(canvas)
 
     const nodes = [
       { label: 'Origin\nNode',      color: '#ff0068' },
@@ -26,15 +30,16 @@ export default function SecuritySection() {
       { label: 'Destination\nNode', color: '#ff0068' },
     ]
 
-    let particles = [], time = 0
+    let particles = [], time = 0, spawnClock = 0
 
     const spawnParticle = () => {
       particles.push({ from: 0, to: 1, progress: 0, speed: 0.007 + Math.random() * 0.005, yOffset: (Math.random() - 0.5) * 12 })
     }
 
-    const animate = () => {
+    const animate = (_time, deltaMs, frameScale) => {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
-      time += 0.018
+      time += 0.018 * frameScale
+      spawnClock += deltaMs
       const w = canvas.offsetWidth, h = canvas.offsetHeight
       const margin = w < 480 ? 36 : 72
       const segmentWidth = (w - 2 * margin) / 3
@@ -61,11 +66,14 @@ export default function SecuritySection() {
         }
       }
 
-      if (Math.random() < 0.025) spawnParticle()
+      if (spawnClock >= 650) {
+        spawnClock = 0
+        spawnParticle()
+      }
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i]
-        p.progress += p.speed
+        p.progress += p.speed * frameScale
         if (p.progress >= 1) {
           particles[i] = { ...p, from: p.to, to: Math.min(p.to + 1, 3), progress: 0 }
           if (p.to >= 3) { particles.splice(i, 1); continue }
@@ -94,11 +102,10 @@ export default function SecuritySection() {
         node.label.split('\n').forEach((line, li) => ctx.fillText(line, nx, ny + 30 + li * 13))
       })
 
-      animationId = requestAnimationFrame(animate)
     }
-    animate()
+    loop = createVisibilityLoop(canvas, animate, { rootMargin: '180px 0px' })
 
-    return () => { cancelAnimationFrame(animationId); window.removeEventListener('resize', resize) }
+    return () => { loop.stop(); resizeObserver.disconnect() }
   }, [])
 
   const securityPoints = [

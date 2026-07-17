@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Renderer, Camera, Geometry, Program, Mesh } from 'ogl'
+import { createVisibilityLoop } from '../utils/animation'
 
 const defaultColors = ['#ff0068', '#91013d', '#700130', '#9f0142', '#ff0068']
 
@@ -147,24 +148,31 @@ function Particles({
     const camera = new Camera(gl, { fov: 15 })
     camera.position.set(0, 0, cameraDistance)
 
+    let viewWidth = container.clientWidth
+    let viewHeight = container.clientHeight
+    let loop
+
     const resize = () => {
-      renderer.setSize(container.clientWidth, container.clientHeight)
+      viewWidth = container.clientWidth
+      viewHeight = container.clientHeight
+      renderer.setSize(viewWidth, viewHeight)
       camera.perspective({ aspect: gl.canvas.width / gl.canvas.height })
+      loop?.requestRender()
     }
-    window.addEventListener('resize', resize, false)
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     resize()
 
     const handleMouseMove = (event) => {
-      const rect = container.getBoundingClientRect()
-      // Mouse coordinates in virtual 3D projection plane coordinates
+      if (!viewWidth || !viewHeight) return
       mouseRef.current = {
-        x: (((event.clientX - rect.left) / rect.width) * 2 - 1) * (particleSpread * 0.5),
-        y: (-(((event.clientY - rect.top) / rect.height) * 2 - 1)) * (particleSpread * 0.5 * (rect.height / rect.width)),
+        x: ((event.clientX / viewWidth) * 2 - 1) * (particleSpread * 0.5),
+        y: -((event.clientY / viewHeight) * 2 - 1) * (particleSpread * 0.5 * (viewHeight / viewWidth)),
       }
     }
 
     if (moveParticlesOnHover) {
-      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('pointermove', handleMouseMove, { passive: true })
     }
 
     const positions = new Float32Array(particleCount * 3)
@@ -211,15 +219,10 @@ function Particles({
     })
 
     const particles = new Mesh(gl, { mode: gl.POINTS, geometry, program })
-    let animationFrameId
-    let lastTime = performance.now()
     let elapsed = 0
 
-    const update = (time) => {
-      animationFrameId = requestAnimationFrame(update)
-      const delta = time - lastTime
-      lastTime = time
-      elapsed += delta * speed
+    const update = (_time, deltaMs) => {
+      elapsed += deltaMs * speed
       program.uniforms.uTime.value = elapsed * 0.001
 
       if (moveParticlesOnHover) {
@@ -249,14 +252,14 @@ function Particles({
       renderer.render({ scene: particles, camera })
     }
 
-    animationFrameId = requestAnimationFrame(update)
+    loop = createVisibilityLoop(container, update, { rootMargin: '0px' })
 
     return () => {
-      window.removeEventListener('resize', resize)
+      loop.stop()
+      resizeObserver.disconnect()
       if (moveParticlesOnHover) {
-        window.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('pointermove', handleMouseMove)
       }
-      cancelAnimationFrame(animationFrameId)
       if (container.contains(gl.canvas)) {
         container.removeChild(gl.canvas)
       }
@@ -282,9 +285,11 @@ function Particles({
 
 export default function ParticleBackground() {
   const colors = ['#ff0068', '#91013d', '#700130', '#9f0142', '#ff0068']
+  const compactViewport = window.matchMedia('(max-width: 768px)').matches
+  const finePointer = window.matchMedia('(pointer: fine)').matches
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-auto overflow-hidden">
+    <div className="particle-background fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
       <div 
         className="absolute inset-0"
         style={{ background: 'radial-gradient(circle at 28% 8%, rgba(255,0,104,0.07), transparent 40%), linear-gradient(180deg, #10020a 0%, #0a0106 52%, #10020a 100%)' }}
@@ -292,16 +297,16 @@ export default function ParticleBackground() {
       <Particles
         className="absolute inset-0 opacity-75"
         particleColors={colors}
-        particleCount={650}
+        particleCount={compactViewport ? 300 : 480}
         particleSpread={15}
         speed={0.06}
         particleBaseSize={125}
         sizeRandomness={0.78}
         cameraDistance={22}
-        moveParticlesOnHover
+        moveParticlesOnHover={finePointer && !compactViewport}
         particleHoverFactor={0.45}
         alphaParticles
-        pixelRatio={Math.min(window.devicePixelRatio || 1, 1.5)}
+        pixelRatio={Math.min(window.devicePixelRatio || 1, compactViewport ? 1 : 1.25)}
         theme="luro"
       />
       <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(16,2,10,0.5), rgba(16,2,10,0.1) 42%, rgba(16,2,10,0.45))' }} />

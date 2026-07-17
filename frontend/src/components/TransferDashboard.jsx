@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Activity, Clock, Shield, FileCheck, Zap, ArrowUpRight } from 'lucide-react'
+import { createVisibilityLoop } from '../utils/animation'
 
 export default function TransferDashboard() {
   const canvasRef = useRef(null)
@@ -9,15 +10,18 @@ export default function TransferDashboard() {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-    let animationId
+    let loop
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth * 2
-      canvas.height = canvas.offsetHeight * 2
-      ctx.scale(2, 2)
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1 : 1.5)
+      canvas.width = Math.round(canvas.offsetWidth * pixelRatio)
+      canvas.height = Math.round(canvas.offsetHeight * pixelRatio)
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      loop?.requestRender()
     }
     resize()
-    window.addEventListener('resize', resize)
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(canvas)
 
     const points = Array.from({ length: 20 }, () => ({
       x: 0, y: 0,
@@ -38,8 +42,8 @@ export default function TransferDashboard() {
 
     let time = 0
 
-    const animate = () => {
-      time += 0.016
+    const animate = (_time, _deltaMs, frameScale) => {
+      time += 0.016 * frameScale
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
       const w = canvas.offsetWidth, h = canvas.offsetHeight, baseY = h - 24
 
@@ -66,7 +70,7 @@ export default function TransferDashboard() {
 
       // Second (baby pink) line
       points2.forEach((pt, i) => {
-        pt.phase += pt.speed
+        pt.phase += pt.speed * frameScale
         pt.x = 12 + i * (w - 24) / (points2.length - 1)
         pt.y = baseY - (pt.baseHeight + Math.sin(pt.phase) * pt.amplitude)
       })
@@ -93,7 +97,7 @@ export default function TransferDashboard() {
 
       // Primary (crimson/hot-pink) line
       points.forEach((pt, i) => {
-        pt.phase += pt.speed
+        pt.phase += pt.speed * frameScale
         pt.x = 12 + i * (w - 24) / (points.length - 1)
         pt.y = baseY - (pt.baseHeight + Math.sin(pt.phase) * pt.amplitude)
       })
@@ -134,11 +138,10 @@ export default function TransferDashboard() {
         ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 8; ctx.shadowColor = '#ff69b4'; ctx.fill(); ctx.shadowBlur = 0
       })
 
-      animationId = requestAnimationFrame(animate)
     }
-    animate()
+    loop = createVisibilityLoop(canvas, animate, { rootMargin: '180px 0px' })
 
-    return () => { cancelAnimationFrame(animationId); window.removeEventListener('resize', resize) }
+    return () => { loop.stop(); resizeObserver.disconnect() }
   }, [])
 
   const stats = [

@@ -73,6 +73,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "ss01" on, "cv11" on;
+    min-height: 100%;
   }
 
   ::selection {
@@ -296,28 +297,13 @@
   .nav-shell {
     background: rgba(16,2,10,0.92);
     border: 1px solid rgba(255,255,255,0.08);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
   }
 
   .nav-shell-scrolled {
     border-color: rgba(255,0,104,0.18);
     box-shadow: 0 1px 0 rgba(255,0,104,0.06), 0 20px 60px rgba(0,0,0,0.7);
-  }
-
-  /* ── Network console ── */
-  .network-console {
-    background: var(--color-dark-mulberry);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: var(--radius-cards);
-    box-shadow: none;
-    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .network-console:hover {
-    box-shadow: var(--shadow-xl);
-    border-color: rgba(255,0,104,0.3);
-    transform: translateY(-2px);
   }
 
   /* ── Glass panel ── */
@@ -431,6 +417,36 @@
     background-size: 200% 100%;
     animation: shimmer 2.5s linear infinite;
   }
+}
+
+.particle-background {
+  contain: strict;
+  transform: translateZ(0);
+}
+
+.particle-background canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mouse-glow {
+  top: 0;
+  left: 0;
+  width: 700px;
+  height: 700px;
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 0, 104, 0.045) 0%, transparent 62%);
+  transform: translate3d(-700px, -700px, 0);
+  transition: opacity 0.35s ease;
+  will-change: transform;
+  contain: strict;
+}
+
+main > section:not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }
 
 @layer utilities {
@@ -573,6 +589,16 @@
   .seo-band { padding: 5rem 0; }
   .seo-heading-row, .seo-split, .seo-grid-three { grid-template-columns: 1fr; }
   .seo-heading-row, .seo-split { gap: 2rem; }
+}
+
+@media (max-width: 768px), (pointer: coarse) {
+  .mouse-glow { display: none; }
+
+  .nav-shell {
+    background: rgba(16,2,10,0.98);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -20,9 +20,35 @@ export default function TerminalDemo() {
   const [currentLine, setCurrentLine] = useState('')
   const [lineIndex, setLineIndex] = useState(0)
   const [charIndex, setCharIndex] = useState(0)
+  const [isActive, setIsActive] = useState(false)
+  const sectionRef = useRef(null)
   const intervalRef = useRef(null)
 
   useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    let isIntersecting = false
+    const syncActiveState = () => setIsActive(isIntersecting && !document.hidden)
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isIntersecting = entry.isIntersecting
+      syncActiveState()
+    }, { rootMargin: '180px 0px' })
+
+    const handleVisibility = () => syncActiveState()
+
+    observer.observe(section)
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => {
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isActive) return
+
     if (lineIndex >= commands.length) {
       const timeout = setTimeout(() => {
         setDisplayedLines([]); setLineIndex(0); setCharIndex(0)
@@ -46,10 +72,10 @@ export default function TerminalDemo() {
       }, 300)
       return () => clearTimeout(timeout)
     }
-  }, [lineIndex, charIndex])
+  }, [isActive, lineIndex, charIndex])
 
   return (
-    <section id="terminal" className="relative py-24 lg:py-36 overflow-hidden">
+    <section ref={sectionRef} id="terminal" className="relative py-24 lg:py-36 overflow-hidden">
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
 
       {/* Ambient glow */}

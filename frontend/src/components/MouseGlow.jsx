@@ -1,22 +1,35 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function MouseGlow() {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const glowRef = useRef(null)
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setPosition({ x: e.clientX, y: e.clientY })
+    const glow = glowRef.current
+    const finePointer = window.matchMedia('(pointer: fine)').matches
+    if (!glow || !finePointer) return
+
+    let frameId = null
+    let x = -700
+    let y = -700
+
+    const renderPosition = () => {
+      glow.style.transform = `translate3d(${x - 350}px, ${y - 350}px, 0)`
+      glow.style.opacity = '1'
+      frameId = null
     }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
+
+    const handlePointerMove = (event) => {
+      x = event.clientX
+      y = event.clientY
+      if (frameId === null) frameId = requestAnimationFrame(renderPosition)
+    }
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true })
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove)
+      if (frameId !== null) cancelAnimationFrame(frameId)
+    }
   }, [])
 
-  return (
-    <div
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{
-        background: `radial-gradient(500px circle at ${position.x}px ${position.y}px, rgba(255, 0, 104, 0.04), transparent 45%)`,
-      }}
-    />
-  )
+  return <div ref={glowRef} className="mouse-glow fixed pointer-events-none z-0" aria-hidden="true" />
 }
