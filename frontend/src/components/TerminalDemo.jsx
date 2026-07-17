@@ -75,7 +75,7 @@ export default function TerminalDemo() {
   }, [isActive, lineIndex, charIndex])
 
   return (
-    <section ref={sectionRef} id="terminal" className="relative py-24 lg:py-36 overflow-hidden">
+    <section ref={sectionRef} id="terminal" className="relative py-20 sm:py-24 lg:py-36 overflow-hidden">
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
 
       {/* Ambient glow */}
@@ -91,7 +91,7 @@ export default function TerminalDemo() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7 }}
-            className="mb-20"
+            className="mb-12 sm:mb-16 lg:mb-20"
           >
             <div className="flex items-center gap-5 mb-6">
               <span className="eyebrow-label">Try It</span>

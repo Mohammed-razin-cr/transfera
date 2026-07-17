@@ -126,7 +126,7 @@ export default function FAQPage() {
 
       <main className="pt-28">
         {/* Hero Banner */}
-        <section className="relative py-24 lg:py-36 overflow-hidden">
+        <section className="relative py-20 sm:py-24 lg:py-36 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 20% 40%, rgba(255,0,104,0.09) 0%, transparent 55%)' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 80% 60%, rgba(145,1,61,0.07) 0%, transparent 50%)' }} />
@@ -171,7 +171,7 @@ export default function FAQPage() {
         </section>
 
         {/* FAQ Sections */}
-        <section className="relative py-24 lg:py-36">
+        <section className="relative py-20 sm:py-24 lg:py-36">
           <div className="section-container">
             <div className="section-inner max-w-3xl">
               {faqs.map((category, catIndex) => (

@@ -21,7 +21,7 @@ const itemVariants = {
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="relative py-28 lg:py-40">
+    <section id="features" className="relative py-20 sm:py-24 lg:py-40">
       {/* Top hairline glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px"
         style={{ background: 'linear-gradient(90deg, transparent, rgba(255,0,104,0.35), transparent)' }} />
@@ -39,7 +39,7 @@ export default function FeaturesSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7 }}
-            className="mb-20"
+            className="mb-12 sm:mb-16 lg:mb-20"
           >
             <div className="flex items-center gap-5 mb-7">
               <span className="eyebrow-label">Capabilities</span>

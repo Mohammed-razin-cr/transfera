@@ -116,7 +116,7 @@ export default function SecuritySection() {
   ]
 
   return (
-    <section id="security" className="relative py-28 lg:py-40 overflow-hidden">
+    <section id="security" className="relative py-20 sm:py-24 lg:py-40 overflow-hidden">
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
 
       {/* Right ambient glow */}
@@ -132,7 +132,7 @@ export default function SecuritySection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7 }}
-            className="mb-20"
+            className="mb-12 sm:mb-16 lg:mb-20"
           >
             <div className="flex items-center gap-5 mb-7">
               <span className="eyebrow-label">Architecture</span>

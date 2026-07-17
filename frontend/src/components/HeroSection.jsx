@@ -39,7 +39,7 @@ export default function HeroSection() {
         style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,0,104,0.12) 50%, transparent 100%)', top: '30%' }}
       />
 
-      <div className="section-container relative z-10 py-16 lg:py-20">
+      <div className="section-container relative z-10 py-12 sm:py-16 lg:py-20">
         <div className="section-inner">
           <motion.div
             variants={containerVariants}
@@ -73,8 +73,8 @@ export default function HeroSection() {
               Send files from phone to PC or between any browsers with end-to-end encryption, QR pairing, and no account required.
             </motion.p>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4 mb-8">
-              <a href="/live" className="btn-primary group">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-8">
+              <a href="/live" className="btn-primary group w-full sm:w-auto">
                 <span>Start Secure Transfer</span>
                 <span className="btn-icon">
                   <motion.span className="flex" whileHover={{ x: 3, y: -3 }} transition={{ duration: 0.2 }}>
@@ -82,7 +82,7 @@ export default function HeroSection() {
                   </motion.span>
                 </span>
               </a>
-              <a href="#security" className="btn-secondary group">
+              <a href="#security" className="btn-secondary group w-full sm:w-auto">
                 <Eye className="w-4 h-4" />
                 <span>View Architecture</span>
               </a>

@@ -838,6 +838,34 @@ button.cta.cta-primary, a.cta.cta-primary, .cta-primary {
   }
 }
 
+@media (max-width: 640px) {
+  .top-strip,
+  .live-key-panel,
+  .live-qr-panel {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .live-transfer-page::before {
+    animation: none;
+    opacity: 0.2;
+  }
+
+  button,
+  .cta {
+    touch-action: manipulation;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ── Prevent horizontal overflow ── */
 html, body {
   overflow-x: hidden;

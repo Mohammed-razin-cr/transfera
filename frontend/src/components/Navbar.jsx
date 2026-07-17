@@ -43,8 +43,8 @@ export default function Navbar() {
       style={{ padding: '12px 16px' }}
     >
       <div
-        className={`nav-shell transition-all duration-500 ${scrolled ? 'nav-shell-scrolled' : ''}`}
-        style={{ borderRadius: '18px', maxWidth: '1200px', margin: '0 auto', padding: '0 28px' }}
+        className={`nav-shell ${scrolled ? 'nav-shell-scrolled' : ''}`}
+        style={{ borderRadius: '18px', maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px, 3vw, 28px)' }}
       >
         <div className="flex items-center justify-between h-[60px]">
 
@@ -67,7 +67,7 @@ export default function Navbar() {
           </a>
 
           {/* Desktop nav links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <a key={link.label} href={link.href} className="nav-link">
                 {link.label}
@@ -76,7 +76,7 @@ export default function Navbar() {
           </div>
 
           {/* CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4">
             <div className="status-badge">
               <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--color-plasma-pink)' }} />
               Gateway Online
@@ -93,7 +93,7 @@ export default function Navbar() {
 
           {/* Mobile toggle */}
           <button
-            className="icon-button h-10 w-10 rounded-xl md:hidden"
+            className="icon-button h-10 w-10 rounded-xl lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle navigation"
           >
@@ -127,7 +127,6 @@ export default function Navbar() {
               border: '1px solid rgba(255,255,255,0.07)',
               maxWidth: '1200px',
               margin: '6px auto 0',
-              backdropFilter: 'blur(28px)',
               boxShadow: 'var(--shadow-xl)',
             }}
           >

@@ -64,7 +64,7 @@ export default function FeaturesPage() {
 
       <main className="pt-28">
         {/* Hero Banner */}
-        <section className="relative py-24 lg:py-36 overflow-hidden">
+        <section className="relative py-20 sm:py-24 lg:py-36 overflow-hidden">
           {/* Ambient glows */}
           <div className="absolute inset-0 pointer-events-none">
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 20% 30%, rgba(255,0,104,0.10) 0%, transparent 55%)' }} />
@@ -113,7 +113,7 @@ export default function FeaturesPage() {
         </section>
 
         {/* Features Grid */}
-        <section className="relative py-24 lg:py-36">
+        <section className="relative py-20 sm:py-24 lg:py-36">
           <div className="section-container">
             <div className="section-inner">
               <motion.div

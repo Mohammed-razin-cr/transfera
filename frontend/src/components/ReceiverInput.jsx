@@ -39,7 +39,7 @@ export default function ReceiverInput() {
   }
 
   return (
-    <section className="relative py-24 lg:py-32">
+    <section className="relative py-20 sm:py-24 lg:py-32">
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
 
       {/* Ambient glow */}
@@ -55,7 +55,7 @@ export default function ReceiverInput() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7 }}
-            className="mb-16"
+            className="mb-12 sm:mb-16"
           >
             <div className="flex items-center gap-5 mb-6">
               <span className="eyebrow-label">Access</span>

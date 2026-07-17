@@ -50,7 +50,7 @@ export default function SecurityPage() {
 
       <main className="pt-28">
         {/* Hero Banner */}
-        <section className="relative py-24 lg:py-36 overflow-hidden">
+        <section className="relative py-20 sm:py-24 lg:py-36 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 35%, rgba(255,0,104,0.10) 0%, transparent 55%)' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 80% 65%, rgba(145,1,61,0.08) 0%, transparent 50%)' }} />
@@ -94,7 +94,7 @@ export default function SecurityPage() {
         </section>
 
         {/* Pipeline cards */}
-        <section className="relative py-24 lg:py-32">
+        <section className="relative py-20 sm:py-24 lg:py-32">
           <div className="section-container">
             <div className="section-inner">
               <motion.div
