@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link, useLocation } from 'react-router-dom'
 import { Send, Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { pathname } = useLocation()
 
   useEffect(() => {
     let frameId = null
@@ -27,6 +29,26 @@ export default function Navbar() {
     }
   }, [])
 
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (!mobileOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setMobileOpen(false)
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [mobileOpen])
+
   const navLinks = [
     { label: 'Features',     href: '/features' },
     { label: 'How it works', href: '/how-it-works' },
@@ -41,22 +63,24 @@ export default function Navbar() {
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="fixed top-0 left-0 right-0 z-50"
       style={{ padding: '12px 16px' }}
+      aria-label="Primary navigation"
     >
       <div
-        className={`nav-shell ${scrolled ? 'nav-shell-scrolled' : ''}`}
+        className={`nav-shell relative z-20 ${scrolled ? 'nav-shell-scrolled' : ''}`}
         style={{ borderRadius: '18px', maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px, 3vw, 28px)' }}
       >
         <div className="flex items-center justify-between h-[60px]">
 
           {/* Brand Lockup */}
-          <a href="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group" aria-label="Transfera home">
             <div
               className="brand-seal transition-all duration-300 group-hover:scale-105"
               style={{ width: '36px', height: '36px' }}
             >
               <img
                 src="/static/logo.png"
-                alt="Transfera Logo"
+                alt=""
+                aria-hidden="true"
                 className="w-full h-full object-contain"
                 style={{ background: 'transparent' }}
               />
@@ -64,14 +88,19 @@ export default function Navbar() {
             <span className="brand-wordmark group-hover:opacity-80 transition-opacity duration-300">
               Transfera
             </span>
-          </a>
+          </Link>
 
           {/* Desktop nav links */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a key={link.label} href={link.href} className="nav-link">
+              <Link
+                key={link.label}
+                to={link.href}
+                className={`nav-link ${pathname === link.href ? 'nav-link-active' : ''}`}
+                aria-current={pathname === link.href ? 'page' : undefined}
+              >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -95,7 +124,9 @@ export default function Navbar() {
           <button
             className="icon-button h-10 w-10 rounded-xl lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle navigation"
+            aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
@@ -116,35 +147,46 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            key="mobile-menu-backdrop"
+            className="mobile-menu-backdrop fixed inset-0 z-10 lg:hidden"
+            aria-hidden="true"
+            onClick={() => setMobileOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            key="mobile-navigation"
+            id="mobile-navigation"
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="overflow-hidden mt-2"
-            style={{
-              background: 'rgba(16,2,10,0.98)',
-              borderRadius: '18px',
-              border: '1px solid rgba(255,255,255,0.07)',
-              maxWidth: '1200px',
-              margin: '6px auto 0',
-              boxShadow: 'var(--shadow-xl)',
-            }}
+            className="mobile-nav-panel relative z-20 overflow-hidden"
           >
-            <div className="section-container py-6 flex flex-col gap-4">
+            <div className="px-6 py-5 flex flex-col gap-1">
               {navLinks.map((link, i) => (
-                <motion.a
+                <motion.div
                   key={link.label}
-                  href={link.href}
-                  className="nav-link text-sm py-2"
-                  onClick={() => setMobileOpen(false)}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
+                  transition={{ delay: i * 0.045 }}
                 >
-                  {link.label}
-                </motion.a>
+                  <Link
+                    to={link.href}
+                    className={`mobile-nav-link ${pathname === link.href ? 'mobile-nav-link-active' : ''}`}
+                    aria-current={pathname === link.href ? 'page' : undefined}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
               ))}
-              <div className="pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+              <div className="pt-4 mt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                 <a href="/live" className="btn-primary group text-center justify-center w-full">
                   <span>Start Transfer</span>
                   <span className="btn-icon">

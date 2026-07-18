@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Key, AlertCircle } from 'lucide-react'
+import { ArrowRight, Key, AlertCircle, Loader2, X } from 'lucide-react'
 
 export default function ReceiverInput() {
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const inputRef = useRef(null)
 
   function norm(p) { return p.toUpperCase().trim().replace(/\s+/g, ' ') }
@@ -24,18 +25,40 @@ export default function ReceiverInput() {
   }
 
   async function submit() {
+    if (isSubmitting) return
     setError('')
     const p = norm(value)
-    if (!p || p.length < 5) { setError('Enter the Access Key'); return }
-    if (!crypto || !crypto.subtle) { setError('Browser missing crypto.subtle (needs HTTPS or localhost)'); return }
-    const t = await sha256('transfera:token:' + p)
-    const k = await sha256('transfera:key:' + p)
-    const rt = await sha256('transfera:receive-token:' + p)
+    if (!p || p.length < 5) {
+      setError('Enter a valid Access Key')
+      inputRef.current?.focus()
+      return
+    }
+    if (!window.crypto?.subtle) {
+      setError('Secure browser encryption is unavailable')
+      return
+    }
+
+    setIsSubmitting(true)
     try {
-      const room = await fetch('/room/' + hex(rt.slice(0, 8)))
-      if (room.ok && (await room.json()).waiting) { location.href = '/u/' + hex(rt.slice(0, 8)) + '#' + b64url(k); return }
-    } catch (e) {}
-    location.href = '/d/' + hex(t.slice(0, 8)) + '#' + b64url(k)
+      const t = await sha256('transfera:token:' + p)
+      const k = await sha256('transfera:key:' + p)
+      const rt = await sha256('transfera:receive-token:' + p)
+
+      try {
+        const room = await fetch('/room/' + hex(rt.slice(0, 8)))
+        if (room.ok && (await room.json()).waiting) {
+          location.href = '/u/' + hex(rt.slice(0, 8)) + '#' + b64url(k)
+          return
+        }
+      } catch {
+        // Room lookup is optional; the direct download route remains available.
+      }
+
+      location.href = '/d/' + hex(t.slice(0, 8)) + '#' + b64url(k)
+    } catch {
+      setError('Could not open this transfer. Check the key and try again.')
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -78,48 +101,62 @@ export default function ReceiverInput() {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="max-w-2xl"
           >
-            <div className="glow-card-subtle" style={{ padding: '32px' }}>
-              <div className="flex flex-col sm:flex-row gap-3">
+            <div className="glow-card-subtle receive-panel">
+              <div className="flex items-center justify-between gap-4 mb-3">
+                <label htmlFor="access-key" className="font-semibold text-sm text-white">Access Key</label>
+                <span className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                  Case insensitive
+                </span>
+              </div>
+              <form className="flex flex-col sm:flex-row gap-3" onSubmit={(event) => { event.preventDefault(); submit() }}>
                 <div className="relative flex-1">
                   <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
                     style={{ color: 'rgba(255,0,104,0.5)' }} />
                   <input
+                    id="access-key"
                     ref={inputRef}
                     type="text"
                     value={value}
-                    onChange={(e) => setValue(e.target.value.toUpperCase())}
-                    onKeyDown={(e) => { if (e.key === 'Enter') submit() }}
+                    onChange={(e) => { setValue(e.target.value.toUpperCase()); if (error) setError('') }}
                     placeholder="AURORA VORTEX 73"
                     autoComplete="off"
+                    autoCapitalize="characters"
                     spellCheck="false"
-                    className="w-full py-3.5 pl-10 pr-4 font-mono text-sm tracking-wider bg-transparent transition-all duration-300 focus:outline-none placeholder:opacity-20"
-                    style={{
-                      background: 'rgba(16,2,10,0.6)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: 'var(--radius-inputs)',
-                      color: 'var(--color-frost-white)',
-                    }}
-                    onFocus={e => { e.target.style.borderColor = 'rgba(255,0,104,0.45)'; e.target.style.boxShadow = 'var(--shadow-xl-2)' }}
-                    onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
+                    disabled={isSubmitting}
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? 'access-key-error access-key-help' : 'access-key-help'}
+                    className="access-key-input w-full py-3.5 pl-10 pr-11 font-mono text-sm tracking-wider placeholder:opacity-20"
                   />
+                  {value && !isSubmitting && (
+                    <button
+                      type="button"
+                      className="icon-button absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg"
+                      aria-label="Clear Access Key"
+                      onClick={() => { setValue(''); setError(''); inputRef.current?.focus() }}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </div>
-                <button onClick={submit} className="btn-primary group whitespace-nowrap">
-                  <span>Open Transfer</span>
+                <button type="submit" disabled={isSubmitting} className="btn-primary group whitespace-nowrap sm:min-w-[174px]">
+                  <span>{isSubmitting ? 'Checking Key' : 'Open Transfer'}</span>
                   <span className="btn-icon">
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    {isSubmitting
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : <ArrowRight className="w-3.5 h-3.5" />}
                   </span>
                 </button>
-              </div>
+              </form>
 
               {error && (
-                <div className="flex items-center gap-2 mt-4 font-mono text-[11px] tracking-wide"
+                <div id="access-key-error" role="alert" className="flex items-center gap-2 mt-4 font-mono text-[11px] tracking-wide"
                   style={{ color: 'rgba(255,0,104,0.9)' }}>
                   <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
                   {error}
                 </div>
               )}
 
-              <p className="font-mono text-[10px] mt-5 tracking-wider" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              <p id="access-key-help" className="font-mono text-[10px] mt-5 tracking-wider" style={{ color: 'rgba(255,255,255,0.3)' }}>
                 Access Keys are case-insensitive and expire after 10 minutes in Vault Storage mode.
               </p>
             </div>

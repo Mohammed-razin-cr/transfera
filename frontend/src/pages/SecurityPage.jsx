@@ -48,7 +48,7 @@ export default function SecurityPage() {
     <div className="relative min-h-screen" style={{ background: 'var(--color-obsidian-void)', color: 'var(--color-frost-white)' }}>
       <Navbar />
 
-      <main className="pt-28">
+      <main id="main-content" tabIndex="-1" className="pt-28">
         {/* Hero Banner */}
         <section className="relative py-20 sm:py-24 lg:py-36 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
