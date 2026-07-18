@@ -44,7 +44,7 @@ export default function Footer() {
                 </div>
                 <span className="brand-wordmark group-hover:opacity-80 transition-opacity duration-300">Transfera</span>
               </a>
-              <p className="text-sm leading-relaxed max-w-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '-0.012px' }}>
+              <p className="text-sm leading-relaxed max-w-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: 0 }}>
                 Secure, browser-based file transfer with end-to-end encryption, QR pairing, and no signup.
               </p>
               <div className="flex items-center gap-2 mb-6">
@@ -82,7 +82,7 @@ export default function Footer() {
                         target={item.href.startsWith('http') ? '_blank' : undefined}
                         rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                         className="text-sm transition-all duration-300 inline-flex items-center gap-1.5 group hover:gap-2"
-                        style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '-0.012px' }}
+                        style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: 0 }}
                         onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.9)'}
                         onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
                       >

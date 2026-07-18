@@ -28,33 +28,33 @@ const headlineLineVariants = {
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-[96vh] flex items-center overflow-hidden pt-20">
+    <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-20">
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse at 12% 25%, rgba(255,0,104,0.13) 0%, transparent 52%)' }}
+          style={{ background: 'radial-gradient(ellipse at 12% 25%, rgba(242,10,103,0.085) 0%, transparent 52%)' }}
         />
         <div
           className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse at 78% 55%, rgba(145,1,61,0.07) 0%, transparent 48%)' }}
+          style={{ background: 'radial-gradient(ellipse at 78% 55%, rgba(99,204,232,0.04) 0%, transparent 48%)' }}
         />
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(180deg, transparent 58%, rgba(16,2,10,0.95) 100%)' }}
+          style={{ background: 'linear-gradient(180deg, transparent 58%, rgba(9,8,11,0.96) 100%)' }}
         />
       </div>
 
       <div
         className="absolute left-0 top-0 bottom-0 w-px"
-        style={{ background: 'linear-gradient(to bottom, transparent, rgba(255,0,104,0.4) 30%, rgba(255,0,104,0.4) 70%, transparent)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(242,10,103,0.22) 30%, rgba(242,10,103,0.22) 70%, transparent)' }}
       />
 
       <div
         className="absolute left-0 right-0 h-px animate-scan pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,0,104,0.12) 50%, transparent 100%)', top: '30%' }}
+        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(242,10,103,0.07) 50%, transparent 100%)', top: '30%' }}
       />
 
-      <div className="section-container relative z-10 py-12 sm:py-16 lg:py-20">
+      <div className="section-container relative z-10 py-8 sm:py-16 lg:py-20">
         <div className="section-inner">
           <motion.div
             variants={containerVariants}
@@ -62,7 +62,7 @@ export default function HeroSection() {
             animate="visible"
             className="max-w-5xl"
           >
-            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-7 max-w-3xl">
+            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-5 sm:mb-7 max-w-3xl">
               <span className="eyebrow-label flex items-center gap-2">
                 <ShieldCheck className="w-3 h-3" />
                 Private transfer protocol - v3
@@ -75,7 +75,7 @@ export default function HeroSection() {
 
             <motion.h1
               variants={headlineVariants}
-              className="hero-title text-[clamp(52px,8.2vw,110px)] text-white mb-6"
+              className="hero-title hero-title-xl text-white mb-5 sm:mb-6"
               aria-label="Secure File Transfer Between Devices."
             >
               <span className="hero-title-line-mask" aria-hidden="true">
@@ -95,11 +95,11 @@ export default function HeroSection() {
               </span>
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="hero-subtitle mb-8 max-w-xl">
+            <motion.p variants={itemVariants} className="hero-subtitle mb-7 sm:mb-8 max-w-xl">
               Send files from phone to PC or between any browsers with end-to-end encryption, QR pairing, and no account required.
             </motion.p>
 
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-8">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-7 sm:mb-8">
               <a href="/live" className="btn-primary group w-full sm:w-auto">
                 <span>Start Secure Transfer</span>
                 <span className="btn-icon">
@@ -114,13 +114,13 @@ export default function HeroSection() {
               </a>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-3">
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-2 sm:gap-3">
               <span className="hero-trust-pill">
-                <Radio className="h-3 w-3" style={{ color: 'var(--color-plasma-pink)' }} />
+                <Radio className="h-3 w-3" style={{ color: 'var(--color-status-online)' }} />
                 Secure Gateway Online
               </span>
               <span className="hero-trust-pill">
-                <ShieldCheck className="h-3 w-3" style={{ color: 'var(--color-plasma-pink)' }} />
+                <ShieldCheck className="h-3 w-3" style={{ color: 'var(--color-signal-cyan)' }} />
                 End-to-end encrypted
               </span>
               <span className="hero-trust-pill">

@@ -74,7 +74,7 @@ export default function SecurityPage() {
                   <div className="flex-1 rule-line-full" />
                 </div>
 
-                <h1 className="hero-title text-[clamp(48px,7vw,96px)] text-white mb-6">
+                <h1 className="hero-title page-title text-white mb-6">
                   Security<br />
                   <span className="gradient-text">Architecture</span>
                 </h1>
@@ -108,7 +108,7 @@ export default function SecurityPage() {
                   <span className="eyebrow-label">Pipeline</span>
                   <div className="flex-1 rule-line-full" />
                 </div>
-                <h2 className="section-heading text-[clamp(32px,4vw,52px)] leading-none">
+                <h2 className="section-heading section-title-sm leading-none">
                   Four-Stage<br />
                   <span className="gradient-text">Encrypted Pipeline</span>
                 </h2>
@@ -125,7 +125,7 @@ export default function SecurityPage() {
                     className="group feature-card"
                   >
                     <div className="font-mono text-[22px] font-bold mb-4"
-                      style={{ color: 'rgba(255,0,104,0.3)', letterSpacing: '-0.025px' }}>{point.num}</div>
+                      style={{ color: 'rgba(255,0,104,0.3)', letterSpacing: 0 }}>{point.num}</div>
                     <div className="flex shrink-0 items-center justify-center w-9 h-9 rounded-xl mb-4 relative"
                       style={{ border: '1px solid rgba(255,0,104,0.2)', background: 'rgba(255,0,104,0.06)' }}>
                       <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -164,7 +164,7 @@ export default function SecurityPage() {
                   <span className="eyebrow-label">Specs</span>
                   <div className="flex-1 rule-line-full" />
                 </div>
-                <h2 className="section-heading text-[clamp(32px,4vw,52px)] leading-none">
+                <h2 className="section-heading section-title-sm leading-none">
                   Technical<br /><span className="gradient-text">Specifications</span>
                 </h2>
               </motion.div>

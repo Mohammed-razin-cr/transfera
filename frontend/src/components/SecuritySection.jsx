@@ -138,11 +138,11 @@ export default function SecuritySection() {
               <span className="eyebrow-label">Architecture</span>
               <div className="flex-1 rule-line-full" />
             </div>
-            <h2 className="section-heading text-[clamp(40px,5vw,62px)] leading-none">
+            <h2 className="section-heading section-title leading-none">
               Security<br />
               <span className="gradient-text">Architecture</span>
             </h2>
-            <p className="mt-5 text-sm max-w-md leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.012px' }}>
+            <p className="mt-5 text-sm max-w-md leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: 0 }}>
               Four-stage encrypted pipeline. Your data never touches unencrypted infrastructure.
             </p>
           </motion.div>
@@ -183,7 +183,7 @@ export default function SecuritySection() {
                 className="group feature-card"
               >
                 <div className="font-mono text-[22px] font-bold mb-4"
-                  style={{ color: 'rgba(255,0,104,0.3)', letterSpacing: '-0.025px' }}>{point.num}</div>
+                  style={{ color: 'rgba(255,0,104,0.3)', letterSpacing: 0 }}>{point.num}</div>
                 <div className="flex shrink-0 items-center justify-center w-9 h-9 rounded-xl mb-4 relative"
                   style={{ border: '1px solid rgba(255,0,104,0.2)', background: 'rgba(255,0,104,0.06)' }}>
                   <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"

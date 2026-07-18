@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Renderer, Camera, Geometry, Program, Mesh } from 'ogl'
 import { createVisibilityLoop } from '../utils/animation'
 
-const defaultColors = ['#ff0068', '#91013d', '#700130', '#9f0142', '#ff0068']
+const defaultColors = ['#f20a67', '#8c244b', '#5b243d', '#63cce8', '#f20a67']
 
 const hexToRgb = (hex) => {
   hex = hex.replace(/^#/, '')
@@ -212,7 +212,7 @@ function Particles({
         uMouse: { value: [0, 0] },
         uHoverStrength: { value: 2.5 },
         uHoverRadius: { value: 4.8 },
-        uAccentColor: { value: [0.56, 0.0, 0.24] },
+        uAccentColor: { value: [0.48, 0.06, 0.23] },
       },
       transparent: true,
       depthTest: false,
@@ -284,7 +284,7 @@ function Particles({
 }
 
 export default function ParticleBackground() {
-  const colors = ['#ff0068', '#91013d', '#700130', '#9f0142', '#ff0068']
+  const colors = ['#f20a67', '#8c244b', '#5b243d', '#63cce8', '#f20a67']
   const compactViewport = window.matchMedia('(max-width: 768px)').matches
   const finePointer = window.matchMedia('(pointer: fine)').matches
 
@@ -292,12 +292,12 @@ export default function ParticleBackground() {
     <div className="particle-background fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
       <div 
         className="absolute inset-0"
-        style={{ background: 'radial-gradient(circle at 28% 8%, rgba(255,0,104,0.07), transparent 40%), linear-gradient(180deg, #10020a 0%, #0a0106 52%, #10020a 100%)' }}
+        style={{ background: 'radial-gradient(circle at 28% 8%, rgba(242,10,103,0.055), transparent 40%), radial-gradient(circle at 82% 38%, rgba(99,204,232,0.025), transparent 34%), linear-gradient(180deg, #09080b 0%, #070609 52%, #09080b 100%)' }}
       />
       <Particles
-        className="absolute inset-0 opacity-75"
+        className="absolute inset-0 opacity-50"
         particleColors={colors}
-        particleCount={compactViewport ? 300 : 480}
+        particleCount={compactViewport ? 220 : 380}
         particleSpread={15}
         speed={0.06}
         particleBaseSize={125}
@@ -309,7 +309,7 @@ export default function ParticleBackground() {
         pixelRatio={Math.min(window.devicePixelRatio || 1, compactViewport ? 1 : 1.25)}
         theme="luro"
       />
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(16,2,10,0.5), rgba(16,2,10,0.1) 42%, rgba(16,2,10,0.45))' }} />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(9,8,11,0.52), rgba(9,8,11,0.08) 42%, rgba(9,8,11,0.42))' }} />
     </div>
   )
 }

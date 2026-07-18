@@ -46,12 +46,12 @@ export default function FeaturesSection() {
               <div className="flex-1 rule-line-full" />
             </div>
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-              <h2 className="section-heading text-[clamp(40px,5vw,62px)] leading-none">
+              <h2 className="section-heading section-title leading-none">
                 Built for<br />
                 <span className="gradient-text">Modern</span><br />
                 Security
               </h2>
-              <p className="text-sm max-w-xs leading-relaxed sm:text-right" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '-0.012px' }}>
+              <p className="text-sm max-w-xs leading-relaxed sm:text-right" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: 0 }}>
                 Every feature engineered with privacy-first principles. Your data belongs to you, and only you.
               </p>
             </div>
@@ -89,12 +89,12 @@ export default function FeaturesSection() {
 
                 {/* Title */}
                 <h3 className="section-heading text-[1.1rem] mb-3 transition-colors duration-300 group-hover:text-[var(--color-plasma-pink)]"
-                  style={{ letterSpacing: '-0.021px' }}>
+                  style={{ letterSpacing: 0 }}>
                   {feature.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '-0.012px' }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0 }}>
                   {feature.description}
                 </p>
 

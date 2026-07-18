@@ -79,7 +79,7 @@ export default function HowItWorksPage() {
                   <div className="flex-1 rule-line-full" />
                 </div>
 
-                <h1 className="hero-title text-[clamp(48px,7vw,96px)] text-white mb-6">
+                <h1 className="hero-title page-title text-white mb-6">
                   How it<br />
                   <span className="gradient-text">Works</span>
                 </h1>

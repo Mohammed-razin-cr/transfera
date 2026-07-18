@@ -67,7 +67,7 @@ export default function Navbar() {
     >
       <div
         className={`nav-shell relative z-20 ${scrolled ? 'nav-shell-scrolled' : ''}`}
-        style={{ borderRadius: '18px', maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px, 3vw, 28px)' }}
+        style={{ borderRadius: '12px', maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px, 3vw, 28px)' }}
       >
         <div className="flex items-center justify-between h-[60px]">
 
@@ -107,7 +107,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="hidden lg:flex items-center gap-4">
             <div className="status-badge">
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--color-plasma-pink)' }} />
+              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--color-status-online)' }} />
               Gateway Online
             </div>
             <a href="/live" className="btn-primary group" style={{ padding: '10px 22px', fontSize: '14px' }}>
@@ -122,7 +122,7 @@ export default function Navbar() {
 
           {/* Mobile toggle */}
           <button
-            className="icon-button h-10 w-10 rounded-xl lg:hidden"
+            className="icon-button h-10 w-10 rounded-lg lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
             aria-expanded={mobileOpen}

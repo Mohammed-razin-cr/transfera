@@ -89,7 +89,7 @@ export default function FeaturesPage() {
                   <div className="flex-1 rule-line-full" />
                 </div>
 
-                <h1 className="hero-title text-[clamp(48px,7vw,96px)] text-white mb-6">
+                <h1 className="hero-title page-title text-white mb-6">
                   Built for<br />
                   <span className="gradient-text">Modern</span><br />
                   Security
@@ -153,12 +153,12 @@ export default function FeaturesPage() {
 
                     {/* Title */}
                     <h2 className="section-heading text-[1.15rem] mb-3 transition-colors duration-300 group-hover:text-[var(--color-plasma-pink)]"
-                      style={{ letterSpacing: '-0.021px' }}>
+                      style={{ letterSpacing: 0 }}>
                       {feature.title}
                     </h2>
 
                     {/* Description */}
-                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '-0.012px' }}>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0 }}>
                       {feature.description}
                     </p>
 

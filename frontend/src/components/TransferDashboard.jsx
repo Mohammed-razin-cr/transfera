@@ -199,7 +199,7 @@ export default function TransferDashboard() {
             </motion.div>
 
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-              <h2 className="hero-title text-[clamp(40px,5.5vw,82px)] text-white leading-none">
+              <h2 className="hero-title dashboard-title text-white leading-none">
                 Transfer<br />
                 <span style={{
                   background: 'linear-gradient(90deg, #ff0068 0%, #ff69b4 45%, #dc143c 100%)',
@@ -209,7 +209,7 @@ export default function TransferDashboard() {
                 }}>Dashboard</span>
               </h2>
               <p className="text-sm max-w-xs leading-relaxed sm:text-right"
-                style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.012px' }}>
+                style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: 0 }}>
                 Monitor your data flow with real-time analytics and encrypted transfer visualization.
               </p>
             </motion.div>

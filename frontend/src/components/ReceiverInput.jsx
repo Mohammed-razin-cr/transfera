@@ -84,11 +84,11 @@ export default function ReceiverInput() {
               <span className="eyebrow-label">Access</span>
               <div className="flex-1 rule-line-full" />
             </div>
-            <h2 className="section-heading text-[clamp(40px,5vw,62px)] leading-none">
+            <h2 className="section-heading section-title leading-none">
               Receive a<br />
               <span className="gradient-text">Transfer</span>
             </h2>
-            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.012px' }}>
+            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: 0 }}>
               Enter the Access Key shared by the Origin Node to receive your encrypted file.
             </p>
           </motion.div>

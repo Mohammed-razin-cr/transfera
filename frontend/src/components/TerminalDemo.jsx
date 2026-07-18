@@ -98,11 +98,11 @@ export default function TerminalDemo() {
               <div className="flex-1 rule-line-full" />
             </div>
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-              <h2 className="section-heading text-[clamp(40px,5vw,62px)] leading-none">
+              <h2 className="section-heading section-title leading-none">
                 Terminal<br />
                 <span className="gradient-text">Demo</span>
               </h2>
-              <p className="text-sm max-w-xs leading-relaxed sm:text-right" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.012px' }}>
+              <p className="text-sm max-w-xs leading-relaxed sm:text-right" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: 0 }}>
                 See how a transfer flows in real-time. No accounts. No passwords. Just pure encryption.
               </p>
             </div>
