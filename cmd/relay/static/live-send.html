@@ -1068,7 +1068,9 @@ if(!window.isSecureContext){
   w.textContent='This page needs HTTPS (or localhost) to encrypt files. Put the Secure Gateway behind a reverse proxy with TLS, or access it locally.';
   document.body.prepend(w);
 }
-const CHUNK=256*1024;
+// 64 KB is safely under the WebRTC DataChannel message size limit across all browsers
+// (Chrome: 256KB, Firefox: 64KB, Safari: 64KB). Using 64KB ensures cross-browser compatibility.
+const CHUNK=64*1024;
 const NEGOTIATE_TIMEOUT_MS=5000;
 
 function $(id){return document.getElementById(id)}
@@ -1777,8 +1779,20 @@ async function streamFile(file,sendFn){
 }
 
 async function sendDC(plaintext){
-  while(dc.bufferedAmount>32*1024*1024){await sleep(5)}
-  dc.send(encrypt(plaintext,keyBytes));
+  // Guard against buffer overflow — wait until DataChannel drains below 8 MB
+  while(dc.bufferedAmount>8*1024*1024){await sleep(10)}
+  const ciphertext=encrypt(plaintext,keyBytes);
+  // Guard against browsers with strict per-message size limits (Firefox/Safari: 64KB)
+  if(ciphertext.byteLength<=65536){
+    dc.send(ciphertext);
+  } else {
+    // Fragment large messages into ≤64 KB frames
+    const MAX_FRAME=65536;
+    for(let off=0;off<ciphertext.byteLength;off+=MAX_FRAME){
+      while(dc.bufferedAmount>8*1024*1024){await sleep(10)}
+      dc.send(ciphertext.slice(off,off+MAX_FRAME));
+    }
+  }
 }
 
 function sendWS(plaintext){

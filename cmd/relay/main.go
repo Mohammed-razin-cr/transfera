@@ -743,9 +743,20 @@ func main() {
 
 	mux := http.NewServeMux()
 	staticFS, _ := fs.Sub(staticFiles, "static")
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFS))))
+	staticHandler := http.StripPrefix("/static/", http.FileServer(http.FS(staticFS)))
+	mux.HandleFunc("GET /static/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "public, max-age=86400")
+		staticHandler.ServeHTTP(w, r)
+	})
+
+	assetsHandler := http.FileServer(http.FS(web.FS()))
+	mux.HandleFunc("GET /assets/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/assets/" && r.URL.Path != "/assets/index.html" {
+			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		}
+		assetsHandler.ServeHTTP(w, r)
+	})
 	mux.Handle("GET /site/", http.StripPrefix("/site/", http.FileServer(http.FS(web.FS()))))
-	mux.Handle("GET /assets/", http.FileServer(http.FS(web.FS())))
 	mux.HandleFunc("GET /", s.handleLandingPage)
 	// SPA routes — serve index.html so React Router handles client-side navigation
 	mux.HandleFunc("GET /features", s.handleSPAPage)

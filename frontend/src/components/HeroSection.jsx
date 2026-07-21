@@ -27,6 +27,13 @@ const headlineLineVariants = {
 }
 
 export default function HeroSection() {
+  const scrollToSection = (id) => (e) => {
+    e.preventDefault()
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
   return (
     <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-20">
       <div className="absolute inset-0 pointer-events-none">
@@ -108,10 +115,15 @@ export default function HeroSection() {
                   </motion.span>
                 </span>
               </a>
-              <a href="#security" className="btn-secondary group w-full sm:w-auto">
+              <button
+                onClick={scrollToSection('security')}
+                className="btn-secondary group w-full sm:w-auto"
+                type="button"
+                aria-label="Scroll to security architecture section"
+              >
                 <Eye className="w-4 h-4" />
                 <span>View Architecture</span>
-              </a>
+              </button>
             </motion.div>
 
             <motion.div variants={itemVariants} className="flex flex-wrap gap-2 sm:gap-3">

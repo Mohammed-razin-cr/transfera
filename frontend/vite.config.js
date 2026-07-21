@@ -17,9 +17,20 @@ export default defineConfig({
   build: {
     outDir: '../web/assets',
     emptyOutDir: true,
+    target: 'es2020',
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       input: {
         main: './index.html'
+      },
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-ogl': ['ogl']
+        }
       }
     }
   }
