@@ -9,19 +9,33 @@ export default function MouseGlow() {
     if (!glow || !finePointer) return
 
     let frameId = null
-    let x = -700
-    let y = -700
+    let targetX = -700
+    let targetY = -700
+    let currentX = -700
+    let currentY = -700
 
-    const renderPosition = () => {
-      glow.style.transform = `translate3d(${x - 350}px, ${y - 350}px, 0)`
+    const render = () => {
+      // Fluid smooth exponential lerp damping
+      currentX += (targetX - currentX) * 0.12
+      currentY += (targetY - currentY) * 0.12
+
+      glow.style.transform = `translate3d(${currentX - 350}px, ${currentY - 350}px, 0)`
       glow.style.opacity = '1'
-      frameId = null
+
+      // Keep animation running smoothly until close to target
+      if (Math.abs(targetX - currentX) > 0.1 || Math.abs(targetY - currentY) > 0.1) {
+        frameId = requestAnimationFrame(render)
+      } else {
+        frameId = null
+      }
     }
 
     const handlePointerMove = (event) => {
-      x = event.clientX
-      y = event.clientY
-      if (frameId === null) frameId = requestAnimationFrame(renderPosition)
+      targetX = event.clientX
+      targetY = event.clientY
+      if (frameId === null) {
+        frameId = requestAnimationFrame(render)
+      }
     }
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true })

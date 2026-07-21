@@ -226,14 +226,15 @@ function Particles({
       program.uniforms.uTime.value = elapsed * 0.001
 
       if (moveParticlesOnHover) {
-        // Fluid interpolation (lerp) for smooth mouse tracking latency
-        currentMouseRef.current.x += (mouseRef.current.x - currentMouseRef.current.x) * 0.08
-        currentMouseRef.current.y += (mouseRef.current.y - currentMouseRef.current.y) * 0.08
+        // Delta-time weighted fluid exponential lerp for ultra-smooth tracking across all refresh rates
+        const lerpFactor = 1 - Math.exp(-0.0075 * deltaMs)
+        currentMouseRef.current.x += (mouseRef.current.x - currentMouseRef.current.x) * lerpFactor
+        currentMouseRef.current.y += (mouseRef.current.y - currentMouseRef.current.y) * lerpFactor
 
         program.uniforms.uMouse.value[0] = currentMouseRef.current.x
         program.uniforms.uMouse.value[1] = currentMouseRef.current.y
 
-        // Gently tilt the system in addition
+        // Gently tilt the system smoothly
         particles.position.x = currentMouseRef.current.x * 0.04
         particles.position.y = currentMouseRef.current.y * 0.04
       } else {
@@ -246,7 +247,7 @@ function Particles({
       if (!disableRotation) {
         particles.rotation.x = Math.sin(elapsed * 0.00015) * 0.08
         particles.rotation.y = Math.cos(elapsed * 0.0003) * 0.12
-        particles.rotation.z += 0.008 * speed
+        particles.rotation.z += (deltaMs * 0.0005) * speed
       }
 
       renderer.render({ scene: particles, camera })

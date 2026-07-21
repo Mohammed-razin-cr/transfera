@@ -78,8 +78,10 @@ export default function SecuritySection() {
           particles[i] = { ...p, from: p.to, to: Math.min(p.to + 1, 3), progress: 0 }
           if (p.to >= 3) { particles.splice(i, 1); continue }
         }
+        // Smooth sinusoidal transition between nodes
+        const easeP = (1 - Math.cos(p.progress * Math.PI)) / 2
         const fromX = margin + p.from * segmentWidth, toX = margin + p.to * segmentWidth
-        const x = fromX + (toX - fromX) * p.progress, y = h / 2 + p.yOffset
+        const x = fromX + (toX - fromX) * easeP, y = h / 2 + p.yOffset * Math.sin(p.progress * Math.PI)
         const pgrd = ctx.createRadialGradient(x, y, 0, x, y, 10)
         pgrd.addColorStop(0, 'rgba(255,0,104,0.7)'); pgrd.addColorStop(1, 'rgba(255,0,104,0)')
         ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.fillStyle = pgrd; ctx.fill()
