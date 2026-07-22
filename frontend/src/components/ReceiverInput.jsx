@@ -1,12 +1,24 @@
-import { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight, Key, AlertCircle, Loader2, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import QrScanner from 'qr-scanner'
+import { ArrowRight, Key, AlertCircle, Loader2, X, ScanLine, ImagePlus, Camera, CameraOff, ShieldCheck } from 'lucide-react'
+import { resolveTransferQr } from '../utils/transferQr'
 
 export default function ReceiverInput() {
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [scannerOpen, setScannerOpen] = useState(false)
+  const [scanState, setScanState] = useState('idle')
+  const [scanError, setScanError] = useState('')
   const inputRef = useRef(null)
+  const scanButtonRef = useRef(null)
+  const videoRef = useRef(null)
+  const scannerRef = useRef(null)
+  const fileInputRef = useRef(null)
+  const cameraReadyRef = useRef(false)
+  const lastScanRef = useRef('')
 
   function norm(p) { return p.toUpperCase().trim().replace(/\s+/g, ' ') }
 
@@ -22,6 +34,123 @@ export default function ReceiverInput() {
     let s = ''
     for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i])
     return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+  }
+
+  const closeScanner = useCallback(() => {
+    setScannerOpen(false)
+    window.setTimeout(() => scanButtonRef.current?.focus(), 0)
+  }, [])
+
+  const handleDecodedQr = useCallback((result) => {
+    const payload = typeof result === 'string' ? result : result?.data
+    if (!payload || payload === lastScanRef.current) return false
+    lastScanRef.current = payload
+
+    const transferUrl = resolveTransferQr(payload, window.location.origin)
+    if (!transferUrl) {
+      setScanError('This QR code is not a valid Transfera link.')
+      setScanState(cameraReadyRef.current ? 'ready' : 'error')
+      return false
+    }
+
+    setScanError('')
+    setScanState('success')
+    scannerRef.current?.stop()
+    window.setTimeout(() => window.location.assign(transferUrl), 300)
+    return true
+  }, [])
+
+  useEffect(() => {
+    if (!scannerOpen || !videoRef.current) return undefined
+
+    let active = true
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') closeScanner()
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+    cameraReadyRef.current = false
+    lastScanRef.current = ''
+    setScanError('')
+    setScanState('requesting')
+
+    let scanner
+
+    async function startScanner() {
+      try {
+        const hasCamera = await QrScanner.hasCamera()
+        if (!active) return
+        if (!hasCamera) {
+          setScanError('No camera was found. Choose a QR image instead.')
+          setScanState('error')
+          return
+        }
+
+        scanner = new QrScanner(
+          videoRef.current,
+          handleDecodedQr,
+          {
+            preferredCamera: 'environment',
+            maxScansPerSecond: 10,
+            highlightScanRegion: false,
+            highlightCodeOutline: true,
+            returnDetailedScanResult: true,
+            onDecodeError: () => {},
+          },
+        )
+        scannerRef.current = scanner
+        await scanner.start()
+        if (!active) return
+        cameraReadyRef.current = true
+        setScanState('ready')
+      } catch (cameraError) {
+        if (!active) return
+        const permissionDenied = cameraError?.name === 'NotAllowedError' || /permission|denied/i.test(String(cameraError))
+        const noCamera = cameraError?.name === 'NotFoundError' || /not found|no camera/i.test(String(cameraError))
+        setScanError(
+          !window.isSecureContext
+            ? 'Camera scanning requires HTTPS or localhost.'
+            : permissionDenied
+              ? 'Camera access was denied. Allow access or choose a QR image.'
+              : noCamera
+                ? 'No camera was found. Choose a QR image instead.'
+                : 'The camera could not start. Choose a QR image instead.',
+        )
+        setScanState('error')
+      }
+    }
+
+    startScanner()
+
+    return () => {
+      active = false
+      cameraReadyRef.current = false
+      scanner?.stop()
+      scanner?.destroy()
+      scannerRef.current = null
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [closeScanner, handleDecodedQr, scannerOpen])
+
+  async function scanQrImage(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    setScanError('')
+    setScanState('image')
+    try {
+      const result = await QrScanner.scanImage(file, { returnDetailedScanResult: true })
+      if (!handleDecodedQr(result)) {
+        setScanState(cameraReadyRef.current ? 'ready' : 'error')
+      }
+    } catch {
+      setScanError('No readable QR code was found in that image.')
+      setScanState(cameraReadyRef.current ? 'ready' : 'error')
+    }
   }
 
   async function submit() {
@@ -146,6 +275,16 @@ export default function ReceiverInput() {
                       : <ArrowRight className="w-3.5 h-3.5" />}
                   </span>
                 </button>
+                <button
+                  ref={scanButtonRef}
+                  type="button"
+                  className="btn-secondary group whitespace-nowrap sm:min-w-[128px]"
+                  onClick={() => setScannerOpen(true)}
+                  aria-haspopup="dialog"
+                >
+                  <ScanLine className="h-4 w-4" />
+                  <span>Scan QR</span>
+                </button>
               </form>
 
               {error && (
@@ -164,6 +303,100 @@ export default function ReceiverInput() {
 
         </div>
       </div>
+
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {scannerOpen && (
+            <motion.div
+              className="qr-scanner-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            >
+              <div className="qr-scanner-backdrop" aria-hidden="true" onClick={closeScanner} />
+              <motion.section
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="qr-scanner-title"
+                aria-describedby="qr-scanner-status"
+                className="qr-scanner-dialog"
+                initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="qr-scanner-header">
+                  <div>
+                    <span className="eyebrow-label">Secure pairing</span>
+                    <h3 id="qr-scanner-title">Scan Transfer QR</h3>
+                  </div>
+                  <button type="button" className="icon-button h-10 w-10 rounded-lg" onClick={closeScanner} aria-label="Close QR scanner" autoFocus>
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="qr-scanner-stage">
+                  <video ref={videoRef} muted playsInline aria-label="QR scanner camera preview" />
+                  <div className="qr-scanner-guide" aria-hidden="true">
+                    <span className="qr-scanner-line" />
+                  </div>
+                  {(scanState === 'requesting' || scanState === 'image') && (
+                    <div className="qr-scanner-stage-state">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
+                  )}
+                  {scanState === 'error' && (
+                    <div className="qr-scanner-stage-state">
+                      <CameraOff className="h-7 w-7" />
+                    </div>
+                  )}
+                  {scanState === 'success' && (
+                    <div className="qr-scanner-stage-state qr-scanner-success">
+                      <ShieldCheck className="h-8 w-8" />
+                    </div>
+                  )}
+                </div>
+
+                <div id="qr-scanner-status" className="qr-scanner-status" aria-live="polite">
+                  {scanState === 'requesting' && <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Requesting camera</>}
+                  {scanState === 'ready' && <><Camera className="h-3.5 w-3.5" /> Camera ready</>}
+                  {scanState === 'image' && <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Reading QR image</>}
+                  {scanState === 'success' && <><ShieldCheck className="h-3.5 w-3.5" /> Transfer QR verified</>}
+                  {scanState === 'error' && <><CameraOff className="h-3.5 w-3.5" /> Camera unavailable</>}
+                </div>
+
+                {scanError && (
+                  <div className="qr-scanner-error" role="alert">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span>{scanError}</span>
+                  </div>
+                )}
+
+                <div className="qr-scanner-footer">
+                  <button type="button" className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
+                    <ImagePlus className="h-4 w-4" />
+                    <span>Choose QR Image</span>
+                  </button>
+                  <span className="qr-scanner-trust">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Transfera links only
+                  </span>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    aria-label="Choose an image containing a Transfera QR code"
+                    onChange={scanQrImage}
+                  />
+                </div>
+              </motion.section>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </section>
   )
 }
