@@ -127,17 +127,17 @@ export default function HeroSection() {
             </motion.div>
 
             <motion.div variants={itemVariants} className="flex flex-wrap gap-2 sm:gap-3">
-              <span className="hero-trust-pill">
-                <Radio className="h-3 w-3" style={{ color: 'var(--color-status-online)' }} />
-                Secure Gateway Online
+              <span className="hero-trust-pill" style={{ borderColor: 'rgba(69,214,160,0.2)', background: 'rgba(69,214,160,0.05)' }}>
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-status-online)', boxShadow: '0 0 6px rgba(69,214,160,0.6)' }} />
+                <span style={{ color: 'rgba(255,255,255,0.7)' }}>Gateway Online</span>
               </span>
               <span className="hero-trust-pill">
                 <ShieldCheck className="h-3 w-3" style={{ color: 'var(--color-signal-cyan)' }} />
-                End-to-end encrypted
+                <span style={{ color: 'rgba(255,255,255,0.7)' }}>E2E Encrypted</span>
               </span>
               <span className="hero-trust-pill">
                 <Fingerprint className="h-3 w-3" style={{ color: 'var(--color-plasma-pink)' }} />
-                No account required
+                <span style={{ color: 'rgba(255,255,255,0.7)' }}>No Account</span>
               </span>
             </motion.div>
           </motion.div>

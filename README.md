@@ -52,6 +52,15 @@ go run ./cmd/relay
 
 Server starts at `http://localhost:8088`. Transfer UI at `/live`.
 
+### Docker
+
+```bash
+docker compose up -d --build
+```
+
+The gateway is available at `http://localhost:8088`. This builds the local
+source so Docker setup does not depend on pulling a registry image.
+
 ---
 
 ## Security model

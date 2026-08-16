@@ -1,5 +1,5 @@
 package web
-// Trigger rebuild: 6
+// Trigger rebuild: 7
 
 import (
 	"embed"

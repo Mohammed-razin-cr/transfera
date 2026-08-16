@@ -106,9 +106,9 @@
   }
 
   .glow-card:hover {
-    box-shadow: var(--shadow-xl);
-    border-color: rgba(242,10,103,0.22);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-xl), 0 0 0 1px rgba(242,10,103,0.1) inset;
+    border-color: rgba(242,10,103,0.2);
+    transform: translateY(-2px);
   }
 
   .glow-card-subtle {
@@ -120,9 +120,9 @@
   }
 
   .glow-card-subtle:hover {
-    box-shadow: var(--shadow-xl-2);
-    border-color: rgba(242,10,103,0.18);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-xl-2), 0 0 0 1px rgba(242,10,103,0.08) inset;
+    border-color: rgba(242,10,103,0.2);
+    transform: translateY(-2px);
   }
 
   /* ── Pill Button (Primary filled) ── */
@@ -361,9 +361,9 @@
   }
 
   .feature-card:hover {
-    box-shadow: var(--shadow-xl-2);
-    border-color: rgba(242,10,103,0.18);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-xl-2), 0 0 0 1px rgba(242,10,103,0.14) inset;
+    border-color: rgba(242,10,103,0.22);
+    transform: translateY(-2px);
   }
 
   /* ── Nav shell ── */
@@ -424,23 +424,25 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 7px 14px;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 8px;
-    background: rgba(255,255,255,0.025);
+    background: rgba(255,255,255,0.022);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
-    font-size: 12px;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.58);
   }
 
   .hero-trust-pill:hover {
-    border-color: rgba(255,255,255,0.16);
-    background: rgba(255,255,255,0.045);
+    border-color: rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.05);
+    transform: translateY(-1px);
+    color: rgba(255,255,255,0.85);
   }
 
   /* ── Icon button ── */
@@ -816,6 +818,27 @@ main > section:not(:first-child) {
 .animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
 .animate-scan       { animation: scan-line 3s ease-in-out infinite; }
+
+/* ── Improved card hover with glow trace ── */
+.feature-card:hover {
+  box-shadow: var(--shadow-xl-2), inset 0 0 0 1px rgba(242,10,103,0.12);
+  border-color: rgba(242,10,103,0.2);
+  transform: translateY(-2px);
+}
+
+/* ── Terminal line hover highlight ── */
+.terminal-line-hover:hover {
+  background: rgba(255,255,255,0.025);
+  border-radius: 4px;
+}
+
+/* ── Number monospace small ── */
+.feature-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
 
 /* ── Responsive Feature Grid ── */
 .features-grid {

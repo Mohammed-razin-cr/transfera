@@ -8,5 +8,5 @@ RUN CGO_ENABLED=0 go build -ldflags "-X main.buildVersion=${VERSION}" -o /gatewa
 
 FROM alpine:3.19
 COPY --from=build /gateway /gateway
-EXPOSE 8080
+EXPOSE 8088
 ENTRYPOINT ["/gateway"]
