@@ -215,156 +215,156 @@ export default function TransferDashboard() {
             </motion.div>
           </motion.div>
 
-          {/* ── Main Layout ── */}
-          <div className="grid lg:grid-cols-3 gap-5">
+            {/* ── Main Layout ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-            {/* ── Chart Card (spans 2 cols) ── */}
+              {/* ── Chart Card (spans 2 cols) ── */}
+              <motion.div
+                initial={{ opacity: 0, x: -28 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-2 overflow-hidden relative"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(30,3,19,0.95) 0%, rgba(16,2,10,0.98) 100%)',
+                  borderRadius: 'var(--radius-cards)',
+                  border: '1px solid rgba(255,0,104,0.15)',
+                  boxShadow: '0 0 60px rgba(255,0,104,0.06)',
+                  transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'rgba(255,0,104,0.32)'
+                  e.currentTarget.style.boxShadow = '0 0 80px rgba(255,0,104,0.12), rgba(255,0,104,0.4) 0px 0px 33px 0px'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'rgba(255,0,104,0.15)'
+                  e.currentTarget.style.boxShadow = '0 0 60px rgba(255,0,104,0.06)'
+                }}
+              >
+                {/* Card header */}
+                <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4"
+                  style={{ borderBottom: '1px solid rgba(255,0,104,0.1)', background: 'rgba(16,2,10,0.6)' }}>
+                  <div className="flex items-center gap-2.5 sm:gap-3">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: 'rgba(255,0,104,0.12)', border: '1px solid rgba(255,0,104,0.25)' }}>
+                      <Activity className="w-3.5 h-3.5" style={{ color: '#ff69b4' }} />
+                    </div>
+                    <span className="font-semibold text-[10px] sm:text-[11px] tracking-widest uppercase truncate" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                      Transfer Throughput
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    {/* Legend */}
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="w-4 sm:w-6 h-0.5 rounded-full" style={{ background: '#ff0068' }} />
+                      <span className="font-mono text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Upload</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="w-4 sm:w-6 h-0.5 rounded-full" style={{ background: 'rgba(255,105,180,0.5)' }} />
+                      <span className="font-mono text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Download</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#ff0068' }} />
+                      <span className="font-mono text-[9px] sm:text-[10px]" style={{ color: 'rgba(255,0,104,0.8)' }}>Live</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Canvas chart */}
+                <div className="relative">
+                  <canvas ref={canvasRef} className="w-full h-48 sm:h-56"
+                    style={{ background: 'linear-gradient(180deg, rgba(16,2,10,0.98) 0%, rgba(30,3,19,0.95) 100%)' }} />
+                  {/* Overlay corner label */}
+                  <div className="absolute top-3 left-4">
+                    <span className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'rgba(255,0,104,0.4)' }}>
+                      MB/s
+                    </span>
+                  </div>
+                </div>
+
+                {/* Time axis */}
+                <div className="flex justify-between px-3 sm:px-6 py-2.5 sm:py-3 overflow-x-hidden"
+                  style={{ borderTop: '1px solid rgba(255,0,104,0.08)', background: 'rgba(16,2,10,0.5)' }}>
+                  {['0s', '10s', '20s', '30s', '40s', '50s', '60s'].map((t, idx) => (
+                    <span key={t} className={`font-mono text-[9px] sm:text-[10px] ${idx % 2 !== 0 ? 'hidden xs:inline' : ''}`} style={{ color: 'rgba(255,255,255,0.2)' }}>{t}</span>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* ── Stats Column ── */}
+              <motion.div
+                initial={{ opacity: 0, x: 28 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+                style={{
+                  background: 'linear-gradient(160deg, rgba(30,3,19,0.95) 0%, rgba(16,2,10,0.98) 100%)',
+                  borderRadius: 'var(--radius-cards)',
+                  border: '1px solid rgba(255,0,104,0.12)',
+                }}
+              >
+                {stats.map((stat, index) => (
+                  <div
+                    key={index}
+                    className="group flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-5 cursor-default transition-all duration-300"
+                    style={{ borderBottom: index < stats.length - 1 ? '1px solid rgba(255,0,104,0.08)' : 'none' }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,0,104,0.05)'}
+                    onMouseLeave={e => e.currentTarget.style.background = ''}
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className="flex shrink-0 items-center justify-center w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl transition-all duration-300 group-hover:scale-110"
+                        style={{ background: stat.bg, border: `1px solid ${stat.border}` }}>
+                        <stat.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color: stat.color }} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-[9px] sm:text-[10px] tracking-widest uppercase mb-0.5 sm:mb-1 truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                          {stat.label}
+                        </p>
+                        <p className="section-heading text-lg sm:text-xl leading-none">{stat.value}</p>
+                      </div>
+                    </div>
+                    <span className="font-mono text-[9px] sm:text-[10px] tracking-widest px-2 py-0.5 sm:py-1 rounded-md shrink-0 ml-2"
+                      style={{ color: stat.color, background: stat.bg, border: `1px solid ${stat.border}` }}>
+                      {stat.unit}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* ── Bottom CTA row (mirrors Hero CTA) ── */}
             <motion.div
-              initial={{ opacity: 0, x: -28 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-2 overflow-hidden relative"
-              style={{
-                background: 'linear-gradient(135deg, rgba(30,3,19,0.95) 0%, rgba(16,2,10,0.98) 100%)',
-                borderRadius: 'var(--radius-cards)',
-                border: '1px solid rgba(255,0,104,0.15)',
-                boxShadow: '0 0 60px rgba(255,0,104,0.06)',
-                transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'rgba(255,0,104,0.32)'
-                e.currentTarget.style.boxShadow = '0 0 80px rgba(255,0,104,0.12), rgba(255,0,104,0.4) 0px 0px 33px 0px'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(255,0,104,0.15)'
-                e.currentTarget.style.boxShadow = '0 0 60px rgba(255,0,104,0.06)'
-              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="mt-8 sm:mt-12 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6"
+              style={{ borderTop: '1px solid rgba(255,0,104,0.1)', paddingTop: '1.5rem' }}
             >
-              {/* Card header */}
-              <div className="flex items-center justify-between px-6 py-4"
-                style={{ borderBottom: '1px solid rgba(255,0,104,0.1)', background: 'rgba(16,2,10,0.6)' }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                    style={{ background: 'rgba(255,0,104,0.12)', border: '1px solid rgba(255,0,104,0.25)' }}>
-                    <Activity className="w-3.5 h-3.5" style={{ color: '#ff69b4' }} />
+              <div className="flex flex-wrap gap-2.5 sm:gap-4">
+                {[
+                  { dot: '#ff0068', label: 'Crimson Core', sub: 'Primary encryption layer' },
+                  { dot: '#ff69b4', label: 'Hot Pink Bridge', sub: 'WebRTC signaling' },
+                  { dot: '#dc143c', label: 'Deep Crimson', sub: 'Vault storage mode' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full"
+                    style={{ background: 'rgba(30,3,19,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                    <div className="w-2 h-2 rounded-full shrink-0 animate-pulse" style={{ background: item.dot }} />
+                    <div className="truncate">
+                      <span className="text-[10px] sm:text-[11px] font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>{item.label}</span>
+                      <span className="hidden md:inline ml-2 text-[9px] sm:text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{item.sub}</span>
+                    </div>
                   </div>
-                  <span className="font-semibold text-[11px] tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                    Transfer Throughput
-                  </span>
-                </div>
-                <div className="flex items-center gap-4">
-                  {/* Legend */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 rounded-full" style={{ background: '#ff0068' }} />
-                    <span className="font-mono text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Upload</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 rounded-full" style={{ background: 'rgba(255,105,180,0.5)' }} />
-                    <span className="font-mono text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Download</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#ff0068' }} />
-                    <span className="font-mono text-[10px]" style={{ color: 'rgba(255,0,104,0.8)' }}>Live</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Canvas chart */}
-              <div className="relative">
-                <canvas ref={canvasRef} className="w-full h-56"
-                  style={{ background: 'linear-gradient(180deg, rgba(16,2,10,0.98) 0%, rgba(30,3,19,0.95) 100%)' }} />
-                {/* Overlay corner label */}
-                <div className="absolute top-3 left-4">
-                  <span className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'rgba(255,0,104,0.4)' }}>
-                    MB/s
-                  </span>
-                </div>
-              </div>
-
-              {/* Time axis */}
-              <div className="flex justify-between px-6 py-3"
-                style={{ borderTop: '1px solid rgba(255,0,104,0.08)', background: 'rgba(16,2,10,0.5)' }}>
-                {['0s', '10s', '20s', '30s', '40s', '50s', '60s'].map((t) => (
-                  <span key={t} className="font-mono text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>{t}</span>
                 ))}
               </div>
+              <a href="/live" className="btn-primary group w-full sm:w-auto">
+                <span>Open Dashboard</span>
+                <span className="btn-icon">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </span>
+              </a>
             </motion.div>
-
-            {/* ── Stats Column ── */}
-            <motion.div
-              initial={{ opacity: 0, x: 28 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden"
-              style={{
-                background: 'linear-gradient(160deg, rgba(30,3,19,0.95) 0%, rgba(16,2,10,0.98) 100%)',
-                borderRadius: 'var(--radius-cards)',
-                border: '1px solid rgba(255,0,104,0.12)',
-              }}
-            >
-              {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className="group flex items-center justify-between px-6 py-5 cursor-default transition-all duration-300"
-                  style={{ borderBottom: index < stats.length - 1 ? '1px solid rgba(255,0,104,0.08)' : 'none' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,0,104,0.05)'}
-                  onMouseLeave={e => e.currentTarget.style.background = ''}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex shrink-0 items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 group-hover:scale-110"
-                      style={{ background: stat.bg, border: `1px solid ${stat.border}` }}>
-                      <stat.icon className="w-4 h-4" style={{ color: stat.color }} />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[10px] tracking-widest uppercase mb-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                        {stat.label}
-                      </p>
-                      <p className="section-heading text-xl leading-none">{stat.value}</p>
-                    </div>
-                  </div>
-                  <span className="font-mono text-[10px] tracking-widest px-2 py-1 rounded-md"
-                    style={{ color: stat.color, background: stat.bg, border: `1px solid ${stat.border}` }}>
-                    {stat.unit}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* ── Bottom CTA row (mirrors Hero CTA) ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-12 flex flex-wrap items-center justify-between gap-6"
-            style={{ borderTop: '1px solid rgba(255,0,104,0.1)', paddingTop: '2rem' }}
-          >
-            <div className="flex flex-wrap gap-4">
-              {[
-                { dot: '#ff0068', label: 'Crimson Core', sub: 'Primary encryption layer' },
-                { dot: '#ff69b4', label: 'Hot Pink Bridge', sub: 'WebRTC signaling' },
-                { dot: '#dc143c', label: 'Deep Crimson', sub: 'Vault storage mode' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 px-4 py-2.5 rounded-full"
-                  style={{ background: 'rgba(30,3,19,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: item.dot }} />
-                  <div>
-                    <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>{item.label}</span>
-                    <span className="ml-2 text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{item.sub}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <a href="/live" className="btn-primary group">
-              <span>Open Dashboard</span>
-              <span className="btn-icon">
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </span>
-            </a>
-          </motion.div>
 
         </div>
       </div>

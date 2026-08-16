@@ -39,11 +39,11 @@ export default function HeroSection() {
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse at 12% 25%, rgba(242,10,103,0.085) 0%, transparent 52%)' }}
+          style={{ background: 'radial-gradient(ellipse at 50% 30%, rgba(242,10,103,0.09) 0%, transparent 55%)' }}
         />
         <div
           className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse at 78% 55%, rgba(99,204,232,0.04) 0%, transparent 48%)' }}
+          style={{ background: 'radial-gradient(ellipse at 80% 60%, rgba(99,204,232,0.035) 0%, transparent 48%)' }}
         />
         <div
           className="absolute inset-0"
@@ -61,52 +61,49 @@ export default function HeroSection() {
         style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(242,10,103,0.07) 50%, transparent 100%)', top: '30%' }}
       />
 
-      <div className="section-container relative z-10 py-8 sm:py-16 lg:py-20">
+      <div className="section-container relative z-10 py-12 sm:py-16 lg:py-24">
         <div className="section-inner">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="max-w-5xl"
+            className="max-w-4xl mx-auto flex flex-col items-center text-center"
           >
-            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-5 sm:mb-7 max-w-3xl">
-              <span className="eyebrow-label flex items-center gap-2">
-                <ShieldCheck className="w-3 h-3" />
+            <motion.div variants={itemVariants} className="inline-flex items-center justify-center gap-3 mb-6 sm:mb-7">
+              <span className="eyebrow-label flex items-center gap-2 px-3.5 py-1.5 rounded-full"
+                style={{ background: 'rgba(255,0,104,0.08)', border: '1px solid rgba(255,0,104,0.2)' }}>
+                <ShieldCheck className="w-3.5 h-3.5" style={{ color: 'var(--color-plasma-pink)' }} />
                 Private transfer protocol - v3
               </span>
-              <div
-                className="flex-1 h-px"
-                style={{ background: 'linear-gradient(90deg, rgba(255,0,104,0.4), transparent)' }}
-              />
             </motion.div>
 
             <motion.h1
               variants={headlineVariants}
-              className="hero-title hero-title-xl text-white mb-5 sm:mb-6"
+              className="hero-title hero-title-xl text-white mb-5 sm:mb-6 flex flex-col items-center text-center"
               aria-label="Secure File Transfer Between Devices."
             >
-              <span className="hero-title-line-mask" aria-hidden="true">
-                <motion.span variants={headlineLineVariants} className="hero-title-line">
+              <span className="hero-title-line-mask text-center" aria-hidden="true">
+                <motion.span variants={headlineLineVariants} className="hero-title-line text-center">
                   Secure File
                 </motion.span>
               </span>
-              <span className="hero-title-line-mask" aria-hidden="true">
-                <motion.span variants={headlineLineVariants} className="hero-title-line gradient-text hero-title-accent">
+              <span className="hero-title-line-mask text-center" aria-hidden="true">
+                <motion.span variants={headlineLineVariants} className="hero-title-line gradient-text hero-title-accent mx-auto text-center">
                   Transfer
                 </motion.span>
               </span>
-              <span className="hero-title-line-mask" aria-hidden="true">
-                <motion.span variants={headlineLineVariants} className="hero-title-line">
+              <span className="hero-title-line-mask text-center" aria-hidden="true">
+                <motion.span variants={headlineLineVariants} className="hero-title-line text-center">
                   Between Devices.
                 </motion.span>
               </span>
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="hero-subtitle mb-7 sm:mb-8 max-w-xl">
+            <motion.p variants={itemVariants} className="hero-subtitle mb-7 sm:mb-8 max-w-xl mx-auto text-center">
               Send files from phone to PC or between any browsers with end-to-end encryption, QR pairing, and no account required.
             </motion.p>
 
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-7 sm:mb-8">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-7 sm:mb-8 w-full sm:w-auto">
               <a href="/live" className="btn-primary group w-full sm:w-auto">
                 <span>Start Secure Transfer</span>
                 <span className="btn-icon">
@@ -126,7 +123,7 @@ export default function HeroSection() {
               </button>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-2 sm:gap-3">
+            <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               <span className="hero-trust-pill" style={{ borderColor: 'rgba(69,214,160,0.2)', background: 'rgba(69,214,160,0.05)' }}>
                 <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-status-online)', boxShadow: '0 0 6px rgba(69,214,160,0.6)' }} />
                 <span style={{ color: 'rgba(255,255,255,0.7)' }}>Gateway Online</span>

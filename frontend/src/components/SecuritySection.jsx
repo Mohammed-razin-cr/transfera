@@ -41,7 +41,9 @@ export default function SecuritySection() {
       time += 0.018 * frameScale
       spawnClock += deltaMs
       const w = canvas.offsetWidth, h = canvas.offsetHeight
-      const margin = w < 480 ? 36 : 72
+      const isNarrow = w < 480
+      const isVeryNarrow = w < 360
+      const margin = isVeryNarrow ? 24 : isNarrow ? 32 : 72
       const segmentWidth = (w - 2 * margin) / 3
 
       // Draw connections
@@ -82,26 +84,30 @@ export default function SecuritySection() {
         const easeP = (1 - Math.cos(p.progress * Math.PI)) / 2
         const fromX = margin + p.from * segmentWidth, toX = margin + p.to * segmentWidth
         const x = fromX + (toX - fromX) * easeP, y = h / 2 + p.yOffset * Math.sin(p.progress * Math.PI)
-        const pgrd = ctx.createRadialGradient(x, y, 0, x, y, 10)
+        const pgrd = ctx.createRadialGradient(x, y, 0, x, y, isNarrow ? 8 : 10)
         pgrd.addColorStop(0, 'rgba(255,0,104,0.7)'); pgrd.addColorStop(1, 'rgba(255,0,104,0)')
-        ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.fillStyle = pgrd; ctx.fill()
-        ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.fillStyle = '#ff0068'; ctx.fill()
+        ctx.beginPath(); ctx.arc(x, y, isNarrow ? 8 : 10, 0, Math.PI * 2); ctx.fillStyle = pgrd; ctx.fill()
+        ctx.beginPath(); ctx.arc(x, y, isNarrow ? 2.5 : 3.5, 0, Math.PI * 2); ctx.fillStyle = '#ff0068'; ctx.fill()
       }
 
       // Nodes
       nodes.forEach((node, i) => {
         const nx = margin + i * segmentWidth, ny = h / 2
         const pulse = Math.sin(time * 1.5 + i * 0.8) * 0.5 + 0.5
-        const outerR = 32 + pulse * 6
+        const baseOuterR = isVeryNarrow ? 20 : isNarrow ? 24 : 32
+        const outerR = baseOuterR + pulse * 4
+        const innerR = isVeryNarrow ? 8 : isNarrow ? 10 : 12
         const ogrd = ctx.createRadialGradient(nx, ny, 0, nx, ny, outerR)
         ogrd.addColorStop(0, `rgba(255,0,104,${0.1 + pulse * 0.06})`); ogrd.addColorStop(1, 'rgba(255,0,104,0)')
         ctx.beginPath(); ctx.arc(nx, ny, outerR, 0, Math.PI * 2); ctx.fillStyle = ogrd; ctx.fill()
-        ctx.beginPath(); ctx.arc(nx, ny, 12, 0, Math.PI * 2); ctx.fillStyle = 'rgba(16,2,10,0.96)'; ctx.fill()
+        ctx.beginPath(); ctx.arc(nx, ny, innerR, 0, Math.PI * 2); ctx.fillStyle = 'rgba(16,2,10,0.96)'; ctx.fill()
         ctx.strokeStyle = node.color; ctx.lineWidth = 1.5; ctx.stroke()
-        ctx.beginPath(); ctx.arc(nx, ny - 3, 4, 0, Math.PI * 2)
+        ctx.beginPath(); ctx.arc(nx, ny - 2, isNarrow ? 3 : 4, 0, Math.PI * 2)
         ctx.fillStyle = `rgba(255,0,104,${0.15 + pulse * 0.12})`; ctx.fill()
-        ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '400 9px monospace'; ctx.textAlign = 'center'
-        node.label.split('\n').forEach((line, li) => ctx.fillText(line, nx, ny + 30 + li * 13))
+        ctx.fillStyle = 'rgba(255,255,255,0.45)';
+        ctx.font = isVeryNarrow ? '400 8px monospace' : isNarrow ? '400 8.5px monospace' : '400 9px monospace'
+        ctx.textAlign = 'center'
+        node.label.split('\n').forEach((line, li) => ctx.fillText(line, nx, ny + (isNarrow ? 22 : 30) + li * (isNarrow ? 11 : 13)))
       })
 
     }

@@ -267,7 +267,7 @@ export default function ReceiverInput() {
                     </button>
                   )}
                 </div>
-                <button type="submit" disabled={isSubmitting} className="btn-primary group whitespace-nowrap sm:min-w-[174px]">
+                <button type="submit" disabled={isSubmitting} className="btn-primary group whitespace-nowrap w-full sm:w-auto sm:min-w-[174px]">
                   <span>{isSubmitting ? 'Checking Key' : 'Open Transfer'}</span>
                   <span className="btn-icon">
                     {isSubmitting
@@ -278,7 +278,7 @@ export default function ReceiverInput() {
                 <button
                   ref={scanButtonRef}
                   type="button"
-                  className="btn-secondary group whitespace-nowrap sm:min-w-[128px]"
+                  className="btn-secondary group whitespace-nowrap w-full sm:w-auto sm:min-w-[128px]"
                   onClick={() => setScannerOpen(true)}
                   aria-haspopup="dialog"
                 >
