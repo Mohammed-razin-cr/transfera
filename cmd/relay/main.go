@@ -96,6 +96,7 @@ func newLogger(format string) *slog.Logger {
 const (
 	maxUploadSize = 500 << 20
 	fileExpiry    = 10 * time.Minute
+	maxRecipients = 10
 )
 
 var (
@@ -347,8 +348,14 @@ func (room *Room) AddClient(conn *websocket.Conn, isOrigin bool) bool {
 	if isOrigin && room.isOrigin {
 		return false // Origin already exists
 	}
-	if !isOrigin && len(room.clients) >= 10 {
-		return false // Max 10 recipients
+	if !isOrigin {
+		recipients := len(room.clients)
+		if room.isOrigin {
+			recipients--
+		}
+		if recipients >= maxRecipients {
+			return false
+		}
 	}
 	room.clients = append(room.clients, conn)
 	if isOrigin {

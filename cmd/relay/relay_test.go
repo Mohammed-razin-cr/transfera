@@ -118,6 +118,23 @@ func TestRoomAddClientLimit(t *testing.T) {
 	}
 }
 
+func TestRoomAllowsTenRecipientsWithOrigin(t *testing.T) {
+	room := &Room{clients: make([]*websocket.Conn, 0, maxRecipients+1)}
+	if !room.AddClient(&websocket.Conn{}, true) {
+		t.Fatal("origin should be allowed")
+	}
+
+	for i := 0; i < maxRecipients; i++ {
+		if !room.AddClient(&websocket.Conn{}, false) {
+			t.Fatalf("recipient %d should be allowed", i+1)
+		}
+	}
+
+	if room.AddClient(&websocket.Conn{}, false) {
+		t.Fatal("recipient above the limit should be rejected")
+	}
+}
+
 func TestRoomCleanup(t *testing.T) {
 	rm := &RoomManager{rooms: make(map[string]*Room), log: newTestLogger()}
 
