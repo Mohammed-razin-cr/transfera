@@ -1,13 +1,10 @@
 import { motion } from 'framer-motion'
-import { Wifi, Lock, QrCode, Database, FolderSync, BarChart3, ArrowUpRight } from 'lucide-react'
+import { Wifi, Lock, QrCode, ArrowUpRight } from 'lucide-react'
 
 const features = [
   { icon: Wifi,       num: '01', title: 'Direct Device-to-Device',  description: 'Files flow directly between your devices through encrypted WebRTC channels. No intermediate servers ever touch your data.', accent: '#f20a67' },
   { icon: Lock,       num: '02', title: 'End-to-End Encryption',    description: 'NaCl secretbox with Poly1305 + XSalsa20. 256-bit keys derived from your Access Key. Zero-knowledge protection.', accent: '#63cce8' },
   { icon: QrCode,     num: '03', title: 'QR Code Pairing',          description: 'Scan a QR code to instantly pair devices. No account creation, no password memorization, no friction.', accent: '#f20a67' },
-  { icon: Database,   num: '04', title: 'Temporary Vault Storage',  description: 'Vault Storage mode holds encrypted files for 10 minutes when the Destination Node is offline. Zero persistent storage.', accent: '#45d6a0' },
-  { icon: FolderSync, num: '05', title: 'Multi-File Sharing',       description: 'Send multiple files or entire folders in one batch. Auto-zipped for DirectLink, native for Vault Storage.', accent: '#f20a67' },
-  { icon: BarChart3,  num: '06', title: 'Real-Time Analytics',      description: 'Monitor transfer speed, progress, and encryption status in real-time. Full visibility, zero compromise.', accent: '#63cce8' },
 ]
 
 const containerVariants = {

@@ -191,12 +191,8 @@ export default function ReceiverInput() {
   }
 
   return (
-    <section className="relative py-20 sm:py-24 lg:py-32">
+    <section className="relative py-16 sm:py-20 lg:py-24">
       <div className="absolute left-0 top-0 right-0 rule-line-full" />
-
-      {/* Ambient glow */}
-      <div className="absolute right-0 top-0 w-[400px] h-[400px] pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(255,0,104,0.06) 0%, transparent 70%)', filter: 'blur(60px)' }} />
 
       <div className="section-container relative z-10">
         <div className="section-inner">
@@ -207,18 +203,12 @@ export default function ReceiverInput() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7 }}
-            className="mb-12 sm:mb-16"
+            className="mb-8 sm:mb-10"
           >
-            <div className="flex items-center gap-5 mb-6">
-              <span className="eyebrow-label">Access</span>
-              <div className="flex-1 rule-line-full" />
-            </div>
-            <h2 className="section-heading section-title leading-none">
-              Receive a<br />
-              <span className="gradient-text">Transfer</span>
-            </h2>
+            <span className="eyebrow-label">Receive</span>
+            <h2 className="section-heading mt-4">Open a shared transfer</h2>
             <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: 0 }}>
-              Enter the Access Key shared by the Origin Node to receive your encrypted file.
+              Enter an Access Key or scan the QR code from the sending device.
             </p>
           </motion.div>
 

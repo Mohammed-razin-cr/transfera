@@ -50,7 +50,6 @@ export default function Navbar() {
   }, [mobileOpen])
 
   const navLinks = [
-    { label: 'Features',     href: '/features' },
     { label: 'How it works', href: '/how-it-works' },
     { label: 'Security',     href: '/security' },
     { label: 'FAQ',          href: '/faq' },
@@ -91,7 +90,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav links */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-7">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
@@ -105,13 +104,9 @@ export default function Navbar() {
           </div>
 
           {/* CTA */}
-          <div className="hidden lg:flex items-center gap-4">
-            <div className="status-badge">
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--color-status-online)' }} />
-              Gateway Online
-            </div>
+          <div className="hidden lg:flex items-center">
             <a href="/live" className="btn-primary group" style={{ padding: '10px 22px', fontSize: '14px' }}>
-              <span>Start Transfer</span>
+              <span>Start transfer</span>
               <span className="btn-icon" style={{ width: '20px', height: '20px' }}>
                 <motion.div whileHover={{ x: 2, y: -2 }} transition={{ duration: 0.2 }}>
                   <Send className="w-3 h-3" />
