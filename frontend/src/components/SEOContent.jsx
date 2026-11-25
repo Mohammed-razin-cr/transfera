@@ -1,112 +1,175 @@
-import { useTheme } from '../App'
-import { ArrowUpRight, Check, KeyRound, QrCode, ShieldCheck, Smartphone, Wifi } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ArrowUpRight, Laptop, Monitor, Smartphone, Tablet } from 'lucide-react'
 
-const steps = [
-  { icon: KeyRound, title: 'Create a private session', text: 'Open Transfera and receive a short access key plus a QR code for the second device.' },
-  { icon: QrCode, title: 'Pair the devices', text: 'Enter the access key or scan the QR code. There is no account, app install, or shared inbox.' },
-  { icon: Wifi, title: 'Send the files', text: 'Choose files and transfer them through an encrypted browser connection, with encrypted relay fallback when needed.' },
+const platforms = [
+  { icon: Laptop, name: 'macOS & Windows', note: 'Chrome, Edge, Firefox, Safari' },
+  { icon: Smartphone, name: 'iOS & Android', note: 'Mobile Safari, Chrome, QR scan' },
+  { icon: Monitor, name: 'Linux Desktop', note: 'Any modern WebRTC browser' },
+  { icon: Tablet, name: 'Tablets & iPads', note: 'Instant browser handoff' },
 ]
 
 const useCases = [
-  ['Phone to computer', 'Move photos, documents, and videos from a phone to a laptop without emailing them to yourself.'],
-  ['Private client delivery', 'Share sensitive project files through a temporary transfer session instead of a permanent cloud link.'],
-  ['Cross-platform handoff', 'Transfer between Windows, macOS, Linux, Android, and iOS devices using a modern browser.'],
+  {
+    title: 'Phone to computer',
+    description:
+      'Move photos, documents, and videos from a phone to a laptop without emailing them to yourself or installing an app.',
+  },
+  {
+    title: 'Private client delivery',
+    description:
+      'Share sensitive project files through a temporary transfer session instead of a permanent cloud link.',
+  },
+  {
+    title: 'Cross-platform handoff',
+    description:
+      'Transfer between Windows, macOS, Linux, Android, and iOS devices using only a modern web browser.',
+  },
 ]
 
 const faqs = [
-  ['Do I need an account to transfer files?', 'No. Transfera uses a temporary access key or QR code to pair devices, so neither sender nor receiver needs to register.'],
-  ['Are files encrypted?', 'Yes. Transfera encrypts file data before transport. Direct sessions use an encrypted peer connection, and relay fallback carries encrypted file data.'],
-  ['Are transferred files stored permanently?', 'No. Direct transfers do not use server file storage. If encrypted relay fallback is required, the temporary payload expires automatically.'],
-  ['Can I send files from a phone to a PC?', 'Yes. Open Transfera on both devices, scan the QR code or enter the access key, then choose the files on your phone.'],
+  {
+    q: 'Do I need an account to transfer files?',
+    a: 'No. Transfera uses a temporary Access Key or QR code to pair devices, so neither sender nor receiver needs to register.',
+  },
+  {
+    q: 'Are files encrypted?',
+    a: 'Yes. Transfera encrypts file data in your browser with NaCl secretbox before transport. Direct sessions use an encrypted WebRTC peer connection, and relay fallback carries encrypted bytes.',
+  },
+  {
+    q: 'Are transferred files stored permanently?',
+    a: 'No. Direct transfers do not use server file storage. If encrypted relay fallback is required, the temporary payload is held in memory and expires after 10 minutes.',
+  },
+  {
+    q: 'Can I send files from a phone to a PC?',
+    a: 'Yes. Open Transfera on both devices, scan the QR code or enter the Access Key, then select the files on your phone.',
+  },
 ]
 
 export default function SEOContent() {
-  const { theme } = useTheme()
-  const isMatrix = theme === 'matrix'
-  const accentHex = isMatrix ? '#22c55e' : '#b41e1e'
-  
   return (
     <>
-      <section id="how-it-works" className="seo-band">
-        <div className="section-container"><div className="section-inner">
-          <span className="eyebrow-label">Three simple steps</span>
-          <div className="seo-heading-row">
-            <h2 className="section-heading">How secure browser file transfer works</h2>
-            <p>Transfera pairs two devices for a temporary encrypted transfer. Your files are not published to a reusable download page.</p>
+      {/* Device Compatibility & Use Cases */}
+      <section className="border-b border-[#27272A] py-20 sm:py-24 lg:py-28">
+        <div className="section-container">
+          <div className="section-inner">
+            <div className="max-w-2xl">
+              <span className="eyebrow-label">Device compatibility</span>
+              <h2 className="section-heading mt-3">
+                Works across every modern browser
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-[#A1A1AA] sm:text-base">
+                No native app, no browser extension, and no local network restriction. Pair any two devices with a browser.
+              </p>
+            </div>
+
+            {/* Platform Strip */}
+            <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {platforms.map((platform) => (
+                <div
+                  key={platform.name}
+                  className="surface-panel flex items-center gap-3.5 px-4 py-3.5"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B] text-[#A1A1AA]">
+                    <platform.icon className="h-4 w-4" aria-hidden="true" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[#F4F4F5]">{platform.name}</p>
+                    <p className="truncate text-xs text-[#71717A]">{platform.note}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Use cases */}
+            <div className="mt-12 grid grid-cols-1 gap-8 border-t border-[#27272A] pt-10 md:grid-cols-3">
+              {useCases.map((item) => (
+                <div key={item.title}>
+                  <h3 className="text-base font-semibold text-[#F4F4F5]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#A1A1AA]">{item.description}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Related Guides */}
+            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#27272A] pt-6 text-xs text-[#A1A1AA]">
+              <a href="/transfer-files-between-devices" className="hover:text-[#F4F4F5]">
+                Transfer files between devices
+              </a>
+              <a href="/send-files-phone-to-pc" className="hover:text-[#F4F4F5]">
+                Send files from phone to PC
+              </a>
+              <a href="/private-file-sharing" className="hover:text-[#F4F4F5]">
+                Private file sharing
+              </a>
+              <a href="/wetransfer-alternative" className="hover:text-[#F4F4F5]">
+                Compare with WeTransfer
+              </a>
+            </div>
           </div>
-          <div className="seo-grid seo-grid-three">
-            {steps.map(({ icon: Icon, title, text }, index) => (
-              <article className="seo-item" key={title}>
-                <span className="seo-index">0{index + 1}</span>
-                <Icon aria-hidden="true" style={{ color: accentHex }} />
-                <h3>{title}</h3><p>{text}</p>
-              </article>
-            ))}
-          </div>
-        </div></div>
+        </div>
       </section>
 
-      <section className="seo-band seo-band-muted">
-        <div className="section-container"><div className="section-inner seo-split">
-          <div>
-            <span className="eyebrow-label">Private by design</span>
-            <h2 className="section-heading">A secure file transfer alternative to cloud upload links</h2>
+      {/* FAQ */}
+      <section id="faq" className="border-b border-[#27272A] bg-[#111114]/40 py-20 sm:py-24 lg:py-28">
+        <div className="section-container">
+          <div className="section-inner">
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+              <div className="lg:col-span-5">
+                <span className="eyebrow-label">FAQ</span>
+                <h2 className="section-heading mt-3">Common questions</h2>
+                <p className="mt-3 text-sm leading-relaxed text-[#A1A1AA]">
+                  Answers about encryption, ephemeral vault storage, and browser compatibility.
+                </p>
+                <div className="mt-6">
+                  <Link
+                    to="/faq"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[#F00064] transition-colors hover:text-[#FF1F7A]"
+                  >
+                    <span>Read all questions</span>
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="faq-accordion border-t border-[#27272A] lg:col-span-7">
+                {faqs.map((item) => (
+                  <details key={item.q}>
+                    <summary>{item.q}</summary>
+                    <p className="faq-answer">{item.a}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="seo-prose">
-            <p>Conventional sharing tools often upload a file first and create a link that can be forwarded or remain available. Transfera starts with a temporary device pairing instead.</p>
-            <ul>
-              <li><Check style={{ color: accentHex }} /> No signup or recipient account</li>
-              <li><Check style={{ color: accentHex }} /> Browser-based encryption and secure transport</li>
-              <li><Check style={{ color: accentHex }} /> QR code or access-key pairing</li>
-              <li><Check style={{ color: accentHex }} /> Direct WebRTC transfer when the network allows it</li>
-              <li><Check style={{ color: accentHex }} /> Temporary encrypted relay fallback</li>
-            </ul>
-            <a className="text-link" href="/wetransfer-alternative">Compare Transfera with WeTransfer <ArrowUpRight /></a>
-          </div>
-        </div></div>
+        </div>
       </section>
 
-      <section className="seo-band">
-        <div className="section-container"><div className="section-inner">
-          <span className="eyebrow-label">Built for everyday handoffs</span>
-          <h2 className="section-heading seo-section-title">Transfer files between devices without installing an app</h2>
-          <div className="seo-grid seo-grid-three">
-            {useCases.map(([title, text]) => (
-              <article className="seo-item" key={title}>
-                <Smartphone style={{ color: accentHex }} />
-                <h3>{title}</h3><p>{text}</p>
-              </article>
-            ))}
+      {/* Final CTA */}
+      <section className="py-20 sm:py-24 lg:py-28">
+        <div className="section-container">
+          <div className="section-inner">
+            <div className="surface-panel flex flex-col items-start justify-between gap-6 p-8 sm:p-10 lg:flex-row lg:items-center">
+              <div className="max-w-xl">
+                <span className="eyebrow-label">Ready when you are</span>
+                <h2 className="section-heading mt-2">
+                  Start an encrypted transfer in seconds
+                </h2>
+                <p className="mt-2 text-sm text-[#A1A1AA] sm:text-base">
+                  No sign-up, no tracking, and no permanent server storage. Pair two devices and send.
+                </p>
+              </div>
+              <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                <a href="/live" className="btn-primary w-full sm:w-auto">
+                  <span>Start transfer</span>
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+                <a href="#receive" className="btn-secondary w-full sm:w-auto">
+                  <span>Enter Access Key</span>
+                </a>
+              </div>
+            </div>
           </div>
-          <div className="seo-related">
-            <a href="/transfer-files-between-devices">Transfer files between devices</a>
-            <a href="/send-files-phone-to-pc">Send files from phone to PC</a>
-            <a href="/private-file-sharing">Private file sharing</a>
-          </div>
-        </div></div>
-      </section>
-
-      <section id="faq" className="seo-band seo-band-muted">
-        <div className="section-container"><div className="section-inner seo-split">
-          <div>
-            <span className="eyebrow-label">Common questions</span>
-            <h2 className="section-heading">Secure file transfer FAQ</h2>
-            <ShieldCheck className="seo-large-icon" style={{ color: accentHex }} />
-          </div>
-          <div className="seo-faq-list">
-            {faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}
-            <a className="text-link" href="/faq">Read all frequently asked questions <ArrowUpRight /></a>
-          </div>
-        </div></div>
-      </section>
-
-      <section className="seo-cta">
-        <div className="section-container"><div className="section-inner">
-          <span className="eyebrow-label">No account. No install.</span>
-          <h2 className="section-heading">Start an encrypted file transfer in your browser</h2>
-          <p>Pair the receiving device with a QR code or access key and send your files.</p>
-          <a href="/live" className="btn-primary group">Start secure transfer <span className="btn-icon"><ArrowUpRight /></span></a>
-        </div></div>
+        </div>
       </section>
     </>
   )

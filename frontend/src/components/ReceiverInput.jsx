@@ -1,8 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AnimatePresence, motion } from 'framer-motion'
 import QrScanner from 'qr-scanner'
-import { ArrowRight, Key, AlertCircle, Loader2, X, ScanLine, ImagePlus, Camera, CameraOff, ShieldCheck } from 'lucide-react'
+import {
+  ArrowRight,
+  Key,
+  AlertCircle,
+  Loader2,
+  X,
+  ScanLine,
+  ImagePlus,
+  Camera,
+  CameraOff,
+  ShieldCheck,
+} from 'lucide-react'
 import { resolveTransferQr } from '../utils/transferQr'
 
 export default function ReceiverInput() {
@@ -191,138 +201,148 @@ export default function ReceiverInput() {
   }
 
   return (
-    <section className="relative py-16 sm:py-20 lg:py-24">
-      <div className="absolute left-0 top-0 right-0 rule-line-full" />
-
-      <div className="section-container relative z-10">
+    <section id="receive" className="border-b border-[#27272A] py-16 sm:py-20 lg:py-24">
+      <div className="section-container">
         <div className="section-inner">
-
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.7 }}
-            className="mb-8 sm:mb-10"
-          >
-            <span className="eyebrow-label">Receive</span>
-            <h2 className="section-heading mt-4">Open a shared transfer</h2>
-            <p className="mt-4 text-sm max-w-md leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: 0 }}>
-              Enter an Access Key or scan the QR code from the sending device.
-            </p>
-          </motion.div>
-
-          {/* Input panel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="max-w-2xl"
-          >
-            <div className="glow-card-subtle receive-panel">
-              <div className="flex items-center justify-between gap-4 mb-3">
-                <label htmlFor="access-key" className="font-semibold text-sm text-white">Access Key</label>
-                <span className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.28)' }}>
-                  Case insensitive
-                </span>
-              </div>
-              <form className="flex flex-col sm:flex-row gap-3" onSubmit={(event) => { event.preventDefault(); submit() }}>
-                <div className="relative flex-1">
-                  <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-                    style={{ color: 'rgba(255,0,104,0.5)' }} />
-                  <input
-                    id="access-key"
-                    ref={inputRef}
-                    type="text"
-                    value={value}
-                    onChange={(e) => { setValue(e.target.value.toUpperCase()); if (error) setError('') }}
-                    placeholder="AURORA VORTEX 73"
-                    autoComplete="off"
-                    autoCapitalize="characters"
-                    spellCheck="false"
-                    disabled={isSubmitting}
-                    aria-invalid={Boolean(error)}
-                    aria-describedby={error ? 'access-key-error access-key-help' : 'access-key-help'}
-                    className="access-key-input w-full py-3.5 pl-10 pr-11 font-mono text-sm tracking-wider placeholder:opacity-20"
-                  />
-                  {value && !isSubmitting && (
-                    <button
-                      type="button"
-                      className="icon-button absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg"
-                      aria-label="Clear Access Key"
-                      onClick={() => { setValue(''); setError(''); inputRef.current?.focus() }}
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-                <button type="submit" disabled={isSubmitting} className="btn-primary group whitespace-nowrap w-full sm:w-auto sm:min-w-[174px]">
-                  <span>{isSubmitting ? 'Checking Key' : 'Open Transfer'}</span>
-                  <span className="btn-icon">
-                    {isSubmitting
-                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      : <ArrowRight className="w-3.5 h-3.5" />}
-                  </span>
-                </button>
-                <button
-                  ref={scanButtonRef}
-                  type="button"
-                  className="btn-secondary group whitespace-nowrap w-full sm:w-auto sm:min-w-[128px]"
-                  onClick={() => setScannerOpen(true)}
-                  aria-haspopup="dialog"
-                >
-                  <ScanLine className="h-4 w-4" />
-                  <span>Scan QR</span>
-                </button>
-              </form>
-
-              {error && (
-                <div id="access-key-error" role="alert" className="flex items-center gap-2 mt-4 font-mono text-[11px] tracking-wide"
-                  style={{ color: 'rgba(255,0,104,0.9)' }}>
-                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                  {error}
-                </div>
-              )}
-
-              <p id="access-key-help" className="font-mono text-[10px] mt-5 tracking-wider" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                Access Keys are case-insensitive and expire after 10 minutes in Vault Storage mode.
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
+            {/* Left Copy */}
+            <div className="lg:col-span-5">
+              <span className="eyebrow-label">Receive files</span>
+              <h2 className="section-heading mt-3">Open a shared transfer</h2>
+              <p className="mt-3 text-sm leading-relaxed text-[#A1A1AA] sm:text-base">
+                Enter the Access Key shown on the sending device, or scan its QR code to pair directly.
               </p>
             </div>
-          </motion.div>
 
+            {/* Right Interactive Panel */}
+            <div className="lg:col-span-7">
+              <div className="surface-panel p-5 sm:p-7">
+                <div className="mb-3 flex items-center justify-between gap-4">
+                  <label htmlFor="access-key" className="text-sm font-medium text-[#F4F4F5]">
+                    Access Key
+                  </label>
+                  <span className="font-mono text-[11px] text-[#71717A]">
+                    Case insensitive
+                  </span>
+                </div>
+
+                <form
+                  className="flex flex-col gap-3 sm:flex-row"
+                  onSubmit={(event) => {
+                    event.preventDefault()
+                    submit()
+                  }}
+                >
+                  <div className="relative flex-1">
+                    <Key
+                      className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#71717A]"
+                      aria-hidden="true"
+                    />
+                    <input
+                      id="access-key"
+                      ref={inputRef}
+                      type="text"
+                      value={value}
+                      onChange={(e) => {
+                        setValue(e.target.value.toUpperCase())
+                        if (error) setError('')
+                      }}
+                      placeholder="AURORA VORTEX 73"
+                      autoComplete="off"
+                      autoCapitalize="characters"
+                      spellCheck="false"
+                      disabled={isSubmitting}
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={error ? 'access-key-error access-key-help' : 'access-key-help'}
+                      className="access-key-input w-full py-2.5 pl-10 pr-10 font-mono text-sm tracking-wider placeholder:text-[#52525B]"
+                    />
+                    {value && !isSubmitting && (
+                      <button
+                        type="button"
+                        className="icon-button absolute right-1.5 top-1/2 h-7 w-7 -translate-y-1/2"
+                        aria-label="Clear Access Key"
+                        onClick={() => {
+                          setValue('')
+                          setError('')
+                          inputRef.current?.focus()
+                        }}
+                      >
+                        <X className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2.5 sm:flex-row">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-primary w-full sm:w-auto"
+                    >
+                      <span>{isSubmitting ? 'Checking...' : 'Open transfer'}</span>
+                      {isSubmitting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                      )}
+                    </button>
+                    <button
+                      ref={scanButtonRef}
+                      type="button"
+                      className="btn-secondary w-full sm:w-auto"
+                      onClick={() => setScannerOpen(true)}
+                      aria-haspopup="dialog"
+                    >
+                      <ScanLine className="h-4 w-4 text-[#A1A1AA]" aria-hidden="true" />
+                      <span>Scan QR</span>
+                    </button>
+                  </div>
+                </form>
+
+                {error && (
+                  <div
+                    id="access-key-error"
+                    role="alert"
+                    className="mt-3 flex items-center gap-2 text-xs text-[#FDA4AF]"
+                  >
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-[#F00064]" aria-hidden="true" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <p id="access-key-help" className="mt-4 font-mono text-xs text-[#71717A]">
+                  Keys are hashed locally with SHA-256. Vault payloads expire automatically after 10 minutes.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          {scannerOpen && (
-            <motion.div
-              className="qr-scanner-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-            >
+      {typeof document !== 'undefined' &&
+        createPortal(
+          scannerOpen && (
+            <div className="qr-scanner-overlay">
               <div className="qr-scanner-backdrop" aria-hidden="true" onClick={closeScanner} />
-              <motion.section
+              <section
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="qr-scanner-title"
                 aria-describedby="qr-scanner-status"
                 className="qr-scanner-dialog"
-                initial={{ opacity: 0, y: 18, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 12, scale: 0.98 }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
               >
                 <div className="qr-scanner-header">
                   <div>
                     <span className="eyebrow-label">Secure pairing</span>
                     <h3 id="qr-scanner-title">Scan Transfer QR</h3>
                   </div>
-                  <button type="button" className="icon-button h-10 w-10 rounded-lg" onClick={closeScanner} aria-label="Close QR scanner" autoFocus>
-                    <X className="h-4 w-4" />
+                  <button
+                    type="button"
+                    className="icon-button h-9 w-9"
+                    onClick={closeScanner}
+                    aria-label="Close QR scanner"
+                    autoFocus
+                  >
+                    <X className="h-4 w-4" aria-hidden="true" />
                   </button>
                 </div>
 
@@ -333,43 +353,67 @@ export default function ReceiverInput() {
                   </div>
                   {(scanState === 'requesting' || scanState === 'image') && (
                     <div className="qr-scanner-stage-state">
-                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
                     </div>
                   )}
                   {scanState === 'error' && (
                     <div className="qr-scanner-stage-state">
-                      <CameraOff className="h-7 w-7" />
+                      <CameraOff className="h-7 w-7" aria-hidden="true" />
                     </div>
                   )}
                   {scanState === 'success' && (
                     <div className="qr-scanner-stage-state qr-scanner-success">
-                      <ShieldCheck className="h-8 w-8" />
+                      <ShieldCheck className="h-8 w-8" aria-hidden="true" />
                     </div>
                   )}
                 </div>
 
                 <div id="qr-scanner-status" className="qr-scanner-status" aria-live="polite">
-                  {scanState === 'requesting' && <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Requesting camera</>}
-                  {scanState === 'ready' && <><Camera className="h-3.5 w-3.5" /> Camera ready</>}
-                  {scanState === 'image' && <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Reading QR image</>}
-                  {scanState === 'success' && <><ShieldCheck className="h-3.5 w-3.5" /> Transfer QR verified</>}
-                  {scanState === 'error' && <><CameraOff className="h-3.5 w-3.5" /> Camera unavailable</>}
+                  {scanState === 'requesting' && (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Requesting camera
+                    </>
+                  )}
+                  {scanState === 'ready' && (
+                    <>
+                      <Camera className="h-3.5 w-3.5" aria-hidden="true" /> Camera ready
+                    </>
+                  )}
+                  {scanState === 'image' && (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Reading QR image
+                    </>
+                  )}
+                  {scanState === 'success' && (
+                    <>
+                      <ShieldCheck className="h-3.5 w-3.5 text-[#10B981]" aria-hidden="true" /> Transfer QR verified
+                    </>
+                  )}
+                  {scanState === 'error' && (
+                    <>
+                      <CameraOff className="h-3.5 w-3.5" aria-hidden="true" /> Camera unavailable
+                    </>
+                  )}
                 </div>
 
                 {scanError && (
                   <div className="qr-scanner-error" role="alert">
-                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <AlertCircle className="h-4 w-4 shrink-0 text-[#F00064]" aria-hidden="true" />
                     <span>{scanError}</span>
                   </div>
                 )}
 
                 <div className="qr-scanner-footer">
-                  <button type="button" className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
-                    <ImagePlus className="h-4 w-4" />
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <ImagePlus className="h-4 w-4" aria-hidden="true" />
                     <span>Choose QR Image</span>
                   </button>
                   <span className="qr-scanner-trust">
-                    <ShieldCheck className="h-3.5 w-3.5" />
+                    <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
                     Transfera links only
                   </span>
                   <input
@@ -381,12 +425,11 @@ export default function ReceiverInput() {
                     onChange={scanQrImage}
                   />
                 </div>
-              </motion.section>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body,
-      )}
+              </section>
+            </div>
+          ),
+          document.body,
+        )}
     </section>
   )
 }

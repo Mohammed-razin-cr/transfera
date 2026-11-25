@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
-import ParticleBackground from './components/ParticleBackground'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import FeaturesSection from './components/FeaturesSection'
@@ -10,7 +9,6 @@ import Footer from './components/Footer'
 import ReceiverInput from './components/ReceiverInput'
 import SEOContent from './components/SEOContent'
 
-// Pages
 import FeaturesPage from './pages/FeaturesPage'
 import HowItWorksPage from './pages/HowItWorksPage'
 import SecurityPage from './pages/SecurityPage'
@@ -40,8 +38,7 @@ function RouteUX() {
 
 function HomePage() {
   return (
-    <div className="relative min-h-screen" style={{ background: 'var(--color-obsidian-void)', color: 'var(--color-frost-white)' }}>
-      <ParticleBackground />
+    <div className="relative min-h-screen bg-[#09090B] text-[#F4F4F5]">
       <Navbar />
       <main id="main-content" tabIndex="-1">
         <HeroSection />
@@ -57,7 +54,7 @@ function HomePage() {
 
 export default function App() {
   return (
-    <ThemeContext.Provider value={{ theme: 'luro' }}>
+    <ThemeContext.Provider value={{ theme: 'dark' }}>
       <MotionConfig reducedMotion="user">
         <BrowserRouter>
           <RouteUX />
