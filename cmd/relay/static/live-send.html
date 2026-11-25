@@ -2052,57 +2052,88 @@ async function negotiateDirectLink(){
   });
 }
 
+function getOptimalChunkSize(){
+  if(typeof pc!=='undefined'&&pc&&pc.sctp&&pc.sctp.maxMessageSize>=262144){
+    return 240*1024;
+  }
+  // Stay safely under 64 KB including 5-byte frame header + 40-byte NaCl overhead
+  return 63*1024;
+}
+
+function waitDCDrain(maxBuf=8*1024*1024,lowThreshold=2*1024*1024){
+  if(dc.bufferedAmount<=maxBuf)return Promise.resolve();
+  return new Promise(resolve=>{
+    let done=false;
+    const finish=()=>{if(done)return;done=true;dc.removeEventListener('bufferedamountlow',finish);clearTimeout(t);resolve()};
+    try{dc.bufferedAmountLowThreshold=lowThreshold}catch(_){}
+    dc.addEventListener('bufferedamountlow',finish);
+    const t=setTimeout(finish,50);
+  });
+}
+
 async function streamFile(file,sendFn){
-  const meta={filename:file.name,size:file.size,chunks:Math.ceil(file.size/CHUNK)};
+  const chunkSize=sendFn===sendDC?getOptimalChunkSize():128*1024;
+  const meta={filename:file.name,size:file.size,chunks:Math.ceil(file.size/chunkSize)};
   await sendFn(encode(MSG_METADATA,new TextEncoder().encode(JSON.stringify(meta))));
 
-  let offset=0;
+  const READ_SLAB=4*1024*1024;
+  let slabOffset=0;
+  let nextSlabPromise=file.size>0?file.slice(0,Math.min(READ_SLAB,file.size)).arrayBuffer():null;
   const startTime=performance.now();
   let lastUIUpdate=0;
 
-  while(offset<file.size){
-    const end=Math.min(offset+CHUNK,file.size);
-    const chunk=await file.slice(offset,end).arrayBuffer();
-    await sendFn(encode(MSG_CHUNK,new Uint8Array(chunk)));
-    offset=end;
-
-    const now=performance.now();
-    if(now-lastUIUpdate>50||offset>=file.size){
-      lastUIUpdate=now;
-      const pct=Math.round(offset/file.size*100);
-      const elapsed=(now-startTime)/1000;
-      const speed=elapsed>0?offset/elapsed:0;
-      if (speedChart) speedChart.addPoint(speed);
-      await new Promise(resolve=>requestAnimationFrame(()=>{
-        $('progress').style.width=pct+'%';
-        $('ptext').textContent=pct+'% · '+formatSize(offset)+' / '+formatSize(file.size);
-        $('speed').textContent=formatSpeed(speed);
-        resolve();
-      }));
+  while(slabOffset<file.size){
+    const slabBuf=await nextSlabPromise;
+    const slabEnd=slabOffset+slabBuf.byteLength;
+    if(slabEnd<file.size){
+      nextSlabPromise=file.slice(slabEnd,Math.min(slabEnd+READ_SLAB,file.size)).arrayBuffer();
     }
+    const slabView=new Uint8Array(slabBuf);
+
+    for(let pos=0;pos<slabView.length;pos+=chunkSize){
+      const end=Math.min(pos+chunkSize,slabView.length);
+      await sendFn(encode(MSG_CHUNK,slabView.subarray(pos,end)));
+      const sent=slabOffset+end;
+
+      const now=performance.now();
+      if(now-lastUIUpdate>60||sent>=file.size){
+        lastUIUpdate=now;
+        const pct=Math.round(sent/file.size*100);
+        const elapsed=(now-startTime)/1000;
+        const speed=elapsed>0?sent/elapsed:0;
+        if (speedChart) speedChart.addPoint(speed);
+        requestAnimationFrame(()=>{
+          $('progress').style.width=pct+'%';
+          $('ptext').textContent=pct+'% · '+formatSize(sent)+' / '+formatSize(file.size);
+          $('speed').textContent=formatSpeed(speed);
+        });
+      }
+    }
+    slabOffset=slabEnd;
   }
 
   await sendFn(encode(MSG_COMPLETE,new Uint8Array(0)));
 }
 
 async function sendDC(plaintext){
-  // Guard against buffer overflow — wait until DataChannel drains below 8 MB
-  while(dc.bufferedAmount>8*1024*1024){await sleep(10)}
+  if(dc.bufferedAmount>8*1024*1024){await waitDCDrain()}
   const ciphertext=encrypt(plaintext,keyBytes);
-  // Guard against browsers with strict per-message size limits (Firefox/Safari: 64KB)
-  if(ciphertext.byteLength<=65536){
+  const maxMsg=(typeof pc!=='undefined'&&pc&&pc.sctp&&pc.sctp.maxMessageSize)?pc.sctp.maxMessageSize:65536;
+  if(ciphertext.byteLength<=maxMsg){
     dc.send(ciphertext);
   } else {
-    // Fragment large messages into ≤64 KB frames
-    const MAX_FRAME=65536;
+    const MAX_FRAME=Math.min(maxMsg,65536);
     for(let off=0;off<ciphertext.byteLength;off+=MAX_FRAME){
-      while(dc.bufferedAmount>8*1024*1024){await sleep(10)}
+      if(dc.bufferedAmount>8*1024*1024){await waitDCDrain()}
       dc.send(ciphertext.slice(off,off+MAX_FRAME));
     }
   }
 }
 
-function sendWS(plaintext){
+async function sendWS(plaintext){
+  if(ws.bufferedAmount>8*1024*1024){
+    while(ws.bufferedAmount>4*1024*1024){await sleep(5)}
+  }
   ws.send(encrypt(plaintext,keyBytes));
 }
 

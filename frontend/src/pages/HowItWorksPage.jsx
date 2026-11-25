@@ -96,17 +96,23 @@ export default function HowItWorksPage() {
         <section className="py-16 sm:py-20 lg:py-24">
           <div className="section-container">
             <div className="section-inner max-w-3xl">
-              <ol className="divide-y divide-[#27272A] border-y border-[#27272A]">
+              <ol className="relative space-y-8 border-l border-[#27272A] pl-7 sm:pl-9">
                 {steps.map((step) => (
-                  <li key={step.step} className="flex gap-5 py-8 sm:gap-7">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#111114] text-[#F00064]">
-                      <step.icon className="h-4 w-4" aria-hidden="true" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="font-mono text-xs text-[#F00064]">Step {step.step}</span>
-                      <h2 className="mt-1.5 text-lg font-semibold text-[#F4F4F5]">{step.title}</h2>
+                  <li key={step.step} className="relative">
+                    <span
+                      className="absolute -left-[35px] top-1 flex h-3 w-3 items-center justify-center rounded-full border border-[#FF4D8D] bg-[#09090B] sm:-left-[43px]"
+                      aria-hidden="true"
+                    >
+                      <span className="h-1 w-1 rounded-full bg-[#FF4D8D]" />
+                    </span>
+                    <div className="surface-panel p-5 sm:p-6">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs text-[#FF4D8D]">Step {step.step}</span>
+                        <step.icon className="h-4 w-4 text-[#A1A1AA]" aria-hidden="true" />
+                      </div>
+                      <h2 className="mt-2.5 text-lg font-semibold text-[#F4F4F5]">{step.title}</h2>
                       <p className="mt-2 text-sm leading-relaxed text-[#A1A1AA]">{step.description}</p>
-                      <p className="mt-3 rounded-lg border border-[#27272A] bg-[#111114] px-3.5 py-2.5 text-xs leading-relaxed text-[#94949E]">
+                      <p className="mt-3 rounded-lg border border-[#27272A] bg-[#09090B] px-3.5 py-2.5 text-xs leading-relaxed text-[#94949E]">
                         {step.detail}
                       </p>
                     </div>

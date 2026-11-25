@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -8,15 +9,17 @@ import {
   FileText,
   Laptop,
   Lock,
+  QrCode,
+  Send,
   Smartphone,
   UploadCloud,
 } from 'lucide-react'
 
 const stages = [
-  { id: 'select', label: '1. Select files' },
-  { id: 'pair', label: '2. Pair device' },
-  { id: 'transfer', label: '3. Transfer' },
-  { id: 'complete', label: '4. Complete' },
+  { id: 'select', label: 'Select files', icon: UploadCloud },
+  { id: 'pair', label: 'Pair device', icon: QrCode },
+  { id: 'transfer', label: 'Transfer', icon: Send },
+  { id: 'complete', label: 'Complete', icon: CheckCircle2 },
 ]
 
 const sampleFiles = [
@@ -83,6 +86,7 @@ export default function TransferPreview() {
           <span className="text-xs text-[#94949E]">Workflow preview</span>
         </div>
 
+        {/* Dot Indicator Status Badge */}
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[#27272A] bg-[#17171B] px-3 py-1 text-xs text-[#A1A1AA]">
             <Lock className="h-3 w-3 text-[#FF4D8D]" aria-hidden="true" />
@@ -91,15 +95,16 @@ export default function TransferPreview() {
         </div>
       </div>
 
-      {/* Segmented Stage Bar */}
-      <div className="border-b border-[#27272A] bg-[#09090B]/50 px-4 py-2.5 sm:px-5">
+      {/* Floating Nav Pill Tabs (adapted from Uilora Floating Nav) */}
+      <div className="border-b border-[#27272A] bg-[#09090B]/60 px-4 py-3 sm:px-5">
         <div
           role="tablist"
           aria-label="Transfer workflow stages"
-          className="grid grid-cols-2 gap-1.5 sm:grid-cols-4"
+          className="mx-auto grid max-w-2xl grid-cols-2 gap-1 rounded-xl border border-[#27272A] bg-[#111114] p-1 sm:grid-cols-4 sm:rounded-full"
         >
           {stages.map((stage) => {
             const isActive = activeStage === stage.id
+            const Icon = stage.icon
             return (
               <button
                 key={stage.id}
@@ -107,13 +112,25 @@ export default function TransferPreview() {
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setActiveStage(stage.id)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`relative flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:rounded-full ${
                   isActive
-                    ? 'bg-[#17171B] text-[#F4F4F5] ring-1 ring-[#3F3F46]'
-                    : 'text-[#94949E] hover:bg-[#111114] hover:text-[#F4F4F5]'
+                    ? 'text-[#F4F4F5]'
+                    : 'text-[#94949E] hover:text-[#F4F4F5]'
                 }`}
               >
-                {stage.label}
+                {isActive && (
+                  <motion.span
+                    layoutId="preview-tab-pill"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    className="absolute inset-0 rounded-lg border border-[#3F3F46] bg-[#17171B] sm:rounded-full"
+                    aria-hidden="true"
+                  />
+                )}
+                <Icon
+                  className={`relative z-10 h-3.5 w-3.5 ${isActive ? 'text-[#FF4D8D]' : 'text-[#94949E]'}`}
+                  aria-hidden="true"
+                />
+                <span className="relative z-10">{stage.label}</span>
               </button>
             )
           })}
@@ -125,22 +142,34 @@ export default function TransferPreview() {
         {/* Left: Active Stage Content */}
         <div className="flex flex-col justify-between p-5 sm:p-7 lg:col-span-7">
           {activeStage === 'select' && (
-            <div className="space-y-5">
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#3F3F46] bg-[#09090B]/60 px-6 py-7 text-center">
-                <UploadCloud className="mb-2.5 h-5 w-5 text-[#FF4D8D]" aria-hidden="true" />
-                <p className="text-sm font-medium text-[#F4F4F5]">
-                  Drop files or folders here
-                </p>
-                <p className="mt-1 text-xs text-[#A1A1AA]">
-                  Encrypted in your browser before leaving your device
-                </p>
+            /* Minimal Glass Upload Pattern (adapted from Uilora Minimal Glass) */
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
+                    <UploadCloud className="h-4 w-4 text-[#FF4D8D]" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#F4F4F5]">Encrypted dropzone</p>
+                    <p className="text-xs text-[#94949E]">Files encrypt locally before leaving your device</p>
+                  </div>
+                </div>
                 <a
                   href="/live"
-                  className="btn-secondary mt-4 !min-h-[34px] !px-3.5 !py-1.5 text-xs"
+                  className="btn-primary !min-h-[34px] !rounded-full !px-3.5 !py-1.5 text-xs"
                 >
-                  Open live sender
+                  <span>Browse</span>
                   <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </a>
+              </div>
+
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#3F3F46] bg-[#09090B]/60 px-6 py-6 text-center transition-colors hover:border-[#FF4D8D]/50">
+                <p className="text-xs font-medium text-[#F4F4F5]">
+                  Drop files or folders here
+                </p>
+                <p className="mt-1 text-[11px] text-[#94949E]">
+                  Any file type · Multi-file batches supported
+                </p>
               </div>
 
               <div className="divide-y divide-[#27272A] border-t border-[#27272A]">
@@ -200,7 +229,6 @@ export default function TransferPreview() {
           {activeStage === 'transfer' && (
             <div className="flex h-full flex-col justify-between gap-6">
               <div>
-                {/* File Row */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
@@ -218,7 +246,6 @@ export default function TransferPreview() {
                   </span>
                 </div>
 
-                {/* Progress Bar */}
                 <div className="mt-5">
                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#27272A]">
                     <div
@@ -236,7 +263,6 @@ export default function TransferPreview() {
                 </div>
               </div>
 
-              {/* Clean Hairline Spec Strip (no nested boxes) */}
               <dl className="grid grid-cols-1 gap-4 border-t border-[#27272A] pt-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#27272A]">
                 <div className="sm:pr-4">
                   <dt className="text-xs text-[#94949E]">Transport</dt>
@@ -289,7 +315,6 @@ export default function TransferPreview() {
             <p className="text-xs font-medium text-[#94949E]">Peer connection</p>
 
             <div className="mt-5">
-              {/* Origin Node */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
@@ -303,13 +328,11 @@ export default function TransferPreview() {
                 <span className="text-xs text-[#A1A1AA]">Sender</span>
               </div>
 
-              {/* Vertical Connector */}
               <div className="ml-4 flex items-center gap-3 border-l border-[#27272A] py-3.5 pl-6">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D8D]" aria-hidden="true" />
                 <span className="text-xs text-[#A1A1AA]">Encrypted WebRTC DataChannel</span>
               </div>
 
-              {/* Destination Node */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">

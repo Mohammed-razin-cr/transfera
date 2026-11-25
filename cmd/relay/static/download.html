@@ -1,517 +1,1640 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Download · Transfera</title>
-<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260510a">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/style.css?v=20260510b">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Download · Transfera</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260510a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #09090B;
+      --bg-surface: #111114;
+      --bg-elevated: #17171B;
+      --text-primary: #F4F4F5;
+      --text-secondary: #A1A1AA;
+      --text-muted: #94949E;
+      --border-subtle: #27272A;
+      --border-strong: #3F3F46;
+      --accent-primary: #D9005A;
+      --accent-hover: #F00064;
+      --accent-pink: #FF4D8D;
+      --accent-subtle: rgba(240, 0, 100, 0.10);
+      --accent-border: rgba(240, 0, 100, 0.30);
+      --status-success: #10B981;
+      --status-success-subtle: rgba(16, 185, 129, 0.10);
+      --status-success-border: rgba(16, 185, 129, 0.30);
+      --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      color-scheme: dark;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.55;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient radial mesh & subtle dot grid (Uilora-inspired backdrop) */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 65% 50% at 50% 0%, rgba(240, 0, 100, 0.11), transparent 70%),
+        radial-gradient(ellipse 45% 40% at 85% 90%, rgba(16, 185, 129, 0.06), transparent 70%),
+        radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 24px 24px;
+    }
+
+    :where(a, button):focus-visible {
+      outline: 2px solid var(--accent-hover);
+      outline-offset: 2px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ── Top Navigation Bar ── */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      border-bottom: 1px solid rgba(39, 39, 42, 0.75);
+      background: rgba(9, 9, 11, 0.82);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .top-bar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 4vw, 2rem);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 36px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+    }
+
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 160ms ease;
+    }
+
+    .brand-link:hover .brand-icon {
+      border-color: var(--border-strong);
+    }
+
+    .brand-icon img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Uilora Dot Indicator Status Badge */
+    .gateway-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .gateway-dot-wrap {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gateway-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 9999px;
+      background: var(--status-success);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .gateway-dot-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 9999px;
+        background: var(--status-success);
+        opacity: 0.45;
+        animation: pulse-ring 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+      }
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.9);
+        opacity: 0.55;
+      }
+
+      75%,
+      100% {
+        transform: scale(2.1);
+        opacity: 0;
+      }
+    }
+
+    .gh-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 32px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .gh-pill:hover {
+      background: var(--bg-elevated);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 540px) {
+      .gateway-pill span.gateway-label-extra {
+        display: none;
+      }
+    }
+
+    /* ── Main Stage ── */
+    .stage-main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 1.5rem);
+    }
+
+    /* Uilora Minimal Glass Card */
+    .transfer-card {
+      width: 100%;
+      max-width: 560px;
+      border-radius: 16px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(17, 17, 20, 0.88);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      transition: border-color 220ms ease, box-shadow 220ms ease;
+    }
+
+    .transfer-card[data-state="complete"],
+    .transfer-card[data-state="ready-more"] {
+      border-color: rgba(16, 185, 129, 0.35);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.65),
+        0 0 40px -12px rgba(16, 185, 129, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .transfer-card[data-state="error"] {
+      border-color: var(--accent-border);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.65),
+        0 0 40px -12px rgba(240, 0, 100, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    /* Uilora Floating Pill Stepper */
+    .card-stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(9, 9, 11, 0.55);
+    }
+
+    .step-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+      white-space: nowrap;
+    }
+
+    .step-pill .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background: var(--border-strong);
+      flex-shrink: 0;
+    }
+
+    .step-pill.is-active {
+      background: var(--bg-elevated);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .step-pill.is-active .step-dot {
+      background: var(--accent-pink);
+      box-shadow: 0 0 8px rgba(255, 77, 141, 0.65);
+    }
+
+    .step-pill.is-done {
+      color: var(--status-success);
+    }
+
+    .step-pill.is-done .step-dot {
+      background: var(--status-success);
+    }
+
+    .step-pill.is-error {
+      background: var(--accent-subtle);
+      border-color: var(--accent-border);
+      color: #FDA4AF;
+    }
+
+    .step-pill.is-error .step-dot {
+      background: var(--accent-hover);
+    }
+
+    @media (max-width: 480px) {
+      .card-stepper {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Card Body */
+    .card-body {
+      padding: clamp(1.5rem, 4vw, 2.25rem);
+    }
+
+    .block {
+      animation: block-enter 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes block-enter {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .block {
+        animation: none;
+      }
+    }
+
+    /* State Header with Icon/Spinner */
+    .state-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .state-icon-box {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-pink);
+    }
+
+    .state-icon-box.is-success {
+      border-color: var(--status-success-border);
+      background: var(--status-success-subtle);
+      color: var(--status-success);
+    }
+
+    .state-icon-box.is-error {
+      border-color: var(--accent-border);
+      background: var(--accent-subtle);
+      color: #FDA4AF;
+    }
+
+    .state-title-wrap {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .state-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-pink);
+      margin-bottom: 4px;
+    }
+
+    .state-eyebrow.is-success {
+      color: var(--status-success);
+    }
+
+    .state-eyebrow.is-error {
+      color: #FDA4AF;
+    }
+
+    .block h1 {
+      font-size: clamp(1.375rem, 1.1rem + 1vw, 1.625rem);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      color: var(--text-primary);
+    }
+
+    .block-sub {
+      margin-top: 12px;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* Native <progress> Indeterminate Spinner (per modern-web-guidance) */
+    @property --arc-start {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    @property --arc-end {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    @property --progress-dash-animation {
+      syntax: "*";
+      inherits: false;
+      initial-value: , progress-dash 2.4s ease-in-out infinite;
+    }
+
+    progress.loading-spinner:indeterminate::-webkit-progress-bar {
+      display: none;
+      background: none;
+    }
+
+    progress.loading-spinner:indeterminate::-webkit-progress-value {
+      display: none;
+      background: none;
+    }
+
+    progress.loading-spinner:indeterminate::-moz-progress-bar {
+      display: none;
+      background: none;
+    }
+
+    progress.loading-spinner:indeterminate::slider-fill {
+      display: none;
+      background: none;
+    }
+
+    progress.loading-spinner:indeterminate {
+      --_from: calc(90deg + var(--arc-start, 0deg));
+      --_to: calc(90deg + var(--arc-end, 158deg));
+      --size: 24px;
+      --thickness: 2.5px;
+      --spinner-color: #FF4D8D;
+      --track-color: #27272A;
+      --spinner-duration: 1.25s;
+      --_used-spinner-duration: var(--spinner-duration);
+
+      position: relative;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      appearance: none;
+      background: conic-gradient(from var(--_from),
+          var(--spinner-color) calc(var(--_to) - var(--_from)),
+          transparent 0) var(--track-color);
+
+      animation:
+        progress-spin var(--_used-spinner-duration) linear infinite var(--progress-dash-animation, );
+    }
+
+    @supports (background-clip: border-area) {
+      progress.loading-spinner:indeterminate {
+        background-clip: border-area;
+        border: var(--thickness) solid transparent;
+        background-origin: border-box;
+      }
+    }
+
+    @supports not (background-clip: border-area) {
+      progress.loading-spinner:indeterminate {
+        --clip-boundary: calc(100% - var(--thickness) * 2);
+        -webkit-mask-image: radial-gradient(farthest-side,
+            transparent var(--clip-boundary),
+            #000 calc(var(--clip-boundary) + 1px));
+        mask-image: radial-gradient(farthest-side,
+            transparent var(--clip-boundary),
+            #000 calc(var(--clip-boundary) + 1px));
+        border: 0;
+      }
+    }
+
+    @keyframes progress-spin {
+      to {
+        rotate: 1turn;
+      }
+    }
+
+    @keyframes progress-dash {
+      from {
+        --arc-start: 0deg;
+        --arc-end: 10deg;
+      }
+
+      50% {
+        --arc-start: 100deg;
+        --arc-end: 350deg;
+      }
+
+      to {
+        --arc-start: 360deg;
+        --arc-end: 370deg;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      progress.loading-spinner:indeterminate {
+        --_used-spinner-duration: 6s;
+        --progress-dash-animation: ;
+        --arc-end: 158deg;
+      }
+    }
+
+    @media (forced-colors: active) {
+      progress.loading-spinner:indeterminate {
+        forced-color-adjust: none;
+        --spinner-color: CanvasText;
+        --track-color: Canvas;
+      }
+    }
+
+    /* Peer / Session Metadata Strip */
+    .meta-panel {
+      margin-top: 22px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(9, 9, 11, 0.65);
+      padding: 14px 16px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .meta-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+
+    .meta-item dt {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .meta-item dd {
+      margin-top: 2px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .meta-item dd.is-emerald {
+      color: var(--status-success);
+    }
+
+    /* File Card */
+    .file-card {
+      margin-top: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(9, 9, 11, 0.7);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .file-card-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .file-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-pink);
+      flex-shrink: 0;
+    }
+
+    .file-badge.is-success {
+      color: var(--status-success);
+      border-color: var(--status-success-border);
+      background: var(--status-success-subtle);
+    }
+
+    .filename {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      word-break: break-all;
+      line-height: 1.35;
+    }
+
+    .size-info {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .transport {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Progress Bar */
+    .progress-wrap {
+      margin-top: 18px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      width: 100%;
+      border-radius: 9999px;
+      background: var(--border-subtle);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-pink));
+      transition: width 120ms linear;
+    }
+
+    .progress-stats {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-text {
+      color: var(--text-secondary);
+    }
+
+    .speed-info {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .session-hint {
+      margin-top: 12px;
+      font-size: 0.8125rem;
+      color: var(--status-success);
+    }
+
+    /* Error Banner & Actions */
+    .error-box {
+      margin-top: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--accent-border);
+      background: var(--accent-subtle);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: #FDA4AF;
+      word-break: break-word;
+    }
+
+    .action-row {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--accent-primary);
+      color: #FFFFFF;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      transition: background-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 16px rgba(240, 0, 100, 0.28);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 160ms ease, background-color 160ms ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-strong);
+      background: #1E1E24;
+    }
+
+    /* Card Footer Bar */
+    .card-footer {
+      padding: 12px clamp(1.5rem, 4vw, 2.25rem);
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(9, 9, 11, 0.5);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .card-footer-lock {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-footer-lock svg {
+      color: var(--status-success);
+    }
+
+    /* ── Page Footer ── */
+    .bottom-bar {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid rgba(39, 39, 42, 0.7);
+      padding: 16px clamp(1rem, 4vw, 2rem);
+    }
+
+    .bottom-bar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .bottom-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .bottom-links a {
+      color: var(--text-secondary);
+      transition: color 160ms ease;
+    }
+
+    .bottom-links a:hover {
+      color: var(--text-primary);
+    }
+
+    @media (forced-colors: active) {
+
+      .transfer-card,
+      .meta-panel,
+      .file-card,
+      .gateway-pill,
+      .gh-pill,
+      .step-pill.is-active {
+        border-color: CanvasText;
+        background: Canvas;
+        color: CanvasText;
+      }
+
+      .progress-bar {
+        border: 1px solid CanvasText;
+      }
+
+      .progress-fill {
+        background: Highlight;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header class="top-strip">
-  <div class="strip-cell brand"><a href="/">TRANSFERA</a></div>
-  <div class="strip-cell spacer"></div>
-  <div class="strip-cell status live"><span class="dot"></span>SECURE GATEWAY ONLINE</div>
-  <a href="https://github.com/Mohammed-razin-cr/transfera" target="_blank" rel="noopener" class="strip-cell port-btn">GITHUB <span class="arrow">↗</span></a>
-</header>
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a href="/" class="brand-link" aria-label="Transfera home">
+        <span class="brand-icon">
+          <img src="/static/logo.png" alt="" aria-hidden="true">
+        </span>
+        <span>Transfera</span>
+      </a>
 
-<main class="grid single">
-
-  <section id="lookup" class="block">
-    <h2>Looking up</h2>
-    <p class="block-sub">Checking whether this Access Key is a stored transfer or a live Origin Node.</p>
-    <div class="dots"><span></span><span></span><span></span></div>
-  </section>
-
-  <section id="loading" class="block hidden">
-    <h2 id="load-status">Downloading</h2>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-      <div class="progress-text" id="ptext">awaiting bytes...</div>
+      <div class="top-actions">
+        <div class="gateway-pill">
+          <span class="gateway-dot-wrap" aria-hidden="true"><span class="gateway-dot"></span></span>
+          <span>Gateway<span class="gateway-label-extra"> Online</span></span>
+        </div>
+        <a href="https://github.com/Mohammed-razin-cr/transfera" target="_blank" rel="noopener" class="gh-pill">
+          <span>GitHub</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
     </div>
-  </section>
+  </header>
 
-  <section id="waiting" class="block hidden">
-    <h2>Waiting for the Origin Node</h2>
-    <p class="block-sub">The Origin Node is online and holds this Access Key. As soon as they pick a file, the connection starts and bytes stream directly between you.</p>
-    <div class="dots"><span></span><span></span><span></span></div>
-  </section>
+  <main class="stage-main">
+    <div class="transfer-card" id="transfer-card" data-state="lookup">
 
-  <section id="negotiating" class="block hidden">
-    <h2>Connecting</h2>
-    <p class="block-sub">Negotiating a direct WebRTC link. The Secure Gateway only sees ciphertext signaling.</p>
-    <div class="dots"><span></span><span></span><span></span></div>
-  </section>
+      <!-- Stage Stepper -->
+      <div class="card-stepper" aria-label="Transfer progress stages">
+        <div class="step-pill is-active" data-step="lookup">
+          <span class="step-dot" aria-hidden="true"></span>
+          <span>Lookup</span>
+        </div>
+        <div class="step-pill" data-step="waiting">
+          <span class="step-dot" aria-hidden="true"></span>
+          <span>Pair</span>
+        </div>
+        <div class="step-pill" data-step="receiving">
+          <span class="step-dot" aria-hidden="true"></span>
+          <span>Transfer</span>
+        </div>
+        <div class="step-pill" data-step="complete">
+          <span class="step-dot" aria-hidden="true"></span>
+          <span>Complete</span>
+        </div>
+      </div>
 
-  <section id="receiving" class="block hidden">
-    <h2>Receiving</h2>
-    <div class="transport" id="transport"></div>
-    <div class="filename" id="recv-filename">-</div>
-    <div class="size-info" id="recv-size"></div>
-    <p class="block-sub" id="recv-session-hint" style="opacity:0.72;font-size:0.88rem"></p>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" id="live-progress"></div></div>
-      <div class="progress-text" id="live-ptext">0%</div>
+      <div class="card-body">
+
+        <!-- 1. Lookup -->
+        <section id="lookup" class="block">
+          <div class="state-head">
+            <div class="state-icon-box">
+              <progress aria-label="Looking up Access Key" class="loading-spinner"></progress>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow">Resolving Access Key</div>
+              <h1>Looking up transfer</h1>
+            </div>
+          </div>
+          <p class="block-sub">Checking whether this Access Key points to a stored Vault transfer or a live Origin Node.
+          </p>
+        </section>
+
+        <!-- 2. Vault Storage Loading -->
+        <section id="loading" class="block hidden">
+          <div class="state-head">
+            <div class="state-icon-box">
+              <progress aria-label="Downloading encrypted payload" class="loading-spinner"></progress>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow">Vault Storage · Async</div>
+              <h1 id="load-status">Downloading</h1>
+            </div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress"></div>
+            </div>
+            <div class="progress-stats">
+              <span class="progress-text" id="ptext">Awaiting bytes...</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Waiting for Origin Node -->
+        <section id="waiting" class="block hidden">
+          <div class="state-head">
+            <div class="state-icon-box">
+              <progress aria-label="Waiting for Origin Node" class="loading-spinner"></progress>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow">Live Session Ready</div>
+              <h1>Waiting for the Origin Node</h1>
+            </div>
+          </div>
+          <p class="block-sub">The Origin Node is online and holds this Access Key. Keep this tab open — as soon as they
+            pick a file, the connection starts and bytes stream directly to you.</p>
+
+          <dl class="meta-panel meta-grid">
+            <div class="meta-item">
+              <dt>Transport</dt>
+              <dd>WebRTC Direct</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Cipher</dt>
+              <dd>XSalsa20-Poly1305</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Server disk</dt>
+              <dd class="is-emerald">0 bytes stored</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- 4. Negotiating WebRTC -->
+        <section id="negotiating" class="block hidden">
+          <div class="state-head">
+            <div class="state-icon-box">
+              <progress aria-label="Negotiating direct peer connection" class="loading-spinner"></progress>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow">ICE / SDP Handshake</div>
+              <h1>Connecting to Origin Node</h1>
+            </div>
+          </div>
+          <p class="block-sub">Negotiating an encrypted peer-to-peer WebRTC link. The Secure Gateway only relays
+            ciphertext signaling.</p>
+        </section>
+
+        <!-- 5. Receiving Live -->
+        <section id="receiving" class="block hidden">
+          <div class="state-head">
+            <div class="state-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow">Streaming Encrypted Bytes</div>
+              <h1>Receiving</h1>
+            </div>
+          </div>
+
+          <div class="transport" id="transport"></div>
+
+          <div class="file-card">
+            <div class="file-card-left">
+              <div class="file-badge" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+              </div>
+              <div class="filename" id="recv-filename">-</div>
+            </div>
+            <div class="size-info" id="recv-size"></div>
+          </div>
+
+          <p class="session-hint" id="recv-session-hint" aria-live="polite"></p>
+
+          <div class="progress-wrap">
+            <div class="progress-bar">
+              <div class="progress-fill" id="live-progress"></div>
+            </div>
+            <div class="progress-stats">
+              <span class="progress-text" id="live-ptext">0%</span>
+              <span class="speed-info" id="speed"></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. Batch Complete / Ready for More -->
+        <section id="ready-more" class="block hidden">
+          <div class="state-head">
+            <div class="state-icon-box is-success">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow is-success">Verified &amp; Saved</div>
+              <h1>Batch complete</h1>
+            </div>
+          </div>
+
+          <div class="transport" id="paused-transport"></div>
+
+          <div class="file-card">
+            <div class="file-card-left">
+              <div class="file-badge is-success" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+              <div class="filename" id="paused-name">-</div>
+            </div>
+            <div class="size-info" id="paused-size"></div>
+          </div>
+
+          <p class="session-hint" id="paused-total-session" aria-live="polite"></p>
+          <p class="block-sub">Stay on this page to receive another batch from the Origin Node.</p>
+        </section>
+
+        <!-- 7. Session Complete -->
+        <section id="complete" class="block hidden">
+          <div class="state-head">
+            <div class="state-icon-box is-success">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow is-success">Decrypted Locally</div>
+              <h1>Session ended</h1>
+            </div>
+          </div>
+
+          <div class="transport" id="done-transport"></div>
+
+          <div class="file-card">
+            <div class="file-card-left">
+              <div class="file-badge is-success" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+              <div class="filename" id="fname">-</div>
+            </div>
+            <div class="size-info" id="file-size">-</div>
+          </div>
+
+          <p class="block-sub">If the download didn't trigger automatically, your browser may have blocked multiple
+            downloads. Allow pop-ups for this site or check your downloads folder.</p>
+
+          <div class="action-row">
+            <a href="/live" class="btn-primary">Send files</a>
+            <a href="/" class="btn-secondary">Back to Home</a>
+          </div>
+        </section>
+
+        <!-- 8. Error -->
+        <section id="error" class="block hidden" role="alert">
+          <div class="state-head">
+            <div class="state-icon-box is-error">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <div class="state-title-wrap">
+              <div class="state-eyebrow is-error">Transfer Unavailable</div>
+              <h1>Couldn't find that transfer</h1>
+            </div>
+          </div>
+
+          <div class="error-box" id="errmsg">-</div>
+
+          <p class="block-sub">Stored Vault transfers expire 10 minutes after upload. Direct transfers require both
+            sides online at the same time. Check the Access Key and try again.</p>
+
+          <div class="action-row">
+            <button type="button" class="btn-primary" onclick="location.reload()">Reload</button>
+            <a href="/" class="btn-secondary">Back to Home</a>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="card-footer">
+        <span class="card-footer-lock">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span>NaCl secretbox · End-to-end encrypted</span>
+        </span>
+        <span>Zero-knowledge relay</span>
+      </div>
     </div>
-    <div class="speed-info" id="speed"></div>
-  </section>
+  </main>
 
-  <section id="ready-more" class="block hidden">
-    <div class="checkmark">✓</div>
-    <h2 style="color:var(--accent)">Batch complete</h2>
-    <div class="transport" id="paused-transport"></div>
-    <div class="filename" id="paused-name">-</div>
-    <div class="size-info" id="paused-size"></div>
-    <p class="block-sub" id="paused-total-session" style="opacity:0.75;font-size:0.88rem"></p>
-    <p class="block-sub">Stay on this page to receive another batch from the Origin Node.</p>
-    <div class="dots"><span></span><span></span><span></span></div>
-  </section>
+  <footer class="bottom-bar">
+    <div class="bottom-bar-inner">
+      <span>End-to-end encrypted · Keys never leave your browser</span>
+      <div class="bottom-links">
+        <a href="/live">Send files</a>
+        <a href="/">Home</a>
+      </div>
+    </div>
+  </footer>
 
-  <section id="complete" class="block hidden">
-    <div class="checkmark">✓</div>
-    <h2 style="color:var(--accent)">Session ended</h2>
-    <div class="transport" id="done-transport"></div>
-    <div class="filename" id="fname">-</div>
-    <div class="size-info" id="file-size">-</div>
-    <p class="block-sub">If the download didn't trigger automatically, your browser may have blocked multiple downloads. Allow pop-ups for this site or check your downloads folder.</p>
-  </section>
+  <script src="/static/nacl-fast.min.js"></script>
+  <script src="/static/transfera-protocol.js"></script>
+  <script src="/static/airpipe-mailbox.js"></script>
+  <script>
+    const NEGOTIATE_TIMEOUT_MS = 15000;
 
-  <section id="error" class="block hidden">
-    <h2 style="color:var(--accent)">Couldn't find that transfer</h2>
-    <div class="filename" id="errmsg">-</div>
-    <p class="block-sub">Stored transfers expire 10 minutes after upload. Direct transfers need both sides online at the same time. Check the Access Key and reload.</p>
-  </section>
+    const token = location.pathname.split('/').pop();
+    const keyStr = location.hash.slice(1);
+    if (!token || !keyStr) { showError('Invalid link'); throw '' }
 
-</main>
-
-<footer class="bottom-strip">
-  <span class="strip-cell">End-to-end encrypted</span>
-  <span class="spacer"></span>
-  <span class="strip-cell"><a href="/">Home</a></span>
-</footer>
-
-<script src="/static/nacl-fast.min.js"></script>
-<script src="/static/transfera-protocol.js"></script>
-<script src="/static/airpipe-mailbox.js"></script>
-<script>
-const NEGOTIATE_TIMEOUT_MS = 15000;
-
-const token = location.pathname.split('/').pop();
-const keyStr = location.hash.slice(1);
-if (!token || !keyStr) { showError('Invalid link'); throw '' }
-
-let key;
-try {
-  key = b64decode(keyStr);
-  if (key.length !== 32) throw '';
-} catch (e) { showError('Invalid encryption key'); throw e }
-
-function $(id) { return document.getElementById(id) }
-
-function show(id) {
-  ['lookup', 'loading', 'waiting', 'negotiating', 'receiving', 'ready-more', 'complete', 'error'].forEach(x => $(x).classList.add('hidden'));
-  $(id).classList.remove('hidden');
-}
-
-function showError(msg) { show('error'); $('errmsg').textContent = msg }
-
-function formatSpeed(bps) {
-  if (bps < 1024) return bps.toFixed(0) + ' B/s';
-  if (bps < 1048576) return (bps / 1024).toFixed(1) + ' KB/s';
-  return (bps / 1048576).toFixed(1) + ' MB/s';
-}
-function b64decode(s) {
-  s = s.replace(/-/g, '+').replace(/_/g, '/');
-  while (s.length % 4) s += '=';
-  const b = atob(s);
-  const r = new Uint8Array(b.length);
-  for (let i = 0; i < b.length; i++) r[i] = b.charCodeAt(i);
-  return r;
-}
-
-(async () => {
-  // Probe: is this a Vault Storage transfer?
-  let probeStatus;
-  try {
-    const probe = await fetch('/raw/' + token, { method: 'HEAD' });
-    probeStatus = probe.status;
-  } catch (e) {
-    showError('Secure Gateway unreachable: ' + (e.message || e));
-    return;
-  }
-  if (probeStatus === 200) {
-    return runMailbox();
-  }
-  if (probeStatus === 404) {
-    return runLive();
-  }
-  showError('Secure Gateway error: ' + probeStatus);
-})();
-
-// Vault Storage flow
-async function runMailbox() {
-  show('loading');
-  $('load-status').textContent = 'Downloading';
-
-  try {
-    const resp = await fetch('/raw/' + token);
-    if (!resp.ok) { showError('File not found or expired'); return }
-
-    const contentLength = resp.headers.get('content-length');
-    const totalSize = contentLength ? parseInt(contentLength) : null;
-
-    let encrypted;
-    if (totalSize && resp.body) {
-      const reader = resp.body.getReader();
-      const chunks = [];
-      let received = 0;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        received += value.length;
-        const pct = Math.round(received / totalSize * 100);
-        $('progress').style.width = pct + '%';
-        $('ptext').textContent = formatSize(received) + ' / ' + formatSize(totalSize);
-      }
-      encrypted = new Uint8Array(received);
-      let pos = 0;
-      for (const chunk of chunks) { encrypted.set(chunk, pos); pos += chunk.length }
-    } else {
-      $('progress').style.width = '50%';
-      encrypted = new Uint8Array(await resp.arrayBuffer());
-    }
-
-    if (encrypted.length < 24) { showError('File too small to contain encrypted data'); return }
-
-    $('load-status').textContent = 'decrypting';
-    $('progress').style.width = '80%';
-    $('ptext').textContent = 'NaCl secretbox · opening payload';
-
-    const nonce = encrypted.slice(0, 24);
-    const ciphertext = encrypted.slice(24);
-
-    let decrypted;
+    let key;
     try {
-      decrypted = nacl.secretbox.open(ciphertext, nonce, key);
-    } catch (e) {
-      showError('Decryption error: ' + (e.message || 'corrupted data'));
-      return;
-    }
-    if (!decrypted) { showError('Decryption failed. Wrong key or corrupted file.'); return }
+      key = b64decode(keyStr);
+      if (key.length !== 32) throw '';
+    } catch (e) { showError('Invalid encryption key'); throw e }
 
-    $('progress').style.width = '100%';
+    function $(id) { return document.getElementById(id) }
 
-    let entries;
-    try {
-      entries = decodeMailboxEntries(decrypted);
-    } catch (err) {
-      showError(err.message ? ('Invalid Vault Storage data: ' + err.message) : 'Invalid Vault Storage data');
-      return;
-    }
+    const STEP_ORDER = ['lookup', 'waiting', 'receiving', 'complete'];
+    const STATE_TO_STEP = {
+      lookup: 0,
+      waiting: 1,
+      negotiating: 1,
+      loading: 2,
+      receiving: 2,
+      'ready-more': 3,
+      complete: 3,
+    };
 
-    if (entries.length === 1) {
-      $('fname').textContent = entries[0].name;
-      $('file-size').textContent = formatSize(entries[0].content.length);
-    } else {
-      const totalSz = entries.reduce((s, e) => s + e.content.byteLength, 0);
-      $('fname').textContent = String(entries.length) + ' files';
-      $('file-size').textContent = formatSize(totalSz) + ' total';
-    }
-    $('done-transport').textContent = 'Vault Storage · async';
-    show('complete');
+    function show(id) {
+      ['lookup', 'loading', 'waiting', 'negotiating', 'receiving', 'ready-more', 'complete', 'error'].forEach(x => $(x).classList.add('hidden'));
+      $(id).classList.remove('hidden');
 
-    entries.forEach((ent, idx) => {
-      setTimeout(() => {
-        const blob = new Blob([ent.content]);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = ent.name;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 60000);
-      }, idx * 150);
-    });
-  } catch (e) {
-    showError(e.message || 'Download failed');
-  }
-}
+      const card = $('transfer-card');
+      if (card) card.dataset.state = id;
 
-// live receive flow
-let ws = null, pc = null, dc = null;
-let phase = 'lookup';
-let transport = null;
-let metadata = null;
-let bytesReceived = 0;
-let receivedChunks = [];
-let startTime = 0;
-let lastUIUpdate = 0;
-let filesReceived = 0;
-let lastSavedName = '';
-let lastSavedSize = 0;
-let totalSavedBytes = 0;
-let sessionFinalized = false;
-let filesThisBatch = 0;
-let batchBytesSent = 0;
-
-function runLive() {
-  phase = 'waiting';
-  show('waiting');
-
-  ws = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/ws/' + token);
-  ws.binaryType = 'arraybuffer';
-
-  ws.onopen = () => {
-    // announce presence to Origin Node
-    ws.send(encrypt(encode(MSG_PEER_JOIN, new Uint8Array(0)), key));
-  };
-
-  ws.onerror = () => {
-    showError('Connection to Secure Gateway lost. Reload to retry.');
-  };
-
-  ws.onclose = () => {
-    if (phase === 'complete' || phase === 'error') return;
-    if (sessionFinalized) return;
-    if (phase === 'readyMore') {
-      finalizeSessionTotals();
-      return;
-    }
-    if (transport === 'ws' && phase === 'receiving' && metadata !== null) {
-      showError('Secure Gateway connection closed during transfer.');
-      return;
-    }
-    if (transport === 'ws' && filesReceived > 0) {
-      finalizeSessionTotals();
-      return;
-    }
-    if (phase === 'negotiating' || phase === 'receiving') {
-      showError('Connection closed during ' + phase + '. Origin Node may have disconnected.');
-    }
-  };
-
-  ws.onmessage = async (evt) => {
-    const enc = new Uint8Array(evt.data);
-    const dec = decrypt(enc, key);
-    if (!dec) return;
-    const msg = decode(dec);
-    if (!msg) return;
-
-    if (msg.type === MSG_SDP_OFFER) {
-      phase = 'negotiating';
-      show('negotiating');
-      try {
-        await answerOffer(new TextDecoder().decode(msg.payload));
-      } catch (e) {
-        console.warn('answer offer failed:', e);
-        showError('Failed to negotiate peer connection: ' + (e.message || e));
+      const pills = document.querySelectorAll('.step-pill');
+      if (id === 'error') {
+        let errored = false;
+        pills.forEach(p => {
+          if (p.classList.contains('is-active')) {
+            p.classList.remove('is-active');
+            p.classList.add('is-error');
+            errored = true;
+          }
+        });
+        if (!errored && pills[0]) pills[0].classList.add('is-error');
+        return;
       }
-      return;
-    }
-    if (msg.type === MSG_ICE_CANDIDATE && pc) {
-      try {
-        const c = JSON.parse(new TextDecoder().decode(msg.payload));
-        await pc.addIceCandidate(c);
-      } catch (e) { console.warn('addIceCandidate:', e) }
-      return;
-    }
-    if (msg.type === MSG_DirectLink_FAIL) {
-      transport = 'ws';
-      if (pc) {
-        pc.onconnectionstatechange = null;
-        if (dc) dc.onclose = null;
-        try { pc.close(); } catch (_) { }
-        pc = null;
-        dc = null;
-      }
-      phase = 'receiving';
-      show('receiving');
-      $('transport').textContent = 'via Secure Gateway · DirectLink unavailable';
-      startTime = performance.now();
-      return;
-    }
-    if (msg.type === MSG_DirectLink_READY) {
-      return;
-    }
-    if (transport === 'ws') {
-      handleDataMessage(msg);
-      return;
-    }
-  };
-}
 
-async function answerOffer(offerSDP) {
-  pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-  dc = pc.createDataChannel('transfera', { ordered: true, id: 1, negotiated: true });
-  dc.binaryType = 'arraybuffer';
-
-  pc.onicecandidate = (evt) => {
-    if (evt.candidate) {
-      const raw = new TextEncoder().encode(JSON.stringify(evt.candidate.toJSON()));
-      ws.send(encrypt(encode(MSG_ICE_CANDIDATE, raw), key));
-    }
-  };
-
-  pc.onconnectionstatechange = () => {
-    if (pc && (pc.connectionState === 'failed' || pc.connectionState === 'disconnected')) {
-      if (phase === 'receiving' && transport === 'DirectLink') {
-        showError('Peer connection dropped during transfer.');
-      }
-    }
-  };
-
-  dc.onopen = () => {
-    transport = 'DirectLink';
-    phase = 'receiving';
-    show('receiving');
-    $('transport').textContent = 'direct · WebRTC DataChannel';
-    startTime = performance.now();
-  };
-
-  dc.onclose = () => {
-    if (phase === 'complete' || phase === 'error' || sessionFinalized) return;
-    if (phase === 'readyMore') {
-      finalizeSessionTotals();
-      return;
-    }
-    if (phase === 'receiving' && metadata !== null) {
-      showError('Peer connection closed during transfer.');
-      return;
-    }
-    if (filesReceived > 0) {
-      finalizeSessionTotals();
-      return;
-    }
-    if (phase === 'receiving') {
-      showError('Peer connection closed before transfer finished.');
-    }
-  };
-
-  dc.onmessage = (evt) => {
-    const enc = new Uint8Array(evt.data);
-    const dec = decrypt(enc, key);
-    if (!dec) return;
-    const msg = decode(dec);
-    if (!msg) return;
-    handleDataMessage(msg);
-  };
-
-  await pc.setRemoteDescription({ type: 'offer', sdp: offerSDP });
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-  ws.send(encrypt(encode(MSG_SDP_ANSWER, new TextEncoder().encode(answer.sdp)), key));
-}
-
-function handleDataMessage(msg) {
-  if (msg.type === MSG_METADATA) {
-    try {
-      metadata = JSON.parse(new TextDecoder().decode(msg.payload));
-    } catch (e) {
-      showError('Bad metadata from Origin Node');
-      return;
-    }
-    if (phase === 'readyMore') {
-      phase = 'receiving';
-      show('receiving');
-    }
-    receivedChunks = [];
-    bytesReceived = 0;
-    lastUIUpdate = 0;
-    startTime = performance.now();
-    $('recv-filename').textContent = metadata.filename;
-    $('recv-size').textContent = formatSize(metadata.size);
-    $('live-progress').style.width = '0%';
-    $('live-ptext').textContent = '0%';
-    $('speed').textContent = '';
-    return;
-  }
-  if (msg.type === MSG_CHUNK) {
-    receivedChunks.push(msg.payload);
-    bytesReceived += msg.payload.length;
-    const now = performance.now();
-    if (now - lastUIUpdate > 50 || (metadata && bytesReceived >= metadata.size)) {
-      lastUIUpdate = now;
-      const total = metadata ? metadata.size : 0;
-      const pct = total > 0 ? Math.round(bytesReceived / total * 100) : 0;
-      const elapsed = (now - startTime) / 1000;
-      const speed = elapsed > 0 ? bytesReceived / elapsed : 0;
-      requestAnimationFrame(() => {
-        $('live-progress').style.width = pct + '%';
-        $('live-ptext').textContent = pct + '% · ' + formatSize(bytesReceived) + (total ? ' / ' + formatSize(total) : '');
-        $('speed').textContent = formatSpeed(speed);
+      const activeIdx = STATE_TO_STEP[id] ?? 0;
+      pills.forEach((p, idx) => {
+        p.classList.remove('is-active', 'is-done', 'is-error');
+        if (idx < activeIdx || (id === 'complete' && idx === activeIdx)) {
+          p.classList.add('is-done');
+        } else if (idx === activeIdx) {
+          p.classList.add('is-active');
+        }
       });
     }
-    return;
-  }
-  if (msg.type === MSG_COMPLETE) {
-    finishOneFile();
-    return;
-  }
-  if (msg.type === MSG_SESSION_END) {
-    pauseBetweenBatches();
-    return;
-  }
-  if (msg.type === MSG_ERROR) {
-    showError('Origin Node reported: ' + new TextDecoder().decode(msg.payload));
-    return;
-  }
-}
 
-function finishOneFile() {
-  if (!metadata) {
-    showError('Transfer ended without metadata');
-    return;
-  }
-  const blob = new Blob(receivedChunks);
-  receivedChunks = [];
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = metadata.filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-  lastSavedName = metadata.filename;
-  lastSavedSize = metadata.size;
-  totalSavedBytes += metadata.size;
-  batchBytesSent += metadata.size;
-  filesReceived++;
-  filesThisBatch++;
-  metadata = null;
-  bytesReceived = 0;
-  lastUIUpdate = 0;
-  $('live-progress').style.width = '0%';
-  $('live-ptext').textContent = '0%';
-  $('speed').textContent = '';
-  const hint = $('recv-session-hint');
-  if (hint) hint.textContent = filesReceived >= 1 ? (filesReceived === 1 ? '1 file saved this session' : `${filesReceived} files saved this session`) : '';
-}
+    function showError(msg) { show('error'); $('errmsg').textContent = msg }
 
-function pauseBetweenBatches() {
-  phase = 'readyMore';
-  $('paused-name').textContent = filesThisBatch <= 1 ? lastSavedName : (String(filesThisBatch) + ' files');
-  $('paused-size').textContent = filesThisBatch <= 1 ? formatSize(lastSavedSize) : (formatSize(batchBytesSent) + ' total');
-  $('paused-transport').textContent = transport === 'DirectLink' ? 'direct · WebRTC' : 'via Secure Gateway';
-  const pt = $('paused-total-session');
-  if (pt) pt.textContent = filesReceived > 0 ? `${filesReceived} saved this session (${formatSize(totalSavedBytes)})` : '';
-  filesThisBatch = 0;
-  batchBytesSent = 0;
-  show('ready-more');
-}
+    function formatSpeed(bps) {
+      if (bps < 1024) return bps.toFixed(0) + ' B/s';
+      if (bps < 1048576) return (bps / 1024).toFixed(1) + ' KB/s';
+      return (bps / 1048576).toFixed(1) + ' MB/s';
+    }
+    function b64decode(s) {
+      s = s.replace(/-/g, '+').replace(/_/g, '/');
+      while (s.length % 4) s += '=';
+      const b = atob(s);
+      const r = new Uint8Array(b.length);
+      for (let i = 0; i < b.length; i++) r[i] = b.charCodeAt(i);
+      return r;
+    }
 
-function finalizeSessionTotals() {
-  if (sessionFinalized) return;
-  sessionFinalized = true;
-  phase = 'complete';
-  $('fname').textContent = filesReceived <= 1 ? lastSavedName : (String(filesReceived) + ' files');
-  $('file-size').textContent = filesReceived <= 1 ? formatSize(lastSavedSize) : (formatSize(totalSavedBytes) + ' total');
-  $('done-transport').textContent = transport === 'DirectLink' ? 'direct · WebRTC' : 'via Secure Gateway';
-  show('complete');
-}
+    (async () => {
+      // Probe: is this a Vault Storage transfer?
+      let probeStatus;
+      try {
+        const probe = await fetch('/raw/' + token, { method: 'HEAD' });
+        probeStatus = probe.status;
+      } catch (e) {
+        showError('Secure Gateway unreachable: ' + (e.message || e));
+        return;
+      }
+      if (probeStatus === 200) {
+        return runMailbox();
+      }
+      if (probeStatus === 404) {
+        return runLive();
+      }
+      showError('Secure Gateway error: ' + probeStatus);
+    })();
 
-</script>
+    // Vault Storage flow
+    async function runMailbox() {
+      show('loading');
+      $('load-status').textContent = 'Downloading';
+
+      try {
+        const resp = await fetch('/raw/' + token);
+        if (!resp.ok) { showError('File not found or expired'); return }
+
+        const contentLength = resp.headers.get('content-length');
+        const totalSize = contentLength ? parseInt(contentLength) : null;
+
+        let encrypted;
+        if (totalSize && resp.body) {
+          const reader = resp.body.getReader();
+          const chunks = [];
+          let received = 0;
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            received += value.length;
+            const pct = Math.round(received / totalSize * 100);
+            $('progress').style.width = pct + '%';
+            $('ptext').textContent = formatSize(received) + ' / ' + formatSize(totalSize);
+          }
+          encrypted = new Uint8Array(received);
+          let pos = 0;
+          for (const chunk of chunks) { encrypted.set(chunk, pos); pos += chunk.length }
+        } else {
+          $('progress').style.width = '50%';
+          encrypted = new Uint8Array(await resp.arrayBuffer());
+        }
+
+        if (encrypted.length < 24) { showError('File too small to contain encrypted data'); return }
+
+        $('load-status').textContent = 'decrypting';
+        $('progress').style.width = '80%';
+        $('ptext').textContent = 'NaCl secretbox · opening payload';
+
+        const nonce = encrypted.slice(0, 24);
+        const ciphertext = encrypted.slice(24);
+
+        let decrypted;
+        try {
+          decrypted = nacl.secretbox.open(ciphertext, nonce, key);
+        } catch (e) {
+          showError('Decryption error: ' + (e.message || 'corrupted data'));
+          return;
+        }
+        if (!decrypted) { showError('Decryption failed. Wrong key or corrupted file.'); return }
+
+        $('progress').style.width = '100%';
+
+        let entries;
+        try {
+          entries = decodeMailboxEntries(decrypted);
+        } catch (err) {
+          showError(err.message ? ('Invalid Vault Storage data: ' + err.message) : 'Invalid Vault Storage data');
+          return;
+        }
+
+        if (entries.length === 1) {
+          $('fname').textContent = entries[0].name;
+          $('file-size').textContent = formatSize(entries[0].content.length);
+        } else {
+          const totalSz = entries.reduce((s, e) => s + e.content.byteLength, 0);
+          $('fname').textContent = String(entries.length) + ' files';
+          $('file-size').textContent = formatSize(totalSz) + ' total';
+        }
+        $('done-transport').textContent = 'Vault Storage · async';
+        show('complete');
+
+        entries.forEach((ent, idx) => {
+          setTimeout(() => {
+            const blob = new Blob([ent.content]);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = ent.name;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+          }, idx * 150);
+        });
+      } catch (e) {
+        showError(e.message || 'Download failed');
+      }
+    }
+
+    // live receive flow
+    let ws = null, pc = null, dc = null;
+    let phase = 'lookup';
+    let transport = null;
+    let metadata = null;
+    let bytesReceived = 0;
+    let receivedChunks = [];
+    let startTime = 0;
+    let lastUIUpdate = 0;
+    let filesReceived = 0;
+    let lastSavedName = '';
+    let lastSavedSize = 0;
+    let totalSavedBytes = 0;
+    let sessionFinalized = false;
+    let filesThisBatch = 0;
+    let batchBytesSent = 0;
+
+    function runLive() {
+      phase = 'waiting';
+      show('waiting');
+
+      ws = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/ws/' + token);
+      ws.binaryType = 'arraybuffer';
+
+      ws.onopen = () => {
+        // announce presence to Origin Node
+        ws.send(encrypt(encode(MSG_PEER_JOIN, new Uint8Array(0)), key));
+      };
+
+      ws.onerror = () => {
+        showError('Connection to Secure Gateway lost. Reload to retry.');
+      };
+
+      ws.onclose = () => {
+        if (phase === 'complete' || phase === 'error') return;
+        if (sessionFinalized) return;
+        if (phase === 'readyMore') {
+          finalizeSessionTotals();
+          return;
+        }
+        if (transport === 'ws' && phase === 'receiving' && metadata !== null) {
+          showError('Secure Gateway connection closed during transfer.');
+          return;
+        }
+        if (transport === 'ws' && filesReceived > 0) {
+          finalizeSessionTotals();
+          return;
+        }
+        if (phase === 'negotiating' || phase === 'receiving') {
+          showError('Connection closed during ' + phase + '. Origin Node may have disconnected.');
+        }
+      };
+
+      ws.onmessage = async (evt) => {
+        const enc = new Uint8Array(evt.data);
+        const dec = decrypt(enc, key);
+        if (!dec) return;
+        const msg = decode(dec);
+        if (!msg) return;
+
+        if (msg.type === MSG_SDP_OFFER) {
+          phase = 'negotiating';
+          show('negotiating');
+          try {
+            await answerOffer(new TextDecoder().decode(msg.payload));
+          } catch (e) {
+            console.warn('answer offer failed:', e);
+            showError('Failed to negotiate peer connection: ' + (e.message || e));
+          }
+          return;
+        }
+        if (msg.type === MSG_ICE_CANDIDATE && pc) {
+          try {
+            const c = JSON.parse(new TextDecoder().decode(msg.payload));
+            await pc.addIceCandidate(c);
+          } catch (e) { console.warn('addIceCandidate:', e) }
+          return;
+        }
+        if (msg.type === MSG_DirectLink_FAIL) {
+          transport = 'ws';
+          if (pc) {
+            pc.onconnectionstatechange = null;
+            if (dc) dc.onclose = null;
+            try { pc.close(); } catch (_) { }
+            pc = null;
+            dc = null;
+          }
+          phase = 'receiving';
+          show('receiving');
+          $('transport').textContent = 'via Secure Gateway · DirectLink unavailable';
+          startTime = performance.now();
+          return;
+        }
+        if (msg.type === MSG_DirectLink_READY) {
+          return;
+        }
+        if (transport === 'ws') {
+          handleDataMessage(msg);
+          return;
+        }
+      };
+    }
+
+    async function answerOffer(offerSDP) {
+      pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+      dc = pc.createDataChannel('transfera', { ordered: true, id: 1, negotiated: true });
+      dc.binaryType = 'arraybuffer';
+
+      pc.onicecandidate = (evt) => {
+        if (evt.candidate) {
+          const raw = new TextEncoder().encode(JSON.stringify(evt.candidate.toJSON()));
+          ws.send(encrypt(encode(MSG_ICE_CANDIDATE, raw), key));
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        if (pc && (pc.connectionState === 'failed' || pc.connectionState === 'disconnected')) {
+          if (phase === 'receiving' && transport === 'DirectLink') {
+            showError('Peer connection dropped during transfer.');
+          }
+        }
+      };
+
+      dc.onopen = () => {
+        transport = 'DirectLink';
+        phase = 'receiving';
+        show('receiving');
+        $('transport').textContent = 'direct · WebRTC DataChannel';
+        startTime = performance.now();
+      };
+
+      dc.onclose = () => {
+        if (phase === 'complete' || phase === 'error' || sessionFinalized) return;
+        if (phase === 'readyMore') {
+          finalizeSessionTotals();
+          return;
+        }
+        if (phase === 'receiving' && metadata !== null) {
+          showError('Peer connection closed during transfer.');
+          return;
+        }
+        if (filesReceived > 0) {
+          finalizeSessionTotals();
+          return;
+        }
+        if (phase === 'receiving') {
+          showError('Peer connection closed before transfer finished.');
+        }
+      };
+
+      dc.onmessage = (evt) => {
+        const enc = new Uint8Array(evt.data);
+        const dec = decrypt(enc, key);
+        if (!dec) return;
+        const msg = decode(dec);
+        if (!msg) return;
+        handleDataMessage(msg);
+      };
+
+      await pc.setRemoteDescription({ type: 'offer', sdp: offerSDP });
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      ws.send(encrypt(encode(MSG_SDP_ANSWER, new TextEncoder().encode(answer.sdp)), key));
+    }
+
+    function handleDataMessage(msg) {
+      if (msg.type === MSG_METADATA) {
+        try {
+          metadata = JSON.parse(new TextDecoder().decode(msg.payload));
+        } catch (e) {
+          showError('Bad metadata from Origin Node');
+          return;
+        }
+        if (phase === 'readyMore') {
+          phase = 'receiving';
+          show('receiving');
+        }
+        receivedChunks = [];
+        bytesReceived = 0;
+        lastUIUpdate = 0;
+        startTime = performance.now();
+        $('recv-filename').textContent = metadata.filename;
+        $('recv-size').textContent = formatSize(metadata.size);
+        $('live-progress').style.width = '0%';
+        $('live-ptext').textContent = '0%';
+        $('speed').textContent = '';
+        return;
+      }
+      if (msg.type === MSG_CHUNK) {
+        receivedChunks.push(msg.payload);
+        bytesReceived += msg.payload.length;
+        const now = performance.now();
+        if (now - lastUIUpdate > 50 || (metadata && bytesReceived >= metadata.size)) {
+          lastUIUpdate = now;
+          const total = metadata ? metadata.size : 0;
+          const pct = total > 0 ? Math.round(bytesReceived / total * 100) : 0;
+          const elapsed = (now - startTime) / 1000;
+          const speed = elapsed > 0 ? bytesReceived / elapsed : 0;
+          requestAnimationFrame(() => {
+            $('live-progress').style.width = pct + '%';
+            $('live-ptext').textContent = pct + '% · ' + formatSize(bytesReceived) + (total ? ' / ' + formatSize(total) : '');
+            $('speed').textContent = formatSpeed(speed);
+          });
+        }
+        return;
+      }
+      if (msg.type === MSG_COMPLETE) {
+        finishOneFile();
+        return;
+      }
+      if (msg.type === MSG_SESSION_END) {
+        pauseBetweenBatches();
+        return;
+      }
+      if (msg.type === MSG_ERROR) {
+        showError('Origin Node reported: ' + new TextDecoder().decode(msg.payload));
+        return;
+      }
+    }
+
+    function finishOneFile() {
+      if (!metadata) {
+        showError('Transfer ended without metadata');
+        return;
+      }
+      const blob = new Blob(receivedChunks);
+      receivedChunks = [];
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = metadata.filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      lastSavedName = metadata.filename;
+      lastSavedSize = metadata.size;
+      totalSavedBytes += metadata.size;
+      batchBytesSent += metadata.size;
+      filesReceived++;
+      filesThisBatch++;
+      metadata = null;
+      bytesReceived = 0;
+      lastUIUpdate = 0;
+      $('live-progress').style.width = '0%';
+      $('live-ptext').textContent = '0%';
+      $('speed').textContent = '';
+      const hint = $('recv-session-hint');
+      if (hint) hint.textContent = filesReceived >= 1 ? (filesReceived === 1 ? '1 file saved this session' : `${filesReceived} files saved this session`) : '';
+    }
+
+    function pauseBetweenBatches() {
+      phase = 'readyMore';
+      $('paused-name').textContent = filesThisBatch <= 1 ? lastSavedName : (String(filesThisBatch) + ' files');
+      $('paused-size').textContent = filesThisBatch <= 1 ? formatSize(lastSavedSize) : (formatSize(batchBytesSent) + ' total');
+      $('paused-transport').textContent = transport === 'DirectLink' ? 'direct · WebRTC' : 'via Secure Gateway';
+      const pt = $('paused-total-session');
+      if (pt) pt.textContent = filesReceived > 0 ? `${filesReceived} saved this session (${formatSize(totalSavedBytes)})` : '';
+      filesThisBatch = 0;
+      batchBytesSent = 0;
+      show('ready-more');
+    }
+
+    function finalizeSessionTotals() {
+      if (sessionFinalized) return;
+      sessionFinalized = true;
+      phase = 'complete';
+      $('fname').textContent = filesReceived <= 1 ? lastSavedName : (String(filesReceived) + ' files');
+      $('file-size').textContent = filesReceived <= 1 ? formatSize(lastSavedSize) : (formatSize(totalSavedBytes) + ' total');
+      $('done-transport').textContent = transport === 'DirectLink' ? 'direct · WebRTC' : 'via Secure Gateway';
+      show('complete');
+    }
+
+  </script>
 </body>
+
 </html>

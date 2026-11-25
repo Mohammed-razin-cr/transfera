@@ -28,11 +28,12 @@ jobs:
       - name: Compute image tags and version
         id: tags
         run: |
-          tags="ghcr.io/sanyam-g/airpipe-relay:latest"
+          image="ghcr.io/${GITHUB_REPOSITORY,,}-relay"
+          tags="${image}:latest"
           version="main-${GITHUB_SHA::7}"
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             version="${GITHUB_REF#refs/tags/}"
-            tags="${tags},ghcr.io/sanyam-g/airpipe-relay:${version}"
+            tags="${tags},${image}:${version}"
           fi
           echo "tags=${tags}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
