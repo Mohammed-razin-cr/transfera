@@ -1379,17 +1379,45 @@
     let sessionFinalized = false;
     let filesThisBatch = 0;
     let batchBytesSent = 0;
+    let aesGcmKey = null;
+    let aesBytesRemaining = 0;
+    let recvQueue = Promise.resolve();
+
+    function enqueueDataFrame(rawBuf) {
+      recvQueue = recvQueue.then(async () => {
+        const enc = rawBuf instanceof Uint8Array ? rawBuf : new Uint8Array(rawBuf);
+        if (aesBytesRemaining > 0 && aesGcmKey) {
+          try {
+            const pt = await decryptAesGcm(enc, aesGcmKey);
+            aesBytesRemaining -= pt.length;
+            handleDataMessage({ type: MSG_CHUNK, payload: pt });
+            return;
+          } catch (_) {
+            // Fall through to NaCl control message decoding
+          }
+        }
+        const dec = decrypt(enc, key);
+        if (!dec) return;
+        const msg = decode(dec);
+        if (!msg) return;
+        handleDataMessage(msg);
+      });
+    }
 
     function runLive() {
       phase = 'waiting';
       show('waiting');
+      if (hasWebCrypto()) {
+        importAesGcmKey(key).then(k => { aesGcmKey = k; }).catch(() => {});
+      }
 
       ws = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/ws/' + token);
       ws.binaryType = 'arraybuffer';
 
       ws.onopen = () => {
-        // announce presence to Origin Node
-        ws.send(encrypt(encode(MSG_PEER_JOIN, new Uint8Array(0)), key));
+        // announce presence + WebCrypto AES-GCM capability to Origin Node
+        const cap = hasWebCrypto() ? new Uint8Array([1]) : new Uint8Array(0);
+        ws.send(encrypt(encode(MSG_PEER_JOIN, cap), key));
       };
 
       ws.onerror = () => {
@@ -1417,6 +1445,10 @@
       };
 
       ws.onmessage = async (evt) => {
+        if (transport === 'ws') {
+          enqueueDataFrame(evt.data);
+          return;
+        }
         const enc = new Uint8Array(evt.data);
         const dec = decrypt(enc, key);
         if (!dec) return;
@@ -1514,12 +1546,7 @@
       };
 
       dc.onmessage = (evt) => {
-        const enc = new Uint8Array(evt.data);
-        const dec = decrypt(enc, key);
-        if (!dec) return;
-        const msg = decode(dec);
-        if (!msg) return;
-        handleDataMessage(msg);
+        enqueueDataFrame(evt.data);
       };
 
       await pc.setRemoteDescription({ type: 'offer', sdp: offerSDP });
@@ -1536,6 +1563,7 @@
           showError('Bad metadata from Origin Node');
           return;
         }
+        aesBytesRemaining = metadata.cipher === 'aes-gcm' ? metadata.size : 0;
         if (phase === 'readyMore') {
           phase = 'receiving';
           show('receiving');

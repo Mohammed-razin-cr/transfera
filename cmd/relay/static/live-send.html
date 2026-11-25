@@ -1372,6 +1372,8 @@ if(isLoopbackHost){
 // (Chrome: 256KB, Firefox: 64KB, Safari: 64KB). Using 64KB ensures cross-browser compatibility.
 const CHUNK=64*1024;
 const NEGOTIATE_TIMEOUT_MS=5000;
+let peerSupportsAesGcm=false;
+let aesGcmKey=null;
 
 function $(id){return document.getElementById(id)}
 
@@ -1713,14 +1715,20 @@ function attachWS(){
     if(!msg)return;
 
     if(msg.type===MSG_PEER_JOIN){
+      const supportsAes=!!(msg.payload&&msg.payload.length>0&&msg.payload[0]===1&&hasWebCrypto());
       if(!peerJoined){
         peerJoined=true;
         recipientCount=1;
+        peerSupportsAesGcm=supportsAes;
+        if(supportsAes&&!aesGcmKey){
+          importAesGcmKey(keyBytes).then(k=>{aesGcmKey=k;}).catch(()=>{peerSupportsAesGcm=false;});
+        }
         updateRecipientCount();
         phase='select';
         show('select');
       }else{
         // Additional recipient joined in multi-recipient mode
+        if(!supportsAes)peerSupportsAesGcm=false;
         recipientCount++;
         updateRecipientCount();
       }
@@ -2072,11 +2080,14 @@ function waitDCDrain(maxBuf=8*1024*1024,lowThreshold=2*1024*1024){
 }
 
 async function streamFile(file,sendFn){
+  const useAesGcm=!!(peerSupportsAesGcm&&aesGcmKey);
   const chunkSize=sendFn===sendDC?getOptimalChunkSize():128*1024;
   const meta={filename:file.name,size:file.size,chunks:Math.ceil(file.size/chunkSize)};
+  if(useAesGcm)meta.cipher='aes-gcm';
   await sendFn(encode(MSG_METADATA,new TextEncoder().encode(JSON.stringify(meta))));
 
   const READ_SLAB=4*1024*1024;
+  const PIPELINE=4;
   let slabOffset=0;
   let nextSlabPromise=file.size>0?file.slice(0,Math.min(READ_SLAB,file.size)).arrayBuffer():null;
   const startTime=performance.now();
@@ -2090,29 +2101,72 @@ async function streamFile(file,sendFn){
     }
     const slabView=new Uint8Array(slabBuf);
 
-    for(let pos=0;pos<slabView.length;pos+=chunkSize){
-      const end=Math.min(pos+chunkSize,slabView.length);
-      await sendFn(encode(MSG_CHUNK,slabView.subarray(pos,end)));
-      const sent=slabOffset+end;
+    if(useAesGcm){
+      const sendRaw=sendFn===sendDC?sendRawDC:sendRawWS;
+      for(let pos=0;pos<slabView.length;pos+=chunkSize*PIPELINE){
+        const batch=[];
+        let batchEnd=pos;
+        for(let i=0;i<PIPELINE&&batchEnd<slabView.length;i++){
+          const end=Math.min(batchEnd+chunkSize,slabView.length);
+          batch.push(encryptAesGcm(slabView.subarray(batchEnd,end),aesGcmKey));
+          batchEnd=end;
+        }
+        const frames=await Promise.all(batch);
+        for(let i=0;i<frames.length;i++){
+          await sendRaw(frames[i]);
+        }
+        const sent=slabOffset+batchEnd;
+        const now=performance.now();
+        if(now-lastUIUpdate>60||sent>=file.size){
+          lastUIUpdate=now;
+          const pct=Math.round(sent/file.size*100);
+          const elapsed=(now-startTime)/1000;
+          const speed=elapsed>0?sent/elapsed:0;
+          if (speedChart) speedChart.addPoint(speed);
+          requestAnimationFrame(()=>{
+            $('progress').style.width=pct+'%';
+            $('ptext').textContent=pct+'% · '+formatSize(sent)+' / '+formatSize(file.size);
+            $('speed').textContent=formatSpeed(speed);
+          });
+        }
+      }
+    }else{
+      for(let pos=0;pos<slabView.length;pos+=chunkSize){
+        const end=Math.min(pos+chunkSize,slabView.length);
+        await sendFn(encode(MSG_CHUNK,slabView.subarray(pos,end)));
+        const sent=slabOffset+end;
 
-      const now=performance.now();
-      if(now-lastUIUpdate>60||sent>=file.size){
-        lastUIUpdate=now;
-        const pct=Math.round(sent/file.size*100);
-        const elapsed=(now-startTime)/1000;
-        const speed=elapsed>0?sent/elapsed:0;
-        if (speedChart) speedChart.addPoint(speed);
-        requestAnimationFrame(()=>{
-          $('progress').style.width=pct+'%';
-          $('ptext').textContent=pct+'% · '+formatSize(sent)+' / '+formatSize(file.size);
-          $('speed').textContent=formatSpeed(speed);
-        });
+        const now=performance.now();
+        if(now-lastUIUpdate>60||sent>=file.size){
+          lastUIUpdate=now;
+          const pct=Math.round(sent/file.size*100);
+          const elapsed=(now-startTime)/1000;
+          const speed=elapsed>0?sent/elapsed:0;
+          if (speedChart) speedChart.addPoint(speed);
+          requestAnimationFrame(()=>{
+            $('progress').style.width=pct+'%';
+            $('ptext').textContent=pct+'% · '+formatSize(sent)+' / '+formatSize(file.size);
+            $('speed').textContent=formatSpeed(speed);
+          });
+        }
       }
     }
     slabOffset=slabEnd;
   }
 
   await sendFn(encode(MSG_COMPLETE,new Uint8Array(0)));
+}
+
+async function sendRawDC(frame){
+  if(dc.bufferedAmount>8*1024*1024){await waitDCDrain()}
+  dc.send(frame);
+}
+
+async function sendRawWS(frame){
+  if(ws.bufferedAmount>8*1024*1024){
+    while(ws.bufferedAmount>4*1024*1024){await sleep(5)}
+  }
+  ws.send(frame);
 }
 
 async function sendDC(plaintext){

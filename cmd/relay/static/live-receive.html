@@ -755,6 +755,28 @@ let filesThisBatch=0;
 let batchBytesSent=0;
 let isMultiRecipient=false;
 let speedChart=null;
+let aesGcmKey=null;
+let aesBytesRemaining=0;
+let recvQueue=Promise.resolve();
+
+function enqueueDataFrame(rawBuf){
+  recvQueue=recvQueue.then(async()=>{
+    const enc=rawBuf instanceof Uint8Array?rawBuf:new Uint8Array(rawBuf);
+    if(aesBytesRemaining>0&&aesGcmKey){
+      try{
+        const pt=await decryptAesGcm(enc,aesGcmKey);
+        aesBytesRemaining-=pt.length;
+        handleDataMessage({type:MSG_CHUNK,payload:pt});
+        return;
+      }catch(_){}
+    }
+    const dec=decrypt(enc,keyBytes);
+    if(!dec)return;
+    const msg=decode(dec);
+    if(!msg)return;
+    handleDataMessage(msg);
+  });
+}
 
 ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/'+token+'?role=recipient');
 ws.binaryType='arraybuffer';
@@ -763,7 +785,8 @@ ws.onopen=()=>{
   const s=$('ws-status');
   s.classList.remove('err');s.classList.add('live');
   s.innerHTML='<span class="dot"></span>SECURE GATEWAY ONLINE';
-  ws.send(encrypt(encode(MSG_PEER_JOIN,new Uint8Array(0)),keyBytes));
+  if(hasWebCrypto()){importAesGcmKey(keyBytes).then(k=>{aesGcmKey=k;}).catch(()=>{});}
+  ws.send(encrypt(encode(MSG_PEER_JOIN,hasWebCrypto()?new Uint8Array([1]):new Uint8Array(0)),keyBytes));
   phase='waiting';
   show('waiting');
 };
@@ -796,6 +819,7 @@ ws.onclose=()=>{
 };
 
 ws.onmessage=async(evt)=>{
+  if(transport==='ws'){enqueueDataFrame(evt.data);return;}
   const enc=new Uint8Array(evt.data);
   const dec=decrypt(enc,keyBytes);
   if(!dec)return;
@@ -898,7 +922,7 @@ async function answerOffer(offerSDP){
     }
   };
 
-  dc.onmessage=(evt)=>{
+  dc.onmessage=(evt)=>{enqueueDataFrame(evt.data);return;};
     const enc=new Uint8Array(evt.data);
     const dec=decrypt(enc,keyBytes);
     if(!dec)return;
@@ -917,6 +941,7 @@ function handleDataMessage(msg){
   if(msg.type===MSG_METADATA){
     try{
       metadata=JSON.parse(new TextDecoder().decode(msg.payload));
+      aesBytesRemaining=metadata.cipher==='aes-gcm'?metadata.size:0;
     }catch(e){
       showError('Bad metadata from Origin Node');
       return;
