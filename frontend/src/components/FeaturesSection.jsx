@@ -51,7 +51,7 @@ export default function FeaturesSection() {
               <div key={step.num} className="py-8 md:px-7 md:first:pl-0 md:last:pr-0">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs text-[#F00064]">{step.num}</span>
-                  <step.icon className="h-4 w-4 text-[#71717A]" aria-hidden="true" />
+                  <step.icon className="h-4 w-4 text-[#94949E]" aria-hidden="true" />
                 </div>
                 <h3 className="mt-5 text-base font-semibold text-[#F4F4F5]">
                   {step.title}

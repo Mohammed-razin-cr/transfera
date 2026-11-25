@@ -106,13 +106,26 @@ export default function HowItWorksPage() {
                       <span className="font-mono text-xs text-[#F00064]">Step {step.step}</span>
                       <h2 className="mt-1.5 text-lg font-semibold text-[#F4F4F5]">{step.title}</h2>
                       <p className="mt-2 text-sm leading-relaxed text-[#A1A1AA]">{step.description}</p>
-                      <p className="mt-3 rounded-lg border border-[#27272A] bg-[#111114] px-3.5 py-2.5 font-mono text-xs leading-relaxed text-[#71717A]">
+                      <p className="mt-3 rounded-lg border border-[#27272A] bg-[#111114] px-3.5 py-2.5 text-xs leading-relaxed text-[#94949E]">
                         {step.detail}
                       </p>
                     </div>
                   </li>
                 ))}
               </ol>
+
+              <div className="surface-panel mt-14 flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center">
+                <div>
+                  <h2 className="text-base font-semibold text-[#F4F4F5]">Ready to send files?</h2>
+                  <p className="mt-1 text-sm text-[#A1A1AA]">
+                    Start an end-to-end encrypted transfer session in your browser.
+                  </p>
+                </div>
+                <a href="/live" className="btn-primary shrink-0">
+                  <span>Start transfer</span>
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </div>
             </div>
           </div>
         </section>

@@ -93,7 +93,7 @@ export default function SecurityPage() {
                       <h3 className="mt-4 text-base font-semibold text-[#F4F4F5]">{point.title}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-[#A1A1AA]">{point.description}</p>
                     </div>
-                    <p className="mt-4 rounded-lg border border-[#27272A] bg-[#09090B] p-3 font-mono text-[11px] leading-relaxed text-[#71717A]">
+                    <p className="mt-4 rounded-lg border border-[#27272A] bg-[#09090B] p-3 text-xs leading-relaxed text-[#94949E]">
                       {point.detail}
                     </p>
                   </div>
@@ -124,6 +124,19 @@ export default function SecurityPage() {
                     </div>
                   ))}
                 </dl>
+              </div>
+
+              <div className="surface-panel mt-12 flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center">
+                <div>
+                  <h2 className="text-base font-semibold text-[#F4F4F5]">Ready to transfer privately?</h2>
+                  <p className="mt-1 text-sm text-[#A1A1AA]">
+                    Zero accounts, zero plaintext storage, and local NaCl encryption.
+                  </p>
+                </div>
+                <a href="/live" className="btn-primary shrink-0">
+                  <span>Start transfer</span>
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </a>
               </div>
             </div>
           </div>

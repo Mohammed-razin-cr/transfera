@@ -9,11 +9,11 @@
     --bg-elevated: #17171B;
     --text-primary: #F4F4F5;
     --text-secondary: #A1A1AA;
-    --text-muted: #71717A;
+    --text-muted: #94949E;
     --border-subtle: #27272A;
     --border-strong: #3F3F46;
-    --accent-primary: #F00064;
-    --accent-hover: #FF1F7A;
+    --accent-primary: #D9005A;
+    --accent-hover: #F00064;
     --accent-subtle: rgba(240, 0, 100, 0.10);
     --accent-border: rgba(240, 0, 100, 0.28);
     --status-success: #10B981;
@@ -93,7 +93,7 @@
 
   /* Primary & Secondary Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap select-none;
+    @apply inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap select-none;
     padding: 0.625rem 1.25rem;
     min-height: 42px;
     border-radius: var(--radius-md);
@@ -170,11 +170,12 @@
 
   /* Typography Helpers */
   .eyebrow-label {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--accent-primary);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FF4D8D;
   }
 
   .hero-heading {

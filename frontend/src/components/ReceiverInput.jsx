@@ -221,7 +221,7 @@ export default function ReceiverInput() {
                   <label htmlFor="access-key" className="text-sm font-medium text-[#F4F4F5]">
                     Access Key
                   </label>
-                  <span className="font-mono text-[11px] text-[#71717A]">
+                  <span className="text-xs text-[#94949E]">
                     Case insensitive
                   </span>
                 </div>
@@ -247,14 +247,14 @@ export default function ReceiverInput() {
                         setValue(e.target.value.toUpperCase())
                         if (error) setError('')
                       }}
-                      placeholder="AURORA VORTEX 73"
+                      placeholder="AURORA VORTEX SIGNAL CLOUD 73"
                       autoComplete="off"
                       autoCapitalize="characters"
                       spellCheck="false"
                       disabled={isSubmitting}
                       aria-invalid={Boolean(error)}
                       aria-describedby={error ? 'access-key-error access-key-help' : 'access-key-help'}
-                      className="access-key-input w-full py-2.5 pl-10 pr-10 font-mono text-sm tracking-wider placeholder:text-[#52525B]"
+                      className="access-key-input w-full py-2.5 pl-10 pr-10 font-mono text-[13px] tracking-normal placeholder:text-[#71717A]"
                     />
                     {value && !isSubmitting && (
                       <button
@@ -309,7 +309,7 @@ export default function ReceiverInput() {
                   </div>
                 )}
 
-                <p id="access-key-help" className="mt-4 font-mono text-xs text-[#71717A]">
+                <p id="access-key-help" className="mt-4 text-xs text-[#94949E]">
                   Keys are hashed locally with SHA-256. Vault payloads expire automatically after 10 minutes.
                 </p>
               </div>

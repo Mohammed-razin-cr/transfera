@@ -20,7 +20,7 @@ export default function HeroSection() {
             {/* Category Label */}
             <div className="inline-flex items-center gap-2 rounded-full border border-[#27272A] bg-[#111114] px-3 py-1">
               <span className="h-1.5 w-1.5 rounded-full bg-[#F00064]" aria-hidden="true" />
-              <span className="font-mono text-xs text-[#A1A1AA]">
+              <span className="text-xs font-medium text-[#A1A1AA]">
                 End-to-end encrypted file transfer
               </span>
             </div>
@@ -48,7 +48,7 @@ export default function HeroSection() {
             </div>
 
             {/* Subtle Status Indicator */}
-            <p className="mt-5 inline-flex items-center justify-center gap-2 font-mono text-xs text-[#71717A]">
+            <p className="mt-5 inline-flex items-center justify-center gap-2 text-xs text-[#94949E]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#10B981]" aria-hidden="true" />
               <span>Gateway online</span>
               <span aria-hidden="true">·</span>

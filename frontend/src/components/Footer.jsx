@@ -61,7 +61,7 @@ export default function Footer() {
             {/* Link Columns */}
             {Object.entries(linkColumns).map(([category, items]) => (
               <div key={category}>
-                <p className="font-mono text-xs font-medium uppercase tracking-wider text-[#F4F4F5]">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#F4F4F5]">
                   {category}
                 </p>
                 <ul className="mt-4 space-y-2.5">
@@ -93,10 +93,10 @@ export default function Footer() {
           </div>
 
           <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-[#27272A] pt-6 sm:flex-row sm:items-center">
-            <p className="font-mono text-xs text-[#71717A]">
+            <p className="text-xs text-[#94949E]">
               © 2026 Transfera · Open source under MIT License
             </p>
-            <p className="font-mono text-xs text-[#71717A]">
+            <p className="text-xs text-[#94949E]">
               NaCl secretbox · WebRTC DataChannel
             </p>
           </div>

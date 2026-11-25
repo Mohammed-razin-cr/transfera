@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Receive · Transfera</title>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260510a">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css?v=20260619a">
 <style>
   /* ── Page-level overrides ── */
@@ -200,23 +200,279 @@
 
   /* main gets bottom padding for fixed footer */
   main { padding-bottom: 64px; }
+
+/* ── Unified Transfera Design System Overrides ── */
+:root {
+  --bg:             #09090B;
+  --bg-2:           #111114;
+  --surface:        #111114;
+  --surface-2:      #17171B;
+  --fg:             #F4F4F5;
+  --muted:          #A1A1AA;
+  --dim:            #94949E;
+  --border:         #27272A;
+  --border-strong:  #3F3F46;
+  --accent:         #D9005A;
+  --accent-strong:  #F00064;
+  --accent-soft:    rgba(240, 0, 100, 0.10);
+  --accent-line:    rgba(240, 0, 100, 0.35);
+  --sans:           "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --display:        "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono:           "IBM Plex Mono", ui-monospace, monospace;
+}
+
+body {
+  background: #09090B !important;
+  color: #F4F4F5 !important;
+  font-family: var(--sans) !important;
+}
+
+body::before {
+  background: radial-gradient(ellipse 65% 45% at 50% 0%, rgba(240, 0, 100, 0.06) 0%, transparent 75%) !important;
+}
+
+.top-strip {
+  background: rgba(9, 9, 11, 0.86) !important;
+  border-bottom: 1px solid #27272A !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  min-height: 56px !important;
+  padding: 0 clamp(16px, 4vw, 40px) !important;
+}
+
+.strip-cell.brand,
+.strip-cell.brand a {
+  font-family: var(--sans) !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  letter-spacing: -0.01em !important;
+  color: #F4F4F5 !important;
+}
+
+.strip-cell.brand em { font-style: normal !important; }
+
+.brand-seal-live {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #27272A;
+  background: #111114;
+  flex-shrink: 0;
+}
+
+.strip-cell.status.live { color: #10B981 !important; }
+.strip-cell.status.live .dot { background: #10B981 !important; box-shadow: none !important; }
+
+.block { border-bottom-color: #27272A !important; }
+.block h1, .block h2 {
+  font-family: var(--sans) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+  color: #F4F4F5 !important;
+}
+
+.stage-kicker {
+  border: 1px solid #27272A !important;
+  background: #111114 !important;
+  color: #A1A1AA !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+  font-size: 0.75rem !important;
+}
+.stage-kicker::before {
+  background: #F00064 !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.live-steps-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 6px 12px;
+  border: 1px solid #27272A;
+  border-radius: 8px;
+  background: #111114;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: #94949E;
+}
+.live-steps-bar .step-active { color: #F4F4F5; font-weight: 600; }
+.live-steps-bar .step-sep { color: #52525B; }
+
+.live-key-panel, .live-qr-panel {
+  background: #111114 !important;
+  border: 1px solid #27272A !important;
+  border-radius: 12px !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+.live-key-panel:hover, .live-qr-panel:hover {
+  border-color: #3F3F46 !important;
+  box-shadow: none !important;
+}
+
+.panel-label {
+  color: #A1A1AA !important;
+  letter-spacing: 0.04em !important;
+  font-size: 0.75rem !important;
+}
+.panel-label span { color: #F00064 !important; }
+
+.phrase-display {
+  background: #09090B !important;
+  border: 1px solid #27272A !important;
+  border-radius: 8px !important;
+}
+.phrase-display::before { display: none !important; }
+.phrase-display .phrase-words { color: #F4F4F5 !important; }
+.phrase-hint { color: #94949E !important; }
+
+button.cta.cta-primary, a.cta.cta-primary, .cta-primary {
+  background: #D9005A !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+  font-family: var(--sans) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+  color: #FFFFFF !important;
+  min-height: 42px !important;
+}
+button.cta.cta-primary:hover, a.cta.cta-primary:hover, .cta-primary:hover {
+  background: #F00064 !important;
+}
+
+.code-block {
+  background: #09090B !important;
+  border: 1px solid #27272A !important;
+  border-radius: 8px !important;
+}
+
+.network-notice {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #27272A;
+  border-radius: 8px;
+  background: #17171B;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #A1A1AA;
+}
+.network-notice strong {
+  display: block;
+  color: #F4F4F5;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.network-notice p { margin: 0 0 8px 0; color: #A1A1AA; }
+.network-notice a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #FF4D94 !important;
+  font-weight: 500;
+  text-decoration: none;
+}
+.network-notice a:hover { text-decoration: underline; }
+
+#multi-recipient-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #3F3F46;
+  border-radius: 4px;
+  background: #09090B;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+#multi-recipient-check::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  transform: scale(0);
+  transition: transform 120ms ease-in-out;
+  box-shadow: inset 1em 1em #FFFFFF;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+#multi-recipient-check:checked { background: #D9005A; border-color: #D9005A; }
+#multi-recipient-check:checked::before { transform: scale(1); }
+
+.drop-zone {
+  background: #111114 !important;
+  border: 1px dashed #3F3F46 !important;
+  border-radius: 12px !important;
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: #F00064 !important;
+  background: #17171B !important;
+}
+
+.progress-bar { background: #27272A !important; }
+.progress-fill { background: #F00064 !important; }
+
+.recv-status-tag {
+  border-color: #27272A !important;
+  color: #94949E !important;
+  background: #111114 !important;
+}
+.recv-status-tag.active {
+  border-color: rgba(240, 0, 100, 0.35) !important;
+  color: #FF4D94 !important;
+  background: rgba(240, 0, 100, 0.10) !important;
+}
+.recv-status-tag.success {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #10B981 !important;
+  background: rgba(16, 185, 129, 0.10) !important;
+}
+
+.filename {
+  background: #111114 !important;
+  border: 1px solid #27272A !important;
+  border-left: 2px solid #F00064 !important;
+  border-radius: 0 8px 8px 0 !important;
+  color: #F4F4F5 !important;
+}
+.size-info { color: #94949E !important; }
+.transport { color: #FF4D94 !important; }
+
+.live-footer {
+  background: #09090B !important;
+  border-top: 1px solid #27272A !important;
+}
+.live-footer .footer-status i { background: #10B981 !important; }
+
 </style>
 </head>
 <body>
 
 <header class="top-strip">
-  <div class="strip-cell brand" style="display:flex;align-items:center;gap:8px;">
-    <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
-      <img src="/static/logo.png" alt="logo" style="width:28px;height:28px;object-fit:cover;border-radius:3px;" />
-      <em>Transfera</em>
+  <div class="strip-cell brand" style="display:flex;align-items:center;gap:10px;">
+    <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <span class="brand-seal-live">
+        <img src="/static/logo.png" alt="" aria-hidden="true" style="width:20px;height:20px;object-fit:contain;" />
+      </span>
+      <span>Transfera</span>
     </a>
   </div>
   <div class="strip-cell spacer"></div>
   <div class="strip-cell status" id="ws-status"><span class="dot"></span>CONNECTING</div>
-  <button type="button" id="theme-toggle" class="strip-cell port-btn" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;letter-spacing:inherit;text-transform:inherit;display:flex;align-items:center;gap:4px;">
+  <button type="button" id="theme-toggle" class="strip-cell port-btn" style="display:none;" aria-hidden="true">
     THEME <span id="theme-icon">●</span>
   </button>
-  <a href="https://github.com/Mohammed-razin-cr/transfera" target="_blank" rel="noopener" class="strip-cell port-btn">GITHUB <span class="arrow">↗</span></a>
+  <a href="/" class="strip-cell port-btn">HOME <span class="arrow">↗</span></a>
 </header>
 
 <main>
@@ -328,7 +584,9 @@
 
 <footer class="bottom-strip live-footer">
   <div class="footer-brand">
-    <span class="footer-mark" aria-hidden="true">T</span>
+    <span class="brand-seal-live" style="width:26px;height:26px;border-radius:6px;">
+      <img src="/static/logo.png" alt="" aria-hidden="true" style="width:16px;height:16px;object-fit:contain;" />
+    </span>
     <span>Transfera</span>
   </div>
   <div class="footer-status">

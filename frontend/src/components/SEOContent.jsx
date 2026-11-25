@@ -74,7 +74,7 @@ export default function SEOContent() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-[#F4F4F5]">{platform.name}</p>
-                    <p className="truncate text-xs text-[#71717A]">{platform.note}</p>
+                    <p className="truncate text-xs text-[#94949E]">{platform.note}</p>
                   </div>
                 </div>
               ))}
@@ -91,17 +91,32 @@ export default function SEOContent() {
             </div>
 
             {/* Related Guides */}
-            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#27272A] pt-6 text-xs text-[#A1A1AA]">
-              <a href="/transfer-files-between-devices" className="hover:text-[#F4F4F5]">
+            <div className="mt-10 flex flex-wrap items-center gap-2.5 border-t border-[#27272A] pt-6">
+              <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-[#94949E]">
+                Guides
+              </span>
+              <a
+                href="/transfer-files-between-devices"
+                className="rounded-md border border-[#27272A] bg-[#111114] px-3 py-1.5 text-xs text-[#A1A1AA] transition-colors hover:border-[#3F3F46] hover:text-[#F4F4F5]"
+              >
                 Transfer files between devices
               </a>
-              <a href="/send-files-phone-to-pc" className="hover:text-[#F4F4F5]">
+              <a
+                href="/send-files-phone-to-pc"
+                className="rounded-md border border-[#27272A] bg-[#111114] px-3 py-1.5 text-xs text-[#A1A1AA] transition-colors hover:border-[#3F3F46] hover:text-[#F4F4F5]"
+              >
                 Send files from phone to PC
               </a>
-              <a href="/private-file-sharing" className="hover:text-[#F4F4F5]">
+              <a
+                href="/private-file-sharing"
+                className="rounded-md border border-[#27272A] bg-[#111114] px-3 py-1.5 text-xs text-[#A1A1AA] transition-colors hover:border-[#3F3F46] hover:text-[#F4F4F5]"
+              >
                 Private file sharing
               </a>
-              <a href="/wetransfer-alternative" className="hover:text-[#F4F4F5]">
+              <a
+                href="/wetransfer-alternative"
+                className="rounded-md border border-[#27272A] bg-[#111114] px-3 py-1.5 text-xs text-[#A1A1AA] transition-colors hover:border-[#3F3F46] hover:text-[#F4F4F5]"
+              >
                 Compare with WeTransfer
               </a>
             </div>

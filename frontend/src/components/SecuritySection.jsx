@@ -57,7 +57,7 @@ export default function SecuritySection() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-[#F4F4F5]">
-                        <span className="mr-2 font-mono text-xs text-[#71717A]">0{idx + 1}</span>
+                        <span className="mr-2 font-mono text-xs text-[#94949E]">0{idx + 1}</span>
                         {stage.step}
                       </p>
                       <p className="mt-0.5 text-sm text-[#A1A1AA]">{stage.detail}</p>
@@ -81,10 +81,10 @@ export default function SecuritySection() {
             <div className="lg:col-span-6 lg:self-center">
               <div className="surface-panel overflow-hidden">
                 <div className="flex items-center justify-between border-b border-[#27272A] bg-[#111114] px-5 py-3.5">
-                  <span className="font-mono text-xs font-medium text-[#F4F4F5]">
+                  <span className="text-xs font-semibold text-[#F4F4F5]">
                     Cryptographic specification
                   </span>
-                  <span className="font-mono text-[11px] text-[#10B981]">Open source · MIT</span>
+                  <span className="text-xs font-medium text-[#10B981]">Open source · MIT</span>
                 </div>
                 <dl className="divide-y divide-[#27272A]">
                   {specs.map((spec) => (
