@@ -1384,16 +1384,19 @@
     let recvQueue = Promise.resolve();
 
     function enqueueDataFrame(rawBuf) {
+      const enc = rawBuf instanceof Uint8Array ? rawBuf : new Uint8Array(rawBuf);
+      // Kick off hardware AES-GCM decryption immediately in parallel before queuing for in-order assembly
+      const preDecrypt = (aesBytesRemaining > 0 && aesGcmKey)
+        ? decryptAesGcm(enc, aesGcmKey).catch(() => null)
+        : null;
+
       recvQueue = recvQueue.then(async () => {
-        const enc = rawBuf instanceof Uint8Array ? rawBuf : new Uint8Array(rawBuf);
         if (aesBytesRemaining > 0 && aesGcmKey) {
-          try {
-            const pt = await decryptAesGcm(enc, aesGcmKey);
+          const pt = preDecrypt ? await preDecrypt : await decryptAesGcm(enc, aesGcmKey).catch(() => null);
+          if (pt) {
             aesBytesRemaining -= pt.length;
             handleDataMessage({ type: MSG_CHUNK, payload: pt });
             return;
-          } catch (_) {
-            // Fall through to NaCl control message decoding
           }
         }
         const dec = decrypt(enc, key);
