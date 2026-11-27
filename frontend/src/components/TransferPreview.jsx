@@ -7,11 +7,9 @@ import {
   Check,
   FileArchive,
   FileText,
-  Laptop,
   Lock,
   QrCode,
   Send,
-  Smartphone,
   UploadCloud,
 } from 'lucide-react'
 
@@ -77,7 +75,7 @@ export default function TransferPreview() {
   }
 
   return (
-    <div className="surface-panel relative overflow-hidden shadow-[0_24px_64px_-12px_rgba(0,0,0,0.75),inset_0_1px_0_rgba(255,255,255,0.06)]">
+    <div className="surface-panel relative mx-auto max-w-2xl overflow-hidden shadow-[0_24px_64px_-12px_rgba(0,0,0,0.75),inset_0_1px_0_rgba(255,255,255,0.06)]">
       {/* Subtle Top Ambient Accent */}
       <div
         aria-hidden="true"
@@ -144,11 +142,9 @@ export default function TransferPreview() {
         </div>
       </div>
 
-      {/* Main Two-Column Workspace */}
-      <div className="grid grid-cols-1 divide-y divide-[#27272A] lg:grid-cols-12 lg:divide-x lg:divide-y-0">
-        {/* Left: Active Stage Content */}
-        <div className="flex flex-col justify-between p-5 sm:p-7 lg:col-span-7">
-          <AnimatePresence mode="wait">
+      {/* Main Organized Workflow Stage */}
+      <div className="p-5 sm:p-7">
+        <AnimatePresence mode="wait">
           {activeStage === 'select' && (
             /* Minimal Glass Upload Pattern (adapted from Uilora Minimal Glass) */
             <motion.div
@@ -355,157 +351,18 @@ export default function TransferPreview() {
             </motion.div>
           )}
           </AnimatePresence>
-        </div>
+      </div>
 
-        {/* Right: Stage-Aware Connection Timeline */}
-        <div className="flex flex-col justify-between bg-[#09090B]/40 p-5 sm:p-7 lg:col-span-5">
-          <div>
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-[#94949E]">
-                Peer connection
-              </p>
-              <span className="font-mono text-[11px] text-[#94949E]">
-                {activeStage === 'select'
-                  ? 'Local staging'
-                  : activeStage === 'pair'
-                    ? 'Key exchange'
-                    : 'P2P · Direct'}
-              </span>
-            </div>
-
-            <div className="mt-4">
-              {/* Origin Node */}
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/90 px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#F00064]/25 bg-[#F00064]/10">
-                    <Laptop className="h-4 w-4 text-[#FF4D8D]" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-[#F4F4F5]">Origin Node</p>
-                    <p className="text-[11px] text-[#94949E]">MacBook Pro · Chrome</p>
-                  </div>
-                </div>
-                <span className="rounded-full border border-[#27272A] bg-[#17171B] px-2.5 py-0.5 text-[11px] font-medium text-[#A1A1AA]">
-                  {activeStage === 'select'
-                    ? 'Picking'
-                    : activeStage === 'pair'
-                      ? 'Waiting'
-                      : activeStage === 'complete'
-                        ? 'Sent'
-                        : 'Streaming'}
-                </span>
-              </div>
-
-              {/* Centered Gradient Connector + Animated Data Packet Stream */}
-              <div className="relative ml-[30px] flex items-center py-4 pl-6">
-                <span
-                  aria-hidden="true"
-                  className={`absolute inset-y-0 left-0 w-px transition-colors duration-300 ${
-                    activeStage === 'select'
-                      ? 'bg-[#27272A]'
-                      : activeStage === 'complete'
-                        ? 'bg-[#10B981]/60'
-                        : 'bg-gradient-to-b from-[#F00064]/65 via-[#F00064]/35 to-[#10B981]/65'
-                  }`}
-                />
-                {!prefersReducedMotion && activeStage === 'transfer' && (
-                  <>
-                    <motion.span
-                      aria-hidden="true"
-                      initial={{ y: -16, opacity: 0 }}
-                      animate={{ y: [-16, 20], opacity: [0, 1, 1, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
-                      className="absolute -left-[3px] h-1.5 w-1.5 rounded-full bg-[#FF4D8D] shadow-[0_0_8px_#F00064]"
-                    />
-                    <motion.span
-                      aria-hidden="true"
-                      initial={{ y: -16, opacity: 0 }}
-                      animate={{ y: [-16, 20], opacity: [0, 0.85, 0.85, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.4, delay: 0.7, ease: 'easeInOut' }}
-                      className="absolute -left-[3px] h-1.5 w-1.5 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981]"
-                    />
-                  </>
-                )}
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#27272A] bg-[#111114] px-2.5 py-1 text-[11px] text-[#A1A1AA]">
-                  <Lock
-                    className={`h-3 w-3 ${activeStage === 'complete' ? 'text-[#10B981]' : 'text-[#FF4D8D]'}`}
-                    aria-hidden="true"
-                  />
-                  <span>
-                    {activeStage === 'select'
-                      ? 'Local key derivation'
-                      : activeStage === 'pair'
-                        ? 'Zero-knowledge signaling'
-                        : activeStage === 'complete'
-                          ? 'Integrity verified locally'
-                          : 'Encrypted WebRTC DataChannel'}
-                  </span>
-                </span>
-              </div>
-
-              {/* Destination Node */}
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/90 px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${
-                      activeStage === 'select' || activeStage === 'pair'
-                        ? 'border-[#27272A] bg-[#17171B]'
-                        : 'border-[#10B981]/25 bg-[#10B981]/10'
-                    }`}
-                  >
-                    <Smartphone
-                      className={`h-4 w-4 ${
-                        activeStage === 'select' || activeStage === 'pair'
-                          ? 'text-[#A1A1AA]'
-                          : 'text-[#10B981]'
-                      }`}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-[#F4F4F5]">Destination Node</p>
-                    <p className="text-[11px] text-[#94949E]">iPhone · Safari</p>
-                  </div>
-                </div>
-                {activeStage === 'select' ? (
-                  <span className="rounded-full border border-[#27272A] bg-[#17171B] px-2.5 py-0.5 text-[11px] font-medium text-[#94949E]">
-                    Pending
-                  </span>
-                ) : activeStage === 'pair' ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#F00064]/30 bg-[#F00064]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#FF4D8D]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D8D]" aria-hidden="true" />
-                    Pairing
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10B981]/30 bg-[#10B981]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#10B981]">
-                    <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                      {!prefersReducedMotion && activeStage === 'transfer' && (
-                        <motion.span
-                          animate={{ scale: [1, 2.2], opacity: [0.7, 0] }}
-                          transition={{ repeat: Infinity, duration: 1.8, ease: 'easeOut' }}
-                          className="absolute inset-0 rounded-full bg-[#10B981]"
-                        />
-                      )}
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#10B981]" />
-                    </span>
-                    {activeStage === 'complete' ? 'Delivered' : 'Paired'}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-center justify-between gap-3 border-t border-[#27272A] pt-4">
-            <span className="text-xs text-[#94949E]">Ready to send real files?</span>
-            <a
-              href="/live"
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#F00064]/30 bg-[#F00064]/10 px-3 py-1.5 text-xs font-medium text-[#FF4D8D] transition-colors hover:border-[#F00064]/55 hover:bg-[#F00064]/20 hover:text-[#FF70A4]"
-            >
-              <span>Start live session</span>
-              <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </a>
-          </div>
-        </div>
+      {/* Organized Footer CTA */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#27272A] bg-[#09090B]/60 px-5 py-3.5 sm:px-7">
+        <span className="text-xs text-[#94949E]">Ready to send real files?</span>
+        <a
+          href="/live"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[#F00064]/30 bg-[#F00064]/10 px-3.5 py-1.5 text-xs font-medium text-[#FF4D8D] transition-colors hover:border-[#F00064]/55 hover:bg-[#F00064]/20 hover:text-[#FF70A4]"
+        >
+          <span>Start live session</span>
+          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+        </a>
       </div>
     </div>
   )
