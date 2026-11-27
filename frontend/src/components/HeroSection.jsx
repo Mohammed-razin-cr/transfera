@@ -1,7 +1,10 @@
 import { ArrowUpRight, KeyRound } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
 import TransferPreview from './TransferPreview'
 
 export default function HeroSection() {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <section className="relative overflow-hidden border-b border-[#27272A] pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-24">
       {/* Subtle static ambient lighting */}
@@ -18,12 +21,19 @@ export default function HeroSection() {
         <div className="section-inner">
           <div className="mx-auto max-w-2xl text-center">
             {/* Category Label */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#27272A] bg-[#111114] px-3 py-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#F00064]" aria-hidden="true" />
-              <span className="text-xs font-medium text-[#A1A1AA]">
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+              className="hero-status-pill inline-flex items-center gap-2.5 rounded-full border border-[#27272A] bg-[#111114]/90 px-3.5 py-1.5 backdrop-blur-md"
+            >
+              <span className="hero-status-dot" aria-hidden="true">
+                <span className="hero-status-dot-core" />
+              </span>
+              <span className="relative z-10 text-xs font-medium tracking-tight text-[#D4D4D8]">
                 End-to-end encrypted file transfer
               </span>
-            </div>
+            </motion.div>
 
             {/* Headline */}
             <h1 className="hero-heading mt-6">

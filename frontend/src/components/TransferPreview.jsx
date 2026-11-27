@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -69,6 +69,7 @@ function PreviewQrSvg() {
 export default function TransferPreview() {
   const [activeStage, setActiveStage] = useState('transfer')
   const [copied, setCopied] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const handleCopyKey = () => {
     setCopied(true)
@@ -141,9 +142,17 @@ export default function TransferPreview() {
       <div className="grid grid-cols-1 divide-y divide-[#27272A] lg:grid-cols-12 lg:divide-x lg:divide-y-0">
         {/* Left: Active Stage Content */}
         <div className="flex flex-col justify-between p-5 sm:p-7 lg:col-span-7">
+          <AnimatePresence mode="wait">
           {activeStage === 'select' && (
             /* Minimal Glass Upload Pattern (adapted from Uilora Minimal Glass) */
-            <div className="space-y-4">
+            <motion.div
+              key="select"
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+              className="space-y-4"
+            >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
@@ -186,11 +195,18 @@ export default function TransferPreview() {
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {activeStage === 'pair' && (
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+            <motion.div
+              key="pair"
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+              className="flex flex-col gap-5 sm:flex-row sm:items-center"
+            >
               <div className="shrink-0 self-start rounded-lg border border-[#27272A] bg-[#09090B] p-2.5">
                 <PreviewQrSvg />
               </div>
@@ -223,15 +239,22 @@ export default function TransferPreview() {
                   Scan the QR code on your receiving device or enter the Access Key. Keys are derived locally with SHA-256.
                 </p>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {activeStage === 'transfer' && (
-            <div className="flex h-full flex-col justify-between gap-6">
+            <motion.div
+              key="transfer"
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+              className="flex h-full flex-col justify-between gap-6"
+            >
               <div>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#09090B]/65 p-3.5">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#F00064]/25 bg-[#F00064]/10">
                       <FileArchive className="h-4 w-4 text-[#FF4D8D]" aria-hidden="true" />
                     </div>
                     <div className="min-w-0">
@@ -241,47 +264,65 @@ export default function TransferPreview() {
                       <p className="text-xs text-[#94949E]">Figma Archive</p>
                     </div>
                   </div>
-                  <span className="font-mono text-xs text-[#A1A1AA] shrink-0">
+                  <span className="shrink-0 rounded-md border border-[#27272A] bg-[#111114] px-2.5 py-1 font-mono text-xs text-[#D4D4D8] tabular-nums">
                     31.4 / 42.8 MB
                   </span>
                 </div>
 
                 <div className="mt-5">
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#27272A]">
+                  <div className="relative h-2 w-full overflow-hidden rounded-full bg-[#27272A]">
                     <div
-                      className="h-full rounded-full bg-[#F00064]"
+                      className="relative h-full overflow-hidden rounded-full bg-gradient-to-r from-[#D9005A] to-[#FF4D8D] shadow-[0_0_12px_rgba(240,0,100,0.45)]"
                       style={{ width: '73%' }}
-                    />
+                    >
+                      {!prefersReducedMotion && (
+                        <motion.span
+                          aria-hidden="true"
+                          initial={{ x: '-100%' }}
+                          animate={{ x: '200%' }}
+                          transition={{ repeat: Infinity, duration: 1.6, ease: 'linear' }}
+                          className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div className="mt-2.5 flex items-center justify-between text-xs">
+                  <div className="mt-2.5 flex items-center justify-between text-xs tabular-nums">
                     <span className="font-medium text-[#A1A1AA]">
-                      73% <span className="mx-1 text-[#94949E]">·</span>{' '}
-                      <span className="font-mono">18.4 MB/s</span>
+                      <span className="text-[#F4F4F5]">73%</span>
+                      <span className="mx-1.5 text-[#52525B]">·</span>
+                      <span className="font-mono text-[#D4D4D8]">84.6 MB/s</span>
                     </span>
-                    <span className="text-[#F4F4F5]">~1s remaining</span>
+                    <span className="font-mono text-[#A1A1AA]">~0.1s remaining</span>
                   </div>
                 </div>
               </div>
 
-              <dl className="grid grid-cols-1 gap-4 border-t border-[#27272A] pt-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#27272A]">
-                <div className="sm:pr-4">
-                  <dt className="text-xs text-[#94949E]">Transport</dt>
-                  <dd className="mt-1 text-xs font-medium text-[#F4F4F5]">WebRTC Direct</dd>
+              <dl className="grid grid-cols-1 gap-3 rounded-xl border border-[#27272A] bg-[#09090B]/50 p-3.5 sm:grid-cols-12 sm:gap-0 sm:divide-x sm:divide-[#27272A]">
+                <div className="sm:col-span-4 sm:pr-3">
+                  <dt className="text-[11px] uppercase tracking-wider text-[#94949E]">Transport</dt>
+                  <dd className="mt-1 whitespace-nowrap text-xs font-medium text-[#F4F4F5]">WebRTC Direct</dd>
                 </div>
-                <div className="sm:px-4">
-                  <dt className="text-xs text-[#94949E]">Cipher</dt>
-                  <dd className="mt-1 font-mono text-xs text-[#F4F4F5]">XSalsa20-Poly1305</dd>
+                <div className="sm:col-span-5 sm:px-3">
+                  <dt className="text-[11px] uppercase tracking-wider text-[#94949E]">Cipher</dt>
+                  <dd className="mt-1 whitespace-nowrap font-mono text-xs text-[#F4F4F5]">AES-256-GCM</dd>
                 </div>
-                <div className="sm:pl-4">
-                  <dt className="text-xs text-[#94949E]">Server disk</dt>
-                  <dd className="mt-1 text-xs font-medium text-[#10B981]">0 bytes stored</dd>
+                <div className="sm:col-span-3 sm:pl-3">
+                  <dt className="text-[11px] uppercase tracking-wider text-[#94949E]">Server disk</dt>
+                  <dd className="mt-1 whitespace-nowrap text-xs font-medium text-[#10B981]">0 bytes</dd>
                 </div>
               </dl>
-            </div>
+            </motion.div>
           )}
 
           {activeStage === 'complete' && (
-            <div className="space-y-5">
+            <motion.div
+              key="complete"
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+              className="space-y-5"
+            >
               <div className="flex items-start gap-3 rounded-lg border border-[#10B981]/30 bg-[#10B981]/10 p-4">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#10B981]" aria-hidden="true" />
                 <div>
@@ -305,45 +346,57 @@ export default function TransferPreview() {
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
 
         {/* Right: Clean Connection Timeline */}
         <div className="flex flex-col justify-between bg-[#09090B]/40 p-5 sm:p-7 lg:col-span-5">
           <div>
-            <p className="text-xs font-medium text-[#94949E]">Peer connection</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-[#94949E]">Peer connection</p>
 
-            <div className="mt-5">
-              <div className="flex items-center justify-between gap-3">
+            <div className="mt-4">
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/80 px-3.5 py-2.5">
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
-                    <Laptop className="h-4 w-4 text-[#A1A1AA]" aria-hidden="true" />
+                    <Laptop className="h-4 w-4 text-[#D4D4D8]" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-[#F4F4F5]">Origin Node</p>
                     <p className="text-[11px] text-[#94949E]">MacBook Pro · Chrome</p>
                   </div>
                 </div>
-                <span className="text-xs text-[#A1A1AA]">Sender</span>
+                <span className="rounded-full border border-[#27272A] bg-[#17171B] px-2 py-0.5 text-[11px] text-[#A1A1AA]">
+                  Sender
+                </span>
               </div>
 
-              <div className="ml-4 flex items-center gap-3 border-l border-[#27272A] py-3.5 pl-6">
+              <div className="relative ml-7 flex items-center gap-3 border-l border-[#27272A] py-4 pl-5">
+                {!prefersReducedMotion && (
+                  <motion.span
+                    aria-hidden="true"
+                    initial={{ y: -12, opacity: 0 }}
+                    animate={{ y: [-12, 16], opacity: [0, 1, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                    className="absolute -left-[3.5px] h-1.5 w-1.5 rounded-full bg-[#FF4D8D] shadow-[0_0_8px_#F00064]"
+                  />
+                )}
                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D8D]" aria-hidden="true" />
                 <span className="text-xs text-[#A1A1AA]">Encrypted WebRTC DataChannel</span>
               </div>
 
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/80 px-3.5 py-2.5">
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
-                    <Smartphone className="h-4 w-4 text-[#A1A1AA]" aria-hidden="true" />
+                    <Smartphone className="h-4 w-4 text-[#D4D4D8]" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-[#F4F4F5]">Destination Node</p>
                     <p className="text-[11px] text-[#94949E]">iPhone · Safari</p>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#10B981]">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10B981]/25 bg-[#10B981]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#10B981]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#10B981]" aria-hidden="true" />
                   Paired
                 </span>
