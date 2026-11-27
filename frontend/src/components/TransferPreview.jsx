@@ -354,61 +354,84 @@ export default function TransferPreview() {
         {/* Right: Clean Connection Timeline */}
         <div className="flex flex-col justify-between bg-[#09090B]/40 p-5 sm:p-7 lg:col-span-5">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-[#94949E]">Peer connection</p>
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-[#94949E]">
+                Peer connection
+              </p>
+              <span className="font-mono text-[11px] text-[#71717A]">P2P · Direct</span>
+            </div>
 
             <div className="mt-4">
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/80 px-3.5 py-2.5">
+              {/* Origin Node */}
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/90 px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
-                    <Laptop className="h-4 w-4 text-[#D4D4D8]" aria-hidden="true" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#F00064]/25 bg-[#F00064]/10">
+                    <Laptop className="h-4 w-4 text-[#FF4D8D]" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-[#F4F4F5]">Origin Node</p>
                     <p className="text-[11px] text-[#94949E]">MacBook Pro · Chrome</p>
                   </div>
                 </div>
-                <span className="rounded-full border border-[#27272A] bg-[#17171B] px-2 py-0.5 text-[11px] text-[#A1A1AA]">
+                <span className="rounded-full border border-[#27272A] bg-[#17171B] px-2.5 py-0.5 text-[11px] font-medium text-[#A1A1AA]">
                   Sender
                 </span>
               </div>
 
-              <div className="relative ml-7 flex items-center gap-3 border-l border-[#27272A] py-4 pl-5">
+              {/* Centered Gradient Connector + Animated Data Packet */}
+              <div className="relative ml-[30px] flex items-center py-3.5 pl-6">
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-[#F00064]/60 via-[#F00064]/35 to-[#10B981]/60"
+                />
                 {!prefersReducedMotion && (
                   <motion.span
                     aria-hidden="true"
-                    initial={{ y: -12, opacity: 0 }}
-                    animate={{ y: [-12, 16], opacity: [0, 1, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                    className="absolute -left-[3.5px] h-1.5 w-1.5 rounded-full bg-[#FF4D8D] shadow-[0_0_8px_#F00064]"
+                    initial={{ y: -14, opacity: 0 }}
+                    animate={{ y: [-14, 18], opacity: [0, 1, 1, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
+                    className="absolute -left-[3px] h-1.5 w-1.5 rounded-full bg-[#FF4D8D] shadow-[0_0_8px_#F00064]"
                   />
                 )}
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D8D]" aria-hidden="true" />
-                <span className="text-xs text-[#A1A1AA]">Encrypted WebRTC DataChannel</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#27272A] bg-[#111114] px-2.5 py-1 text-[11px] text-[#A1A1AA]">
+                  <Lock className="h-3 w-3 text-[#FF4D8D]" aria-hidden="true" />
+                  <span>Encrypted WebRTC DataChannel</span>
+                </span>
               </div>
 
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/80 px-3.5 py-2.5">
+              {/* Destination Node */}
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#27272A] bg-[#111114]/90 px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#27272A] bg-[#17171B]">
-                    <Smartphone className="h-4 w-4 text-[#D4D4D8]" aria-hidden="true" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#10B981]/25 bg-[#10B981]/10">
+                    <Smartphone className="h-4 w-4 text-[#10B981]" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-[#F4F4F5]">Destination Node</p>
                     <p className="text-[11px] text-[#94949E]">iPhone · Safari</p>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10B981]/25 bg-[#10B981]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#10B981]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#10B981]" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#10B981]/30 bg-[#10B981]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#10B981]">
+                  <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                    {!prefersReducedMotion && (
+                      <motion.span
+                        animate={{ scale: [1, 2.2], opacity: [0.7, 0] }}
+                        transition={{ repeat: Infinity, duration: 1.8, ease: 'easeOut' }}
+                        className="absolute inset-0 rounded-full bg-[#10B981]"
+                      />
+                    )}
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#10B981]" />
+                  </span>
                   Paired
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-between border-t border-[#27272A] pt-4">
+          <div className="mt-6 flex items-center justify-between gap-3 border-t border-[#27272A] pt-4">
             <span className="text-xs text-[#94949E]">Ready to send real files?</span>
             <a
               href="/live"
-              className="inline-flex items-center gap-1 text-xs font-medium text-[#FF4D8D] hover:text-[#FF70A4]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#F00064]/30 bg-[#F00064]/10 px-3 py-1.5 text-xs font-medium text-[#FF4D8D] transition-colors hover:border-[#F00064]/55 hover:bg-[#F00064]/20 hover:text-[#FF70A4]"
             >
               <span>Start live session</span>
               <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
