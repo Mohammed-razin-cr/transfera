@@ -57,13 +57,15 @@ export default function HeroSection() {
               </a>
             </div>
 
-            {/* Subtle Status Indicator */}
-            <p className="mt-5 inline-flex items-center justify-center gap-2 text-xs text-[#94949E]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#10B981]" aria-hidden="true" />
-              <span>Gateway online</span>
-              <span aria-hidden="true">·</span>
+            {/* Telemetry Status Strip */}
+            <p className="mt-6 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 font-mono text-[0.75rem] tracking-[0.015em] text-[#A1A1AA]">
+              <span className="inline-flex items-center gap-2 font-medium text-[#E4E4E7]">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#10B981]" aria-hidden="true" />
+                <span>Gateway online</span>
+              </span>
+              <span className="text-[#52525B]" aria-hidden="true">/</span>
               <span>NaCl secretbox</span>
-              <span aria-hidden="true">·</span>
+              <span className="text-[#52525B]" aria-hidden="true">/</span>
               <span>Zero server storage</span>
             </p>
           </div>
